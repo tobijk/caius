@@ -1,0 +1,76 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require WebDriver
+package require Error
+package require OOSupport
+namespace import OOSupport::*
+
+#
+# TEST CASES
+#
+
+test ut_webdriver_window {
+    Test window positioning, resizing, closing.
+} {
+    -result 0
+    -setup {
+        set cap [WebDriver::Capabilities #auto]
+        $cap set_browser_name "htmlunit"
+    }
+    -body {
+
+        except {
+            set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window [$session active_window]
+
+            $window maximize
+            lassign [$window position] x y
+
+            if { $x != 0 || $y != 0 } {
+                error "maximized window is not at position (0, 0)"
+            }
+
+            $window set_size 300 300
+            lassign [$window size] w h
+
+            if { $w != 300 || $h != 300 } {
+                error "window should be size 300x300, but is ${w}x${h}"
+            }
+
+            $window set_size 400 400
+            lassign [$window size] w h
+
+            if { $w != 400 || $h != 400 } {
+                error "window should be size 400x400, but is ${w}x${h}"
+            }
+
+            $window set_position 100 100
+            lassign [$window position] x y
+
+            if { $x != 100 || $y != 100 } {
+                error "window is not at position (100, 100)"
+            }
+
+            $window set_position 200 200
+            lassign [$window position] x y
+
+            if { $x != 200 || $y != 200 } {
+                error "window is not at position (200, 200)"
+            }
+
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error [$e msg]
+            }
+        }
+
+        return 0
+    }
+}
+

@@ -1,0 +1,82 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require OOSupport
+namespace import OOSupport::*
+
+#
+# PREAMBLE
+#
+
+::itcl::class ClassBlessed {
+
+    common attributes {
+        {string read_only_attr  "read only"  ro}
+        {string write_only_attr "write only" wo}
+        {string read_write_attr "read/write" rw}
+    }
+
+    method constructor {} {
+        init_attributes
+    }
+
+    bless_attributes
+}
+
+#
+# TEST CASES
+#
+
+test ut_oosupport_attribute_accessors {
+    Test automatic attribute accessor generation
+} {
+    -result 0
+    -setup {
+        set obj [ClassBlessed #auto]
+    }
+    -body {
+        set rval [catch {
+            $obj set_read_only_attr "overwritten"
+        } err ]
+        if {$rval == 0} {
+            error "read-only attribute is writable"
+        }
+
+        if {[$obj read_only_attr] ne "read only"} {
+            error "read-only attribute changed"
+        }
+
+        set rval [catch {
+            $obj write_only_attr
+        } err ]
+        if {$rval == 0} {
+            error "write-only attribute is readable"
+        }
+
+        set rval [catch {
+            $obj read_write_attr
+        } err ]
+        if {$rval != 0} {
+            error "read/write attribute is not readable"
+        }
+
+        set rval [catch {
+            $obj set_read_write_attr "overwritten"
+        } err ]
+        if {$rval != 0} {
+            error "read/write attribute is not writeable"
+        }
+
+        set val [$obj read_write_attr]
+        if {$val != "overwritten"} {
+            error "read/write attribute was not successfully changed"
+        }
+
+        return 0
+    }
+}
+

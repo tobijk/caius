@@ -1,0 +1,57 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require WebDriver
+package require Error
+package require OOSupport
+namespace import OOSupport::*
+
+set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
+set PAGE_URL "file://$DATA_DIR/html/page_click_alert.html"
+
+#
+# TEST CASES
+#
+
+set CLICK_ME_TEXT "You clicked me!"
+
+test ut_webdriver_alerts {
+    Test clicking on an element to summon a JavaScript alert and dismiss it.
+} {
+    -result 0
+    -setup {
+        set cap [WebDriver::Capabilities #auto]
+        $cap set_browser_name "firefox"
+    }
+    -body {
+
+        except {
+            set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window [$session active_window]
+
+            $window set_url $PAGE_URL
+            set link [$window element by_id a:clickme]
+
+            $link click
+            set alert_text [$window alert_text]
+            if {$alert_text != $CLICK_ME_TEXT} {
+                error "alert text should have been $CLICK_ME_TEXT but is $alert_text."
+            }
+
+            $window dismiss_alert
+
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error [$e msg]
+            }
+        }
+
+        return 0
+    }
+}
+

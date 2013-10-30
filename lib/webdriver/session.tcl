@@ -1,0 +1,274 @@
+#
+#   Caius Functional Testing Framework
+#
+#   Copyright 2013 Tobias Koch <tobias.koch@gmail.com>
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#   See the LICENSE file in the source distribution for more information.
+#
+
+package require Thread
+package require Itcl
+package require OOSupport
+package require Error
+package require http 2.7
+package require base64
+package require uri
+
+namespace eval WebDriver {
+
+    ::itcl::class Session {
+
+        common attributes {
+            {string  session_url  ""    rw}
+            {string  session_id   ""    rw}
+            {bool    cloned       false rw}
+        }
+
+        # these are not serializable
+        private variable _windows
+
+        constructor {{url ""} \
+            {desired_capabilities  ""} \
+            {required_capabilities ""} \
+        } {
+            OOSupport::init_attributes
+
+            # these are not serializable
+            set _windows {}
+
+            if {$url != ""} {
+                set desired_and_required_caps [ \
+                    ::WebDriver::DesiredAndRequiredCapabilities #auto \
+                    $desired_capabilities $required_capabilities]
+
+                # serialize capabilities
+                set post_data [$desired_and_required_caps to_json]
+                
+                # open a new session
+                set response [::WebDriver::Protocol::dispatch -query $post_data \
+                    $url/session]
+
+                # save session URL and ID
+                array set meta [$response headers]
+
+                # different versions use different methods to report session id
+                if {[info exists meta(Location)]} {
+                    set _session_url $meta(Location)
+                } else {
+                    set _session_url "$url/session/[$response session_id]"
+                }
+                set _session_id [lindex [split $_session_url) /] end]
+
+                ::itcl::delete object $response
+            }
+        }
+
+        destructor {
+            # delete windows
+            foreach {handle window} $_windows {
+                ::itcl::delete object $window
+            }
+
+            # delete session
+            if {!$_cloned} {
+                set response [::WebDriver::Protocol::dispatch -method DELETE \
+                    $_session_url]
+                ::itcl::delete object $response
+            }
+        }
+
+        # accessor functions and JSON support
+        OOSupport::bless_attributes -json_support -collapse_underscore \
+            -skip_undefined
+
+        method capabilities {} {
+            set response [::WebDriver::Protocol::dispatch $_session_url]
+
+            # parse capabilities
+            set caps [::itcl::code [WebDriver::Capabilities #auto]]
+            $caps from_tcl [$res value]
+
+            ::itcl::delete object $response
+            return $caps
+        }
+
+        method set_page_load_timeout {ms} {
+            if {![regexp {^\d+$} $ms]} {
+                raise ::ValueError \
+                    "invalid timeout value '$ms' for page load timeout"
+            }
+
+            set json "{ \"type\": \"page load\", \"ms\": $ms }"
+            set response [::WebDriver::Protocol::dispatch -query $json \
+                $_session_url/timeouts]
+            ::itcl::delete object $response
+        }
+
+        method set_async_script_timeout {ms} {
+            if {![regexp {^\d+$} $ms]} {
+                raise ::ValueError \
+                    "invalid timeout value '$ms' for async script timeout"
+            }
+
+            set json "{ \"ms\": $ms }"
+            set response [::WebDriver::Protocol::dispatch -query $json \
+                $_session_url/timeouts/async_script]
+            ::itcl::delete object $response
+        }
+
+        method set_implicit_wait_timeout {ms} {
+            if {![regexp {^\d+$} $ms]} {
+                raise ::ValueError \
+                    "invalid timeout value '$ms' for implicit wait timeout"
+            }
+
+            set json "{ \"ms\": $ms }"
+            set response [::WebDriver::Protocol::dispatch -query $json \
+                $_session_url/timeouts/implicit_wait]
+            ::itcl::delete object $response
+        }
+
+        method active_window {} {
+            set response [::WebDriver::Protocol::dispatch \
+                $_session_url/window_handle]
+
+            set handle [string trim [$response value] "{}"]
+            ::itcl::delete object $response
+
+            array set windows $_windows
+
+            if {[info exists windows($handle)]} {
+                set result $windows($handle)
+            } else {
+                set result [::itcl::code [::WebDriver::Window #auto $handle \
+                    [::itcl::code $this]]]
+                set windows($handle) $result
+                set _windows [array get windows]
+            }
+
+            return $result
+        }
+
+        method windows {} {
+            set response [::WebDriver::Protocol::dispatch \
+                $_session_url/window_handles]
+
+            set handles [$response value]
+            for {set i 0} {$i < [llength $handles]} {incr i} {
+                lset handles $i [string trim [lindex $handles $i] "{}"]
+            }
+            ::itcl::delete object $response
+
+            # 1. create
+            # 2. keep
+            # 3. delete
+
+            array set h_idx {}
+
+            foreach {h  } $handles { set h_idx($h) 1 }
+            foreach {h w} $_windows {
+                if {[info exists h_idx($h)]} {
+                    set h_idx($h) 2
+                } else {
+                    set h_idx($h) 3
+                }
+            }
+
+            array set windows $_windows
+            set result {}
+
+            # update handle list
+            foreach {h action} [array get h_idx] {
+                if {$action == 1} {
+                    lappend result [set windows($h) \
+                        [ ::itcl::code [ \
+                            ::WebDriver::Window #auto $h [::itcl::code $this] ] \
+                        ] \
+                    ]
+                } elseif {$action == 2} {
+                    lappend result $windows($h)
+                } elseif {$action == 3} {
+                    ::itcl::delete object $windows($h)
+                    unset windows($h)
+                }
+            }
+            set _windows [array get windows]
+
+            return $result
+        }
+
+        private method __execute_async {script args} {
+            set script [::OOSupport::json_escape_chars $script]
+            set json "{ \"script\": \"$script\", \"args\": \[[join $args ", "]\] }"
+
+            set response [::WebDriver::Protocol::dispatch \
+                -query $json \
+                $_session_url/execute_async]
+
+            # return TCL'ized JSON object or single value
+            set result [$response value]
+
+            ::itcl::delete object $response
+            return $result
+        }
+
+        private method __elements {by locator {root null} {single true}} {
+            array set by2text "
+                by_class_name        {class name}
+                by_css_selector      {css selector}
+                by_id                {id}
+                by_name              {name}
+                by_link_text         {link text}
+                by_partial_link_text {partial link text}
+                by_tag_name          {tag name}
+                by_xpath             {xpath}
+            "
+
+            set strategy $by2text($by)
+            set locator [::OOSupport::json_escape_chars $locator]
+            set json "{ \"using\": \"$strategy\", \"value\": \"$locator\" }"
+
+            set result ""
+
+            if {$root eq "null"} {
+                set url [$this session_url]/element
+            } else {
+                set url [$this session_url]/element/[$root ELEMENT]/element
+            }
+
+            if {!$single} {
+                set url "${url}s"
+            }
+
+            set response [::WebDriver::Protocol::dispatch \
+                -query $json \
+                $url]
+
+            if {$single} {
+                set result [::itcl::code \
+                    [[::WebDriver::WebElement #auto $this] from_tcl \
+                        [$response value]]]
+            } else {
+                set element_list [$response value]
+
+                foreach {elm} $element_list {
+                    lappend result [::itcl::code \
+                        [[::WebDriver::WebElement #auto $this] from_tcl $elm]]
+                }
+            }
+
+            ::itcl::delete object $response
+            return $result
+        }
+    }
+}
+

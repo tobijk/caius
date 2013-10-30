@@ -1,0 +1,329 @@
+#!/usr/bin/tclsh
+
+package require tcltest
+namespace import tcltest::*
+
+package require Itcl
+package require Error
+
+#
+# PREAMBLE
+#
+
+::itcl::class ExceptionA {
+    inherit ::Exception
+
+    constructor {msg} {
+        ::Exception::constructor $msg
+    } {}
+
+    destructor {}
+}
+
+::itcl::class ExceptionAA {
+    inherit ::ExceptionA
+
+    constructor {msg} {
+        ::ExceptionA::constructor $msg
+    } {}
+
+    destructor {}
+}
+
+#
+# TEST CASES
+#
+
+test ut_exceptions_01 {
+    Catch exception by exact class name
+} {
+    -result 0
+    -body {
+
+        except {
+            raise ::ExceptionA "class A exception"
+        } e {
+            ::ExceptionA {
+                if {[$e info class] == "::ExceptionA"} {
+                    return 0
+                }
+
+                error "exception has wrong type"
+            }
+        }
+
+        error "exception was not caught"
+    }
+}
+
+test ut_exceptions_02 {
+    Catch exception by base class
+} {
+    -result 0
+    -body {
+
+        except {
+            raise ::ExceptionAA "class AA exception"
+        } e {
+            ::ExceptionA {
+                if {[$e info class] == "::ExceptionAA"} {
+                    return 0
+                }
+
+                error "exception has wrong type"
+            }
+        }
+
+        error "exception was not caught"
+    }
+}
+
+test ut_exceptions_03 {
+    Catch exception on first base class match (1st occurrence)
+} {
+    -result 0
+    -body {
+
+        except {
+            raise ::ExceptionAA "class AA exception"
+        } e {
+            ::Exception {
+                return 0
+            }
+            ::ExceptionA {
+                error "exception caught incorrectly as ExceptionA"
+            }
+            ::ExceptionAA {
+                error "exception caught incorrectly as ExceptionAA"
+            }
+        }
+
+        error "exception was not caught"
+    }
+}
+
+test ut_exceptions_04 {
+    Catch exception on first base class match (in between)
+} {
+    -result 0
+    -body {
+
+        except {
+            raise ::ExceptionA "class AA exception"
+        } e {
+            ::ExceptionAA {
+                error "exception caught incorrectly as ExceptionAA"
+            }
+            ::Exception {
+                return 0
+            }
+            ::ExceptionA {
+                error "exception caught incorrectly as ExceptionA"
+            }
+        }
+
+        error "exception was not caught"
+    }
+}
+
+test ut_exception_05 {
+    Catch exception by exact class match (in between)
+} {
+    -result 0
+    -body {
+
+        except {
+            raise ::ExceptionA "class A exception"
+        } e {
+            ::ExceptionAA {
+                error "caught exception with derived class name"
+            }
+            ::ExceptionA {
+                return 0
+            }
+            ::Exception {
+                error "exception not caught with exact class name"
+            }
+        }
+
+        error "exception was not caught"
+    }
+}
+
+test ut_exceptions_06 {
+    Catch an ordinary Tcl error as TclError exception object.
+} {
+    -result 0
+    -body {
+
+        except {
+            error "this is an ordinary Tcl error"
+        } e {
+            ::TclError {
+                if {[$e info class] ne "::TclError"} {
+                    error "expected exception object of class ::Exception::TclError"
+                }
+
+                return 0
+            }
+        }
+
+        error "Tcl error was not caught"
+    }
+}
+
+test ut_exceptions_07 {
+    Uncaught exceptions propagate through cascading except blocks.
+} {
+    -result 0
+    -body {
+
+        except {
+            except {
+                raise ::ValueError "catch me if you can..."
+            } e1 {
+                ::TclError {
+                    error "exception was caught in wrong spot."
+                }
+            }
+        } e2 {
+            ::ValueError {
+                return 0
+            }
+        }
+
+        error "exception was not caught"
+    }
+}
+
+test ut_exceptions_08 {
+    Execute final clause when exception occurs and is caught.
+} {
+    -result 0
+    -setup {
+        set exception_caught 0
+        set final_run 0
+    }
+    -body {
+        except {
+            raise ExceptionA "catch me and run final clause"
+        } e {
+            ::Exception {
+                set exception_caught 1
+            }
+        } final {
+            set final_run 1
+        }
+
+        if {!$exception_caught} {
+            error "exception wasn't caught"
+        }
+
+        if {!$final_run} {
+            error "final clause was not run"
+        }
+
+        return 0
+    }
+}
+
+test ut_exceptions_09 {
+    Execute final clause when exception occurs and is NOT caught.
+} {
+    -result 0
+    -setup {
+        set exception_caught 0
+        set final_run 0
+    }
+    -body {
+
+        except {
+            except {
+                raise ExceptionA "catch me and run final clause"
+            } e1 {
+                ::RuntimeError {
+                    set exception_caught 1
+                }
+            } final {
+                set final_run 1
+            }
+        } e2 {
+            ::ExceptionA {
+                #pass
+            }
+        }
+
+        if {$exception_caught} {
+            error "exception was caught but shouldn't have"
+        }
+
+        if {!$final_run} {
+            error "final clause was not run"
+        }
+
+        return 0
+    }
+}
+
+test ut_exceptions_10 {
+    Handle empty catch block.
+} {
+    -result 0
+    -setup {
+        set exception_propagated 0
+        set final_run 0
+    }
+    -body {
+
+        except {
+            except {
+                raise ExceptionA "catch me and run final clause"
+            } e1 {
+
+            } final {
+                set final_run 1
+            }
+        } e2 {
+            ::ExceptionA {
+                set exception_propagated 1
+            }
+        }
+
+        if {$exception_propagated == 0} {
+            error "exception didn't propagate"
+        }
+
+        if {!$final_run} {
+            error "final clause was not run"
+        }
+
+        return 0
+    }
+}
+
+
+test ut_exceptions_11 {
+    Execute final clause when no exception occurs!
+} {
+    -result 0
+    -setup {
+        set final_run 0
+    }
+    -body {
+
+        except {
+
+        } e1 {
+
+        } final {
+            set final_run 1
+        }
+
+        if {!$final_run} {
+            error "final clause was not run"
+        }
+
+        return 0
+    }
+}
+

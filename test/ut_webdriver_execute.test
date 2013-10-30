@@ -1,0 +1,99 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require Thread
+package require WebDriver
+
+package require OOSupport
+namespace import OOSupport::*
+
+set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
+
+#
+# TEST CASES
+#
+
+test ut_webdriver_execute {
+    Inject JavaScript and test script result.
+} {
+    -result 0
+    -setup {
+        set cap [::itcl::code [::WebDriver::Capabilities #auto]]
+        $cap set_browser_name "htmlunit"
+        set result 0
+    }
+    -body {
+        except {
+            set session [::WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window  [$session active_window]
+
+            $window set_url "file://$DATA_DIR/html/page1.html"
+
+            # inject javascript
+            set script {
+                return Math.sqrt(arguments[0]);
+            }
+            set result [$window execute $script 144]
+
+            # window is deleted as session property
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error "caught unexpected exception [$e info class]: [$e msg]"
+            }
+        }
+
+        if {$result != 12} {
+            error "unexpected script result '$result'"
+        }
+
+        return 0
+    }
+}
+
+test ut_webdriver_execute_async {
+    Inject JavaScript and run asynchronously.
+} {
+    -result 0
+    -setup {
+        set cap [::itcl::code [::WebDriver::Capabilities #auto]]
+        $cap set_browser_name "htmlunit"
+        set result 0
+    }
+    -body {
+        except {
+            set session [::WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window  [$session active_window]
+
+            $window set_url "file://$DATA_DIR/html/page1.html"
+
+            set script {
+                var callback = arguments[arguments.length - 1]
+                var result = Math.sqrt(arguments[0]);
+                callback(result);
+            }
+
+            set thread_id [$window execute_async -joinable \
+                -result thread_shared result $script 169]
+            ::thread::join $thread_id
+
+            set result [::tsv::get thread_shared result]
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error "caught unexpected exception [$e info class]: [$e msg]"
+            }
+        }
+
+        if {$result != 13} {
+            error "unexpected script result '$result'"
+        }
+
+        return 0
+    }
+}
+

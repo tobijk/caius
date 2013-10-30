@@ -1,0 +1,79 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require WebDriver
+package require Error
+package require OOSupport
+namespace import OOSupport::*
+
+set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
+set PAGE_URL "file://$DATA_DIR/html/page_text.html"
+
+#
+# TEST CASES
+#
+
+set LABEL_TEXT "Label Text"
+set INPUT_TEXT "Input Field"
+
+test ut_webdriver_text {
+    Test reading and setting text of an element.
+} {
+    -result 0
+    -setup {
+        set cap [WebDriver::Capabilities #auto]
+        $cap set_browser_name "htmlunit"
+    }
+    -body {
+
+        except {
+            set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window [$session active_window]
+
+            $window set_url $PAGE_URL
+
+            set label [$window element by_id label]
+            if {[$label text] ne $LABEL_TEXT} {
+                error "label text is not correct or encoding problem."
+            }
+
+            set input [$window element by_id input]
+            if {[$input attribute value] ne $INPUT_TEXT} {
+                error "input field text is wrong."
+            }
+
+            $input click
+            $input clear
+
+            set INPUT_TEXT "Hello World! ÄÖÜß"
+            $input send_keys $INPUT_TEXT
+
+            if {[$input attribute value] ne $INPUT_TEXT} {
+                error "input field text wrong or encoding problem."
+            }
+
+            if {[$input tag_name] ne "input"} {
+                error "input element has wrong tag name."
+            }
+
+            if {![$input enabled]} {
+                error "input element should be enabled."
+            }
+
+            ::itcl::delete object $label
+            ::itcl::delete object $input
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error [$e msg]
+            }
+        }
+
+        return 0
+    }
+}
+

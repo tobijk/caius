@@ -1,0 +1,55 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require Error
+package require WebDriver
+package require OOSupport
+namespace import OOSupport::*
+
+#
+# PREAMBLE
+#
+
+set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
+set TEST_PAGE "file://$DATA_DIR/html/page1.html"
+
+#
+# TEST CASES
+#
+
+test ut_webdriver_screenshot {
+    Load a test page and take a screenshot.
+} {
+    -result 0
+    -setup {
+        set cap [::itcl::code [::WebDriver::Capabilities #auto]]
+        $cap set_browser_name "firefox"
+    }
+    -body {
+        except {
+            set session [::WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window  [$session active_window]
+
+            $window set_url $TEST_PAGE
+            after 1
+            set screenshot [$window screenshot -decode]
+
+            set fp [open "test.png" "w+b"]
+            puts $fp $screenshot
+            close $fp
+
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error "caught exception: [$e msg]"
+            }
+        }
+
+        return 0
+    }
+}
+

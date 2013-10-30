@@ -1,0 +1,51 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require WebDriver
+package require Error
+package require OOSupport
+namespace import OOSupport::*
+
+set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
+
+#
+# TEST CASES
+#
+
+test ut_webdriver_failed_command {
+    Inject invalid JavaScript and expect a WebDriver exception to be thrown.
+} {
+    -result 0
+    -setup {
+        set cap [::itcl::code [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "htmlunit"
+    }
+    -body {
+        except {
+            set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            set window  [$session active_window]
+
+            $window set_url "file://$DATA_DIR/html/page1.html"
+
+            # inject javascript
+            set script {
+                return no_var;
+            }
+            $window execute $script
+
+            ::itcl::delete object $session
+        } e {
+            ::WebDriver::Error {
+                ::itcl::delete object $session
+                return 0
+            }
+        }
+
+        error "injected script should have caused an exception to occur"
+    }
+}
+
