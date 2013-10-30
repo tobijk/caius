@@ -18,8 +18,6 @@
 package require Error
 package require OS
 package require OutputStream
-package require Expect
-package require fileutil
 
 namespace eval Testing {
 
