@@ -153,7 +153,7 @@ namespace eval WebDriver {
                 [$_session session_url]/element/$_ELEMENT/location]
             array set value [$response value]
             ::itcl::delete $response
-            return [list $array(x) $array(y)]
+            return [list $value(x) $value(y)]
         }
 
         method size {} {
@@ -161,7 +161,7 @@ namespace eval WebDriver {
                 [$_session session_url]/element/$_ELEMENT/size]
             array set value [$response value]
             ::itcl::delete $response
-            return [list $array(width) $array(height)]
+            return [list $value(width) $value(height)]
         }
 
         method css_property {css_property} {
