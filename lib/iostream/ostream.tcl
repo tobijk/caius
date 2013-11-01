@@ -36,7 +36,9 @@ namespace eval OutputStream {
             return {initialize finalize write}
         }
 
-        method finalize {channel} {}
+        method finalize {channel} {
+            set _state :start
+        }
 
         method write {channel data} {
             set lines [regexp -inline -all -line -- {^.*(?:\r?\n)?} $data]
@@ -71,7 +73,9 @@ namespace eval OutputStream {
             return {initialize finalize write}
         }
 
-        method finalize {channel} {}
+        method finalize {channel} {
+            flush $_target
+        }
 
         method write {channel data} {
             puts -nonewline $_target $data
@@ -80,10 +84,6 @@ namespace eval OutputStream {
     }
 
     ::itcl::class AnsiEscapeFilter {
-
-        constructor {{target stdout}} {
-            set _target $target
-        }
 
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
