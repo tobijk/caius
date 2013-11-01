@@ -15,9 +15,26 @@
 #   See the LICENSE file in the source distribution for more information.
 #
 
-package ifneeded Testing 1.0 "
-    source \[file join [list $dir] testobj.tcl\]
-    source \[file join [list $dir] assert.tcl \]
-    source \[file join [list $dir] version.tcl\]
-"
+package require Itcl
+package require Error
+
+namespace eval Testing {
+
+    ::itcl::class AssertionFailed {
+        inherit Exception
+
+        constructor {msg} {
+            ::Exception::constructor "$msg"
+        } {}
+
+        destructor {}
+    }
+
+    proc assert {args} {
+        if 1 "if {$args} {
+            return 0 
+        }"
+        raise Testing::AssertionFailed "asserting '$args' failed"
+    }
+}
 
