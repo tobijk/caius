@@ -46,7 +46,7 @@ proc except {block exception_var clauses {final_kw ""} {final_block ""}} {
 
     if { \[ catch {
         $block
-    } $exception_var except_opts] == 1 } {
+    } $exception_var __except_opts_$exception_var] == 1 } {
 
         $final_block
 
@@ -54,9 +54,9 @@ proc except {block exception_var clauses {final_kw ""} {final_block ""}} {
             set $exception_var \[::itcl::code \[::TclError #auto \"\$$exception_var\"]]
         }
 
-        \$$exception_var set_stack_trace \[dict get \$except_opts -errorinfo]
-        \$$exception_var set_code        \[dict get \$except_opts -errorcode]
-        \$$exception_var set_line        \[dict get \$except_opts -errorline]
+        \$$exception_var set_stack_trace \[dict get \$__except_opts_$exception_var -errorinfo]
+        \$$exception_var set_code        \[dict get \$__except_opts_$exception_var -errorcode]
+        \$$exception_var set_line        \[dict get \$__except_opts_$exception_var -errorline]
 
         set __rcode \[ catch { if $__buf else {error \$$exception_var} } __rval ]
     } else {
