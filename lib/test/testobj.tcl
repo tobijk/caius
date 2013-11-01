@@ -57,11 +57,6 @@ namespace eval Testing {
                         set verdict "FAIL"
                     }
                 } final {
-                    chan pop stderr
-                    chan pop stdout
-                    chan pop stdout
-                    chan pop stdout
-
                     # run teardown script
                     except {
                         $this ::Testing::TestObject::teardown
@@ -71,17 +66,22 @@ namespace eval Testing {
                             puts "- Warning:"
                             puts [regsub -all -lineanchor {^} [$et stack_trace] "    "]
                         }
+                    } final {
+                        chan pop stderr
+                        chan pop stdout
+                        chan pop stdout
+                        chan pop stdout
                     }
                 }
-                puts ""
 
                 # print stack trace
                 if {$verdict eq "FAIL"} {
+                    puts ""
                     puts "- Trace:"
                     puts [regsub -all -lineanchor {^} [$e stack_trace] "    "]
-                    puts ""
                 }
 
+                puts ""
                 puts "- Verdict: $verdict\n"
                 incr test_count
             }

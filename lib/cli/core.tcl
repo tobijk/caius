@@ -69,15 +69,21 @@ namespace eval Cli {
         }
 
         method send {args} {
-            uplevel [list exp_send -i $_spawn_id {*}$args]
+            uplevel "::exp_send -i $_spawn_id $args"
         }
 
         method expect {args} {
-            uplevel [list expect -i $_spawn_id {*}$args]
+            uplevel \
+                "set spawn_id $_spawn_id
+                ::expect $args"
         }
 
         method match_max {{size ""}} {
             return [match_max -i $_spawn_id $size]
+        }
+
+        method spawn_id {} {
+            return $_spawn_id
         }
     }
 }
