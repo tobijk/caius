@@ -59,9 +59,11 @@ package require OOSupport
 ::itcl::class TclError {
     inherit ::RuntimeError
 
-
     constructor {msg} { ::RuntimeError::constructor $msg } {}
-
     destructor {}
+
+    method set_stack_trace {stack_trace} {
+        $this ::Exception::set_stack_trace "::TclError: $stack_trace"
+    }
 }
 
