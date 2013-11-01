@@ -42,28 +42,36 @@ namespace eval Testing {
                 append heading [string repeat "-" [expr 70 - [string length $heading]]] " "
                 puts "$heading START"
 
-                # setup log channel transformations
-                puts "- Log:"
-                chan push stdout $indenter_out
-                chan push stdout $newlines_flip
-                chan push stdout $escape_filter
-                chan push stderr $redirect_err
-
                 # run setup, test, teardown
                 except {
+                    puts "- Log:"
+                    chan push stdout $indenter_out
+                    chan push stdout $newlines_flip
+                    chan push stdout $escape_filter
+                    chan push stderr $redirect_err
+
                     $this ::Testing::TestObject::setup
                     $this $test
-                    $this ::Testing::TestObject::teardown
                 } e {
                     ::Exception {
                         set verdict "FAIL"
                     }
                 } final {
-                    # remove log channel transformations
                     chan pop stderr
                     chan pop stdout
                     chan pop stdout
                     chan pop stdout
+
+                    # run teardown script
+                    except {
+                        $this ::Testing::TestObject::teardown
+                    } et {
+                        ::Exception {
+                            puts ""
+                            puts "- Warning:"
+                            puts [regsub -all -lineanchor {^} [$et stack_trace] "    "]
+                        }
+                    }
                 }
                 puts ""
 
