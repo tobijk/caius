@@ -23,8 +23,66 @@ namespace eval Testing {
 
     ::itcl::class TestObject {
 
-        method run {} {
-            set num_tests [llength [set all_tests [$this test_list]]]
+        private variable _outformat "text"
+
+        public method run {{argc 0} {argv {}}} {
+            set tests_to_run {}
+
+            foreach {v} $argv {
+                switch $v {
+                    "-h" -
+                    "--help" {
+                        $this ::Testing::TestObject::usage
+                        exit 0
+                    }
+                    "-x" -
+                    "--xml" {
+                        set _outformat "xml"
+                    }
+                    "-l" -
+                    "--list" {
+                        set all_tests [$this ::Testing::TestObject::list_tests]
+                        foreach {test} $all_tests {
+                            puts $test
+                        }
+                        exit 0
+                    }
+                    default {
+                        if {[string index $v 0] eq "-"} {
+                            raise RuntimeError "unknown command line parameter '$v'."
+                        } else {
+                            if {[catch { $this info function $v } err ] != 0} {
+                                raise RuntimeError "no such test '$v'."
+                            }
+
+                            lappend tests_to_run $v
+                        }
+                    }
+                }
+            }
+
+            $this ::Testing::TestObject::execute $tests_to_run
+        }
+
+        public method usage {} {
+            puts "Caius Functional Testing Framework - Test Module [$this info class]  "
+            puts "                                                                     "
+            puts "Usage: [file tail $::argv0] \[OPTIONS] \[<test1> <test2> ...]        "
+            puts "                                                                     "
+            puts "Options:                                                             "
+            puts " -h, --help        Print this help message end exit.                 "
+            puts " -x, --xml         Output test results in XML format.                "
+            puts " -l, --list        Print list of available tests in this class.      "
+            puts "                                                                     "
+        }
+
+        public method execute {{tests_to_run {}}} {
+            if {[llength $tests_to_run] > 0} {
+                set num_tests [llength [set all_tests $tests_to_run]]
+            } else {
+                set num_tests [llength [set all_tests \
+                    [$this ::Testing::TestObject::list_tests]]]
+            }
 
             set indenter_out  [::itcl::code [OutputStream::Indenter #auto "    "]]
             set escape_filter [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
@@ -92,9 +150,7 @@ namespace eval Testing {
             ::itcl::delete object $redirect_err
         }
 
-        # PROTECTED
-
-        protected method test_list {} {
+        public method list_tests {} {
             set all_methods [lsort [$this info function]]
             set all_tests {}
 
@@ -113,7 +169,7 @@ namespace eval Testing {
             return $all_tests
         }
 
-        protected method setup {} {
+        private method setup {} {
             foreach {class} [lreverse [$this info heritage]] {
                 if {![catch { lassign [$this info function ${class}::setup \
                         -protection -type] protection type }]} \
@@ -125,7 +181,7 @@ namespace eval Testing {
             }
         }
 
-        protected method teardown {} {
+        private method teardown {} {
             foreach {class} [$this info heritage] {
                 if {![catch { lassign [$this info function ${class}::teardown \
                         -protection -type] protection type }]} \
