@@ -32,8 +32,15 @@ namespace eval Testing {
                 switch $v {
                     "-h" -
                     "--help" {
-                        $this ::Testing::TestObject::usage
-                        exit 0
+                        puts "Caius Functional Testing Framework - Test Module [$this info class]  "
+                        puts "                                                                     "
+                        puts "Usage: [file tail $::argv0] \[OPTIONS] \[<test1> <test2> ...]        "
+                        puts "                                                                     "
+                        puts "Options:                                                             "
+                        puts " -h, --help        Print this help message end exit.                 "
+                        puts " -x, --xml         Output test results in XML format.                "
+                        puts " -l, --list        Print list of available tests in this class.      "
+                        return
                     }
                     "-x" -
                     "--xml" {
@@ -41,17 +48,14 @@ namespace eval Testing {
                     }
                     "-l" -
                     "--list" {
-                        set all_tests [$this ::Testing::TestObject::list_tests]
-                        foreach {test} $all_tests {
-                            puts $test
-                        }
-                        exit 0
+                        puts [join [$this ::Testing::TestObject::list_tests] "\n"]
+                        return
                     }
                     default {
                         if {[string index $v 0] eq "-"} {
                             raise RuntimeError "unknown command line parameter '$v'."
                         } else {
-                            if {[catch { $this info function $v } err ] != 0} {
+                            if {[catch {$this info function $v} err] != 0} {
                                 raise RuntimeError "no such test '$v'."
                             }
 
@@ -62,18 +66,6 @@ namespace eval Testing {
             }
 
             $this ::Testing::TestObject::execute $tests_to_run
-        }
-
-        public method usage {} {
-            puts "Caius Functional Testing Framework - Test Module [$this info class]  "
-            puts "                                                                     "
-            puts "Usage: [file tail $::argv0] \[OPTIONS] \[<test1> <test2> ...]        "
-            puts "                                                                     "
-            puts "Options:                                                             "
-            puts " -h, --help        Print this help message end exit.                 "
-            puts " -x, --xml         Output test results in XML format.                "
-            puts " -l, --list        Print list of available tests in this class.      "
-            puts "                                                                     "
         }
 
         public method execute {{tests_to_run {}}} {
@@ -89,24 +81,20 @@ namespace eval Testing {
             set newlines_flip [::itcl::code [OutputStream::FlipNewlines #auto unix]]
             set redirect_err  [::itcl::code [OutputStream::Redirect #auto stdout]]
 
-            puts "Exercising tests in [$this info class]:"
-            set test_count 1
+            set count 1
 
             foreach {test} $all_tests {
                 set verdict "PASS"
 
-                # print a heading
-                set heading "* Test $test_count/$num_tests: [namespace tail $test] "
-                append heading [string repeat "-" [expr 70 - [string length $heading]]] " "
-                puts "$heading START"
-
-                # run setup, test, teardown
+                $this ::Testing::TestObject::record test_info $test $count $num_tests
                 except {
                     puts "- Log:"
                     chan push stdout $indenter_out
                     chan push stdout $newlines_flip
                     chan push stdout $escape_filter
                     chan push stderr $redirect_err
+
+                    set start_time [clock milliseconds]
 
                     $this ::Testing::TestObject::setup
                     $this $test
@@ -115,33 +103,29 @@ namespace eval Testing {
                         set verdict "FAIL"
                     }
                 } final {
-                    # run teardown script
                     except {
                         $this ::Testing::TestObject::teardown
                     } et {
                         ::Exception {
-                            puts ""
-                            puts "- Warning:"
-                            puts [regsub -all -lineanchor {^} [$et stack_trace] "    "]
+                            $this ::Testing::TestObject::record warning [$et stack_trace]
                         }
                     } final {
+                        set stop_time [clock milliseconds]
+
                         chan pop stderr
                         chan pop stdout
                         chan pop stdout
                         chan pop stdout
                     }
                 }
+                set total_time [expr $stop_time - $start_time]
 
-                # print stack trace
                 if {$verdict eq "FAIL"} {
-                    puts ""
-                    puts "- Trace:"
-                    puts [regsub -all -lineanchor {^} [$e stack_trace] "    "]
+                    $this record trace [$e stack_trace]
                 }
 
-                puts ""
-                puts "- Verdict: $verdict\n"
-                incr test_count
+                $this ::Testing::TestObject::record result $verdict $total_time
+                incr count
             }
 
             ::itcl::delete object $indenter_out
@@ -189,6 +173,38 @@ namespace eval Testing {
                     if {$type eq "method" && $protection eq "public"} {
                         $this ${class}::teardown
                     }
+                }
+            }
+        }
+
+        private method record {type args} {
+            switch $type {
+                test_info {
+                    lassign $args test_name count num_tests
+                    set heading "* Test $count/$num_tests: [string trimleft $test_name ::] "
+                    append heading [string repeat - [expr 70 - [string length $heading]]]
+                    puts "$heading START"
+                }
+                warning -
+                trace {
+                    lassign $args msg
+                    puts "\n- [string totitle $type]:"
+                    puts [regsub -all -lineanchor {^} $msg "    "]
+                }
+                result {
+                    lassign $args verdict milliseconds
+
+                    set m  [expr $milliseconds / (60000)]
+                    set s  [expr ($milliseconds - $m * 60000) / 1000]
+                    set ms [expr $milliseconds % 1000]
+
+                    set total_time [format "%02d min %02d sec %03d ms" $m $s $ms]
+
+                    puts ""
+                    set footer "- Verdict: $verdict"
+                    append footer [string repeat " " [expr 70 - 15 - [string length $total_time] + 5]]
+                    append footer " " $total_time "\n"
+                    puts $footer
                 }
             }
         }
