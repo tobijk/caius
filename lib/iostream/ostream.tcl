@@ -132,5 +132,50 @@ namespace eval OutputStream {
             return [regsub -all {\r*\n} $data $_newline]
         }
     }
+
+    ::itcl::class Capture {
+        private variable _buffer
+
+        constructor {} {}
+
+        method initialize {channel mode} {
+            if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
+                error "OutputStream::Capture can only be opened for writing."
+            }
+            return {initialize finalize write}
+        }
+
+        method finalize {channel} {}
+
+        method write {channel data} {
+            append _buffer $data
+            return {}
+        }
+
+        method get {} {
+            return $_buffer
+        }
+
+        method clear {} {
+            set _buffer {}
+        }
+    }
+
+    ::itcl::class XMLEscape {
+        constructor {} {}
+
+        method initialize {channel mode} {
+            if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
+                error "OutputStream::XMLEscape can only be opened for writing."
+            }
+            return {initialize finalize write}
+        }
+
+        method finalize {channel} {}
+
+        method write {channel data} {
+            return [string map {& &amp; < &lt; > &gt; \" &quot;} $data]
+        }
+    }
 }
 
