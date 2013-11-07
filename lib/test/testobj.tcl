@@ -77,7 +77,7 @@ namespace eval Testing {
             }
 
             set count 1
-            set result [::Testing::TestResult #auto $_outformat]
+            set result [::Testing::TestResultFormatter #auto $_outformat]
 
             foreach {test} $all_tests {
                 set verdict "PASS"

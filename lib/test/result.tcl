@@ -20,7 +20,7 @@ package require OOSupport
 
 namespace eval Testing {
 
-    ::itcl::class TestResult {
+    ::itcl::class TestResultFormatter {
 
         private variable _outformat
 
