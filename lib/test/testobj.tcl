@@ -23,7 +23,7 @@ namespace eval Testing {
 
     ::itcl::class TestObject {
 
-        private variable _outformat "text"
+        private variable _outformat "plain"
 
         public method run {{argc 0} {argv {}}} {
             set tests_to_run {}
@@ -76,23 +76,15 @@ namespace eval Testing {
                     [$this ::Testing::TestObject::list_tests]]]
             }
 
-            set indenter_out  [::itcl::code [OutputStream::Indenter #auto "    "]]
-            set escape_filter [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set newlines_flip [::itcl::code [OutputStream::FlipNewlines #auto unix]]
-            set redirect_err  [::itcl::code [OutputStream::Redirect #auto stdout]]
-
             set count 1
+            set result [::Testing::TestResult #auto $_outformat]
 
             foreach {test} $all_tests {
                 set verdict "PASS"
 
-                $this ::Testing::TestObject::record test_info $test $count $num_tests
+                $result test_start $test $count $num_tests
                 except {
-                    puts "- Log:"
-                    chan push stdout $indenter_out
-                    chan push stdout $newlines_flip
-                    chan push stdout $escape_filter
-                    chan push stderr $redirect_err
+                    $result log_start
 
                     set start_time [clock milliseconds]
 
@@ -107,31 +99,25 @@ namespace eval Testing {
                         $this ::Testing::TestObject::teardown
                     } et {
                         ::Exception {
-                            $this ::Testing::TestObject::record warning [$et stack_trace]
+                            $result log_warning [$et stack_trace]
                         }
                     } final {
                         set stop_time [clock milliseconds]
-
-                        chan pop stderr
-                        chan pop stdout
-                        chan pop stdout
-                        chan pop stdout
+                        $result log_end
                     }
                 }
                 set total_time [expr $stop_time - $start_time]
 
                 if {$verdict eq "FAIL"} {
-                    $this record trace [$e stack_trace]
+                    $result log_error [$e stack_trace]
                 }
 
-                $this ::Testing::TestObject::record result $verdict $total_time
+                $result test_end $verdict $total_time
+                $result reset
                 incr count
             }
 
-            ::itcl::delete object $indenter_out
-            ::itcl::delete object $newlines_flip
-            ::itcl::delete object $escape_filter
-            ::itcl::delete object $redirect_err
+            ::itcl::delete object $result
         }
 
         public method list_tests {} {
@@ -173,38 +159,6 @@ namespace eval Testing {
                     if {$type eq "method" && $protection eq "public"} {
                         $this ${class}::teardown
                     }
-                }
-            }
-        }
-
-        private method record {type args} {
-            switch $type {
-                test_info {
-                    lassign $args test_name count num_tests
-                    set heading "* Test $count/$num_tests: [string trimleft $test_name ::] "
-                    append heading [string repeat - [expr 70 - [string length $heading]]]
-                    puts "$heading START"
-                }
-                warning -
-                trace {
-                    lassign $args msg
-                    puts "\n- [string totitle $type]:"
-                    puts [regsub -all -lineanchor {^} $msg "    "]
-                }
-                result {
-                    lassign $args verdict milliseconds
-
-                    set m  [expr $milliseconds / (60000)]
-                    set s  [expr ($milliseconds - $m * 60000) / 1000]
-                    set ms [expr $milliseconds % 1000]
-
-                    set total_time [format "%02d min %02d sec %03d ms" $m $s $ms]
-
-                    puts ""
-                    set footer "- Verdict: $verdict"
-                    append footer [string repeat " " [expr 70 - 15 - [string length $total_time] + 5]]
-                    append footer " " $total_time "\n"
-                    puts $footer
                 }
             }
         }
