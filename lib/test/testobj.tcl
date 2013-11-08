@@ -79,6 +79,8 @@ namespace eval Testing {
             set count 1
             set result [::Testing::TestResultFormatter #auto $_outformat]
 
+            $result module_start [$this info class]
+
             foreach {test} $all_tests {
                 set verdict "PASS"
 
@@ -113,9 +115,12 @@ namespace eval Testing {
                 }
 
                 $result test_end $verdict $total_time
+
                 $result reset
                 incr count
             }
+
+            $result module_end
 
             ::itcl::delete object $result
         }

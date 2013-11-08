@@ -38,7 +38,8 @@ namespace eval Testing {
         private variable _log
 
         # test attributes
-        private variable _name
+        private variable _module_name
+        private variable _test_name
 
         constructor {{outformat plain}} {
             set _outformat $outformat
@@ -52,6 +53,7 @@ namespace eval Testing {
 
             set _warnings {}
             set _errors   {}
+            set _log      {}
         }
 
         destructor {
@@ -63,11 +65,28 @@ namespace eval Testing {
             ::itcl::delete object $_tostdout
         }
 
+        method module_start {name} {
+            set _module_name [string trimleft $name ::]
+
+            if {$_outformat eq "xml"} {
+                puts "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+                puts "<testset name=\"$_module_name\">"
+            } else {
+                puts "* EXERCISING TESTS IN \"$_module_name\"\n"
+            }
+        }
+
+        method module_end {} {
+            if {$_outformat eq "xml"} {
+                puts "</testset>"
+            }
+        }
+
         method test_start {name count num_tests} {
             set name [string trimleft $name ::]
 
             if {$_outformat eq "xml"} {
-                set _name $name
+                set _test_name $name
                 $_capture clear
             } else {
                 append title [format "* Test %d/%d: %s" $count $num_tests $name ]
@@ -84,21 +103,21 @@ namespace eval Testing {
             if {$_outformat eq "xml"} {
                 set total_time [format "%02d:%02d.%03d" $m $s $ms]
 
-                puts "<test name=\"$_name\" runtime=\"$total_time\" verdict=\"$verdict\">"
-                puts "  <log>"
-                puts    -nonewline $_log
-                puts "  </log>"
+                puts "  <test name=\"$_test_name\" runtime=\"$total_time\" verdict=\"$verdict\">"
+                puts "    <log>"
+                puts      -nonewline $_log
+                puts "    </log>"
                 foreach {warning} $_warnings {
-                    puts "  <warning>"
-                    puts $warning
-                    puts "  </warning>"
+                    puts "    <warning>"
+                    puts      $warning
+                    puts "    </warning>"
                 }
                 foreach {err} $_errors {
-                    puts "  <error>"
-                    puts    $err
-                    puts "  </error>"
+                    puts "    <error>"
+                    puts      $err
+                    puts "    </error>"
                 }
-                puts "</test>"
+                puts "  </test>"
             } else {
                 set total_time [format "%02d min %02d sec %03d ms" $m $s $ms]
 
@@ -155,6 +174,10 @@ namespace eval Testing {
 
         method reset {} {
             $_capture clear
+
+            set _warnings {}
+            set _errors   {}
+            set _log      {}
         }
     }
 }
