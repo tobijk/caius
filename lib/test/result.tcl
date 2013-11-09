@@ -38,7 +38,7 @@ namespace eval Testing {
         private variable _log
 
         # test attributes
-        private variable _module_name
+        private variable _class_name
         private variable _test_name
 
         constructor {{outformat plain}} {
@@ -66,13 +66,13 @@ namespace eval Testing {
         }
 
         method module_start {name} {
-            set _module_name [string trimleft $name ::]
+            set _class_name [string trimleft $name ::]
 
             if {$_outformat eq "xml"} {
                 puts "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-                puts "<testset name=\"$_module_name\">"
+                puts "<testset name=\"$_class_name\">"
             } else {
-                puts "* EXERCISING TESTS IN \"$_module_name\"\n"
+                puts "* EXERCISING TESTS IN \"$_class_name\"\n"
             }
         }
 
@@ -103,7 +103,7 @@ namespace eval Testing {
             if {$_outformat eq "xml"} {
                 set total_time [format "%02d:%02d.%03d" $m $s $ms]
 
-                puts "  <test name=\"$_test_name\" runtime=\"$total_time\" verdict=\"$verdict\">"
+                puts "  <test name=\"$_test_name\" time=\"$total_time\" verdict=\"$verdict\">"
                 puts "    <log>"
                 puts      -nonewline $_log
                 puts "    </log>"
