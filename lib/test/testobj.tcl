@@ -77,7 +77,11 @@ namespace eval Testing {
             }
 
             set count 1
-            set result [::Testing::TestResultFormatter #auto $_outformat]
+            if {$_outformat eq "xml"} {
+                set result [::Testing::XMLFormatter #auto]
+            } else {
+                set result [::Testing::TextFormatter #auto]
+            }
 
             $result module_start [$this info class]
 
