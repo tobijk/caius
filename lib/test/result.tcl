@@ -58,6 +58,13 @@ namespace eval Testing {
             puts "$title START"
         }
 
+        method test_desc {text} {
+            if {$text ne ""} {
+                puts "- Description:\n[regsub -all \
+                    -lineanchor {^} $text "    "]\n"
+            }
+        }
+
         method test_end {verdict milliseconds} {
             set m  [expr $milliseconds / (60000)]
             set s  [expr ($milliseconds - $m * 60000) / 1000]
@@ -112,6 +119,7 @@ namespace eval Testing {
         private variable _warnings
         private variable _errors
         private variable _log
+        private variable _desc
 
         # test attributes
         private variable _class_name
@@ -129,6 +137,7 @@ namespace eval Testing {
             set _warnings {}
             set _errors   {}
             set _log      {}
+            set _desc     {}
         }
 
         destructor {
@@ -156,6 +165,10 @@ namespace eval Testing {
             $_capture clear
         }
 
+        method test_desc {text} {
+            set _desc $text
+        }
+
         method test_end {verdict milliseconds} {
             set m  [expr $milliseconds / (60000)]
             set s  [expr ($milliseconds - $m * 60000) / 1000]
@@ -164,6 +177,9 @@ namespace eval Testing {
             set total_time [format "%02d:%02d.%03d" $m $s $ms]
 
             puts "  <test name=\"$_test_name\" time=\"$total_time\" verdict=\"$verdict\">"
+            if {$_desc ne ""} {
+                puts "    <description>$_desc</description>"
+            }
             puts "    <log>$_log</log>"
             foreach {warning} $_warnings {
                 puts "    <warning>$warning</warning>"
@@ -207,6 +223,7 @@ namespace eval Testing {
             set _warnings {}
             set _errors   {}
             set _log      {}
+            set _desc     {}
         }
     }
 }

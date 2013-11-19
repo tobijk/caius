@@ -16,6 +16,7 @@
 #
 
 package ifneeded Testing 1.0 "
+    source \[file join [list $dir] docstr.tcl \]
     source \[file join [list $dir] testobj.tcl\]
     source \[file join [list $dir] result.tcl \]
     source \[file join [list $dir] assert.tcl \]

@@ -22,10 +22,12 @@ package require OutputStream
 namespace eval Testing {
 
     ::itcl::class TestObject {
+        inherit Docstrings
 
         private variable _outformat "plain"
 
         public method run {{argc 0} {argv {}}} {
+            set do_info 0
             set tests_to_run {}
 
             foreach {v} $argv {
@@ -40,6 +42,7 @@ namespace eval Testing {
                         puts " -h, --help        Print this help message end exit.                 "
                         puts " -x, --xml         Output test results in XML format.                "
                         puts " -l, --list        Print list of available tests in this class.      "
+                        puts " -i, --info        Print doc strings of tests and exit.              "
                         return
                     }
                     "-x" -
@@ -48,8 +51,15 @@ namespace eval Testing {
                     }
                     "-l" -
                     "--list" {
+                        if {$do_info} {
+                            raise RuntimeError "option -l and -i cannot be used together."
+                        }
                         puts [join [$this ::Testing::TestObject::list_tests] "\n"]
                         return
+                    }
+                    "-i" -
+                    "--info" {
+                        set do_info 1
                     }
                     default {
                         if {[string index $v 0] eq "-"} {
@@ -63,6 +73,28 @@ namespace eval Testing {
                         }
                     }
                 }
+            }
+
+            if {$do_info} {
+
+                if {[llength $tests_to_run] > 0} {
+                    set all_tests $tests_to_run
+                } else {
+                    set all_tests [$this ::Testing::TestObject::list_tests]
+                }
+
+                foreach {test} $all_tests {
+                    set docstr [$this get_docstr $test]
+
+                    puts "$test:"
+                    if {$docstr ne ""} {
+                        puts "[regsub -all -lineanchor {^} $docstr "  "]\n"
+                    } else {
+                        puts "  No description available for this test.\n"
+                    }
+                }
+
+                return
             }
 
             $this ::Testing::TestObject::execute $tests_to_run
@@ -89,6 +121,8 @@ namespace eval Testing {
                 set verdict "PASS"
 
                 $result test_start $test $count $num_tests
+                $result test_desc  [$this get_docstr $test]
+
                 except {
                     $result log_start
 
