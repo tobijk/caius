@@ -27,8 +27,8 @@ namespace eval Testing {
         private variable _outformat "plain"
 
         public method run {{argc 0} {argv {}}} {
-            set do_info 0
             set tests_to_run {}
+            set special_action none
 
             foreach {v} $argv {
                 switch $v {
@@ -51,15 +51,11 @@ namespace eval Testing {
                     }
                     "-l" -
                     "--list" {
-                        if {$do_info} {
-                            raise RuntimeError "option -l and -i cannot be used together."
-                        }
-                        puts [join [$this ::Testing::TestObject::list_tests] "\n"]
-                        return
+                        set special_action "list"
                     }
                     "-i" -
                     "--info" {
-                        set do_info 1
+                        set special_action "info"
                     }
                     default {
                         if {[string index $v 0] eq "-"} {
@@ -75,26 +71,33 @@ namespace eval Testing {
                 }
             }
 
-            if {$do_info} {
+            switch $special_action {
+                "info" {
 
-                if {[llength $tests_to_run] > 0} {
-                    set all_tests $tests_to_run
-                } else {
-                    set all_tests [$this ::Testing::TestObject::list_tests]
-                }
-
-                foreach {test} $all_tests {
-                    set docstr [$this get_docstr $test]
-
-                    puts "$test:"
-                    if {$docstr ne ""} {
-                        puts "[regsub -all -lineanchor {^} $docstr "  "]\n"
+                    if {[llength $tests_to_run] > 0} {
+                        set all_tests $tests_to_run
                     } else {
-                        puts "  No description available for this test.\n"
+                        set all_tests [$this ::Testing::TestObject::list_tests]
                     }
+
+                    foreach {test} $all_tests {
+                        set docstr [$this get_docstr $test]
+
+                        puts "$test:"
+                        if {$docstr ne ""} {
+                            puts "[regsub -all -lineanchor {^} $docstr "  "]\n"
+                        } else {
+                            puts "  \[No description available]\n"
+                        }
+                    }
+
+                    return
                 }
 
-                return
+                "list" {
+                    puts [join [$this ::Testing::TestObject::list_tests] "\n"]
+                    return
+                }
             }
 
             $this ::Testing::TestObject::execute $tests_to_run
@@ -125,9 +128,7 @@ namespace eval Testing {
 
                 except {
                     $result log_start
-
                     set start_time [clock milliseconds]
-
                     $this ::Testing::TestObject::setup
                     $this $test
                 } e {
@@ -153,13 +154,11 @@ namespace eval Testing {
                 }
 
                 $result test_end $verdict $total_time
-
                 $result reset
                 incr count
             }
 
             $result module_end
-
             ::itcl::delete object $result
         }
 
