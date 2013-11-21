@@ -7,6 +7,7 @@ package require Expect
 
     private variable _sock
     private common _stop
+    private variable _desired_options_sent 0
     array set _stop {}
 
     common IAC        "\xff"
@@ -84,10 +85,19 @@ package require Expect
     method _process_option {cmd opt} {
         set nvtdata ""
 
+        if {!$_desired_options_sent} {
+            append nvtdata "${IAC}${DO}${SUPGOAHEAD}"
+            append nvtdata "${IAC}${DO}${ECHO}"
+            set _desired_options_sent 1
+        }
+
         if {$cmd eq "${WILL}"} {
             switch ${opt} \
                 ${SUPGOAHEAD} {} \
-                ${ECHO}       {} \
+                ${ECHO}       {
+                    # put tty in raw mode
+                    stty raw -echo
+                } \
                 default {
                     append nvtdata "${IAC}${DONT}${opt}"
                 }
@@ -99,16 +109,6 @@ package require Expect
     }
 
     method do {} {
-        append options "${IAC}${DO}${SUPGOAHEAD}"
-        append options "${IAC}${DO}${ECHO}"
-
-        # send desired options
-        puts -nonewline $_sock $options
-        flush $_sock
-
-        # put tty in raw mode
-        stty raw -echo
-
         # enter event loop
         vwait ::Telnet::_stop($this)
     }
