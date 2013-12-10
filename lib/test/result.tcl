@@ -17,6 +17,7 @@
 
 package require OutputStream
 package require OOSupport
+package require markdown
 
 namespace eval Testing {
 
@@ -166,7 +167,7 @@ namespace eval Testing {
         }
 
         method test_desc {text} {
-            set _desc $text
+            set _desc [::markdown::convert $text]
         }
 
         method test_end {verdict milliseconds} {
