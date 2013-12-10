@@ -1,1 +1,1 @@
-export TCLLIBPATH="`pwd`/lib/oosupport `pwd`/lib/webdriver `pwd`/lib/error `pwd`/lib/cli `pwd`/lib/os `pwd`/lib/test `pwd`/lib/iostream"
+export TCLLIBPATH="`pwd`/lib"
