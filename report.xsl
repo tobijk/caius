@@ -45,6 +45,7 @@
 
 body {
     font-family: sans-serif;
+    background-color: #eeeeaa;
 }
 
 .l1 {
@@ -52,6 +53,10 @@ body {
     padding: 10px;
     margin: 1px 0px;
     overflow: auto;
+}
+
+.linkify {
+    cursor: pointer;
 }
 
 .l2 {
@@ -73,6 +78,7 @@ body {
 
 .info {
     border: 1px dotted #aaaaaa;
+    background-color: #ffffff;
 }
 
 .verbatim {
@@ -101,19 +107,51 @@ span.action {
 }
 
                 </style>
-                <script>
-                    
+                <script type="text/javascript">
+                    <xsl:text disable-output-escaping="yes">
+                        &lt;!--
+                    </xsl:text>
+
+                    <xsl:text disable-output-escaping="yes">
                     function toggle_visibility(target)
                     {
-                        el = document.getElementsByName(target)[0];
-                        if (el.style.display == "none")
+                        var visibility = "none";
+                        var el = document.getElementsByName(target)[0];
+
+                        if(el.style.display == "none")
                         {
-                            el.style.display = "block";
-                        } else {
-                            el.style.display = "none";
+                            visibility = "block";
+                        }
+
+                        el.style.display = visibility;
+
+                        if(visibility == "none")
+                        {
+                            el = el.nextElementSibling || el.nextSibling;
+
+                            while(el != null &amp;&amp; el.className != undefined &amp;&amp;
+                                    el.className.split(' ')[1] == "info")
+                            {
+                                if(el.tagName == undefined) { continue };
+
+                                el.style.display = visibility;
+                                el = el.nextElementSibling || el.nextSibling;
+                            }
                         }
                     }
 
+                    function toggle_expand(target_list)
+                    {
+                        for(var i = 0; i &lt; target_list.length; i++)
+                        {
+                            toggle_visibility(target_list[i]);
+                        }
+                    }
+                    </xsl:text>
+
+                    <xsl:text disable-output-escaping="yes">
+                        &lt;!--
+                    </xsl:text>
                 </script>
             </head>
             <body>
@@ -138,8 +176,22 @@ span.action {
             </xsl:choose>
         </xsl:variable>
 
-        <div name="testset::{@name}" class="l1 {$testset.class}">
-            <b><xsl:value-of select="@name"/></b>
+        <xsl:variable name="testset.tests">
+            <xsl:text>[</xsl:text>
+            <xsl:for-each select="test">
+                <xsl:text>'</xsl:text>
+                <xsl:value-of select="concat('test::', generate-id(.))"/>
+                <xsl:text>'</xsl:text>
+                <xsl:if test="position() != last()">
+                    <xsl:text>,</xsl:text>
+                </xsl:if>
+            </xsl:for-each>
+            <xsl:text>]</xsl:text>
+        </xsl:variable>
+
+        <div name="testset::{generate-id(.)}" class="l1 {$testset.class} linkify"
+                onClick="toggle_expand({$testset.tests})">
+            <b><u><xsl:value-of select="@name"/></u></b>
             <ul class="list">
                 <li>
                     <xsl:value-of select="$testset.pass_count"/>  pass
@@ -172,7 +224,7 @@ span.action {
             </xsl:choose>
         </xsl:variable>
 
-        <div name="test::{@name}" class="l2 {$test.class}">
+        <div name="test::{generate-id(.)}" class="l2 {$test.class}" style="display: none;">
             <xsl:value-of select="@name"/>
             <ul class="list">
                 <li>
