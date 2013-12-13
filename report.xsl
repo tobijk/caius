@@ -124,33 +124,41 @@ span.action {
                         }
 
                         el.style.display = visibility;
-
-                        if(visibility == "none")
-                        {
-                            el = el.nextElementSibling || el.nextSibling;
-
-                            while(el != null &amp;&amp; el.className != undefined &amp;&amp;
-                                    el.className.split(' ')[1] == "info")
-                            {
-                                if(el.tagName == undefined) { continue };
-
-                                el.style.display = visibility;
-                                el = el.nextElementSibling || el.nextSibling;
-                            }
-                        }
                     }
 
                     function toggle_expand(target_list)
                     {
                         for(var i = 0; i &lt; target_list.length; i++)
                         {
-                            toggle_visibility(target_list[i]);
+                            var visibility = "none";
+                            var el = document.getElementsByName(target_list[i])[0];
+
+                            if(el.style.display == "none")
+                            {
+                                visibility = "block";
+                            }
+
+                            el.style.display = visibility;
+
+                            if(visibility == "none")
+                            {
+                                el = el.nextElementSibling || el.nextSibling;
+
+                                while(el != null &amp;&amp; el.className != undefined &amp;&amp;
+                                        el.className.split(' ')[1] == "info")
+                                {
+                                    if(el.tagName == undefined) { continue };
+
+                                    el.style.display = visibility;
+                                    el = el.nextElementSibling || el.nextSibling;
+                                }
+                            }
                         }
                     }
                     </xsl:text>
 
                     <xsl:text disable-output-escaping="yes">
-                        &lt;!--
+                        // --&gt;
                     </xsl:text>
                 </script>
             </head>
