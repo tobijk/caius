@@ -67,7 +67,7 @@ body {
 }
 
 .fail {
-    background-color: #994444;
+    background-color: #aa1111;
     color: white;
 }
 
