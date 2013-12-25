@@ -35,48 +35,73 @@ namespace eval Testing {
     ::itcl::class TestObject {
         inherit Docstrings
 
-        private variable _outformat "plain"
+        private variable _outformat "text"
 
         public method run {{argc 0} {argv {}}} {
             set tests_to_run {}
             set special_action none
 
-            foreach {v} $argv {
-                switch $v {
-                    "-h" -
-                    "--help" {
+            for {set i 0} {$i < [llength $argv]} {incr i} {
+                set o [lindex $argv $i]
+                set v {}
+
+                if {[set pos [string first = $o]] != -1} {
+                    set v [string range $o [expr $pos + 1] end]
+                    set o [string range $o 0 [expr $pos - 1]]
+                }
+
+                switch $o {
+                    -h -
+                    --help {
                         puts "Caius Functional Testing Framework - Test Module [$this info class]  "
                         puts "                                                                     "
                         puts "Usage: [file tail $::argv0] \[OPTIONS] \[<test1> <test2> ...]        "
                         puts "                                                                     "
                         puts "Options:                                                             "
-                        puts " -h, --help        Print this help message end exit.                 "
-                        puts " -x, --xml         Output test results in XML format.                "
-                        puts " -l, --list        Print list of available tests in this class.      "
-                        puts " -i, --info        Print doc strings of tests and exit.              "
+                        puts " -h, --help          Print this help message end exit                "
+                        puts " -f, --format <fmt>  Output test results in one of these formats:    "
+                        puts "                     'xml'   - Caius native XML reporting format     "
+                        puts "                     'junit' - JUnit-compatible XML output           "
+                        puts "                     'zero'  - Don't apply special formatting        "
+                        puts "                     'text'  - Pretty-printed text (default)         "
+                        puts " -l, --list          Print list of available tests in this class.    "
+                        puts " -i, --info          Print doc strings of tests and exit.            "
                         return
                     }
-                    "-x" -
-                    "--xml" {
-                        set _outformat "xml"
+                    -f -
+                    --format {
+                        if {$v eq {}} {
+                            set v [lindex $argv [incr i]]
+                        }
+                        switch $v {
+                            "xml"   -
+                            "junit" -
+                            "text"  -
+                            "zero" {
+                                set _outformat $v
+                            }
+                            default {
+                                raise RuntimeError "unknown output format '$v'."
+                            }
+                        }
                     }
-                    "-l" -
-                    "--list" {
+                    -l -
+                    --list {
                         set special_action "list"
                     }
-                    "-i" -
-                    "--info" {
+                    -i -
+                    --info {
                         set special_action "info"
                     }
                     default {
-                        if {[string index $v 0] eq "-"} {
-                            raise RuntimeError "unknown command line parameter '$v'."
+                        if {[string index $o 0] eq "-"} {
+                            raise RuntimeError "unknown command line parameter '$o'."
                         } else {
-                            if {[catch {$this info function $v} err] != 0} {
-                                raise RuntimeError "no such test '$v'."
+                            if {[catch {$this info function $o} err] != 0} {
+                                raise RuntimeError "no such test '$o'."
                             }
 
-                            lappend tests_to_run $v
+                            lappend tests_to_run $o
                         }
                     }
                 }
@@ -123,10 +148,19 @@ namespace eval Testing {
             }
 
             set count 1
-            if {$_outformat eq "xml"} {
-                set result [::Testing::XMLFormatter #auto]
-            } else {
-                set result [::Testing::TextFormatter #auto]
+            switch $_outformat {
+                xml {
+                    set result [::Testing::XMLFormatter #auto]
+                }
+                zero {
+                    set result [::Testing::ZeroFormatter #auto]
+                }
+                junit {
+                    set result [::Testing::JUnitFormatter #auto]
+                }
+                default {
+                    set result [::Testing::TextFormatter #auto]
+                }
             }
 
             $result module_start [$this info class]
