@@ -40,7 +40,7 @@ namespace eval Testing {
         private variable _dos2unix
         private variable _tostdout
 
-        constructor {{outformat plain}} {
+        constructor {} {
             set _indent   [::itcl::code [OutputStream::Indenter #auto "    "]]
             set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
             set _dos2unix [::itcl::code [OutputStream::FlipNewlines #auto unix]]
@@ -59,7 +59,9 @@ namespace eval Testing {
             puts "* EXERCISING TESTS IN \"$_class_name\"\n"
         }
 
-        method module_end {} {}
+        method module_end {} {
+            # do nothing
+        }
 
         method test_start {name count num_tests} {
             set name [string trimleft $name ::]
@@ -117,6 +119,67 @@ namespace eval Testing {
         method reset {} {}
     }
 
+    ::itcl::class ZeroFormatter {
+
+        # stream filters
+        private variable _escape
+        private variable _dos2unix
+        private variable _tostdout
+
+        constructor {} {
+            set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
+            set _dos2unix [::itcl::code [OutputStream::FlipNewlines #auto unix]]
+            set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
+        }
+
+        destructor {
+            ::itcl::delete object $_escape
+            ::itcl::delete object $_dos2unix
+            ::itcl::delete object $_tostdout
+        }
+
+        method module_start {name} {
+            # do nothing
+        }
+
+        method module_end {} {
+            # do nothing
+        }
+
+        method test_start {name count num_tests} {
+            # do nothing
+        }
+
+        method test_desc {text} {
+            # do nothing
+        }
+
+        method test_end {verdict milliseconds} {
+            # do nothing
+        }
+
+        method log_start {} {
+            chan push stdout $_dos2unix
+            chan push stdout $_escape
+            chan push stderr $_tostdout
+        }
+
+        method log_end {} {
+            chan pop stderr
+            chan pop stdout
+            chan pop stdout
+        }
+
+        method log_warning {msg} {
+            puts stderr $msg
+        }
+
+        method log_error {msg} {
+            puts stderr $msg
+        }
+
+        method reset {} {}
+    }
 
     ::itcl::class XMLFormatter {
 
@@ -137,9 +200,7 @@ namespace eval Testing {
         private variable _class_name
         private variable _test_name
 
-        constructor {{outformat plain}} {
-            set _outformat $outformat
-
+        constructor {} {
             set _capture   [::itcl::code [OutputStream::Capture #auto]]
             set _xmlescape [::itcl::code [OutputStream::XMLEscape #auto]]
             set _escape    [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
@@ -200,6 +261,178 @@ namespace eval Testing {
                 puts "    <error>$err</error>"
             }
             puts "  </test>"
+        }
+
+        method log_start {} {
+            chan push stdout $_capture
+            chan push stdout $_xmlescape
+            chan push stdout $_dos2unix
+            chan push stdout $_escape
+            chan push stderr $_tostdout
+        }
+
+        method log_end {} {
+            chan pop stderr
+            chan pop stdout
+            chan pop stdout
+            chan pop stdout
+            chan pop stdout
+            set _log [$_capture get]
+        }
+
+        method log_warning {msg} {
+            lappend _warnings [string map \
+                {& &amp; < &lt; > &gt; \" &quot;} $msg]
+        }
+
+        method log_error {msg} {
+            lappend _errors [string map \
+                {& &amp; < &lt; > &gt; \" &quot;} $msg]
+        }
+
+        method reset {} {
+            $_capture clear
+
+            set _warnings {}
+            set _errors   {}
+            set _log      {}
+            set _desc     {}
+        }
+    }
+
+    ::itcl::class JUnitFormatter {
+
+        # stream filters
+        private variable _capture
+        private variable _xmlescape
+        private variable _escape
+        private variable _dos2unix
+        private variable _tostdout
+
+        # warnings, errors, log
+        private variable _warnings
+        private variable _errors
+        private variable _log
+
+        # test attributes
+        private variable _class_name
+        private variable _test_name
+
+        # result sets
+        private variable _result_sets
+        private variable _num_failed_tests
+        private variable _num_total_tests
+        private variable _start_time
+        private variable _stop_time
+
+        constructor {} {
+            set _capture   [::itcl::code [OutputStream::Capture #auto]]
+            set _xmlescape [::itcl::code [OutputStream::XMLEscape #auto]]
+            set _escape    [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
+            set _dos2unix  [::itcl::code [OutputStream::FlipNewlines #auto unix]]
+            set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
+
+            set _warnings {}
+            set _errors   {}
+            set _log      {}
+
+            set _num_failed_tests 0
+            set _num_total_tests 0
+        }
+
+        destructor {
+            ::itcl::delete object $_capture
+            ::itcl::delete object $_xmlescape
+            ::itcl::delete object $_escape
+            ::itcl::delete object $_dos2unix
+            ::itcl::delete object $_tostdout
+        }
+
+        method module_start {name} {
+            set _class_name [string trimleft $name ::]
+            puts "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+            set _start_time [clock milliseconds] 
+        }
+
+        method module_end {} {
+            set total_time [expr ([clock milliseconds] - $_start_time) / 1000.0]
+            set timestamp [clock format \
+                [expr $_start_time / 1000] -format "%Y-%m-%dT%H:%M:%S"]
+
+            puts "<testsuite name=\"\"\
+                timestamp=\"$timestamp\"\
+                hostname=\"[info hostname]\"\
+                tests=\"$_num_total_tests\"\
+                failures=\"$_num_failed_tests\"\
+                errors=\"0\" time=\"$total_time\">"
+
+            foreach {result_set} $_result_sets {
+                lassign $result_set \
+                    test_name \
+                    test_verdict \
+                    test_time \
+                    test_log \
+                    test_warnings \
+                    test_errors
+
+                set test_class [namespace qualifiers $test_name]
+                set test_name  [namespace tail       $test_name] 
+
+                if {$test_verdict eq {PASS}} {
+                    if {$test_log ne {}} {
+                        puts "  <testcase classname=\"$test_class\"\
+                            name=\"$test_name\" time=\"$test_time\">"
+                        puts "    <system-out>$test_log</system-out>"
+                        puts "  </testcase>"
+                    } else {
+                        puts "  <testcase classname=\"$test_class\"\
+                            name=\"$test_name\" time=\"$test_time\"/>"
+                    }
+                } else {
+                    puts "  <testcase classname=\"$test_class\"\
+                        name=\"$test_name\" time=\"$test_time\">"
+
+                    set msg [string trim [lindex [split $test_errors "\n"] 0]]
+
+                    puts "    <failure type=\"failure\"\
+                        message=\"$msg\">$test_errors</failure>"
+
+                    if {$test_log ne {}} {
+                        puts "    <system-out>$test_log</system-out>"
+                    }
+
+                    puts "  </testcase>"
+                }
+            }
+
+            puts "</testsuite>"
+        }
+
+        method test_start {name count num_tests} {
+            set name [string trimleft $name ::]
+            set _test_name $name
+            $_capture clear
+        }
+
+        method test_desc {text} {
+            # do nothing
+        }
+
+        method test_end {verdict milliseconds} {
+            set seconds  [expr $milliseconds / 1000.0]
+
+            set _errors   [join $_errors   "\n"]
+            set _warnings [join $_warnings "\n"]
+
+            lappend _result_sets [list \
+                $_test_name $verdict $seconds $_log $_warnings $_errors \
+            ]
+
+            if {$verdict eq {FAIL}} {
+                incr _num_failed_tests
+            }
+
+            incr _num_total_tests
         }
 
         method log_start {} {
