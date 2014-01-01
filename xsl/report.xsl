@@ -45,7 +45,6 @@
 
 body {
     font-family: sans-serif;
-    background-color: #eeeeaa;
 }
 
 .l1 {
