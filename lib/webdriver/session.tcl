@@ -112,6 +112,27 @@ namespace eval WebDriver {
             return $caps
         }
 
+        method log_types {} {
+            set response [::WebDriver::Protocol::dispatch \
+                $_session_url/log/types]
+
+            set rval [$response value]
+            ::itcl::delete object $response
+            return $rval
+        }
+
+        method get_log {type} {
+            set json "{ \"type\": \"$type\" }"
+
+            set response [::WebDriver::Protocol::dispatch -query $json \
+                $_session_url/log]
+
+            set log [$response value]
+            ::itcl::delete object $response
+
+            return $log
+        }
+
         method set_page_load_timeout {ms} {
             if {![regexp {^\d+$} $ms]} {
                 raise ::ValueError \
