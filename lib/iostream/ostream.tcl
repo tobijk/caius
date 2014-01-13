@@ -147,7 +147,9 @@ namespace eval OutputStream {
     ::itcl::class Capture {
         private variable _buffer
 
-        constructor {} {}
+        constructor {} {
+            set _buffer {}
+        }
 
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
