@@ -67,6 +67,11 @@ namespace eval WebDriver {
                 set json "{ \"id\": \"$id\" }"
             }
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "select frame [string trim [string map {"\n" " "} $json]]"
+            }
+
             set response [::WebDriver::Protocol::dispatch -query $json \
                 [$_session session_url]/frame]
             ::itcl::delete object $response
@@ -78,6 +83,11 @@ namespace eval WebDriver {
 
             for {set i 0} {$i < 10} {incr i} {
                 if {[[$_session active_window] handle]  ne [$this handle]} {
+
+                    if {[$_session logging_enabled]} {
+                        ::WebDriver::log [$_session session_id] "focus window $_handle"
+                    }
+
                     set response [::WebDriver::Protocol::dispatch -query $json \
                         [$_session session_url]/window]
                     ::itcl::delete object $response
@@ -105,6 +115,10 @@ namespace eval WebDriver {
             # before deleting it, make sure it's focused
             $this focus
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] "closing window '$_handle'"
+            }
+
             set response [::WebDriver::Protocol::dispatch -method DELETE \
                 [$_session session_url]/window]
             ::itcl::delete object $response
@@ -113,7 +127,12 @@ namespace eval WebDriver {
         method set_size {w h} {
             set json "{\"width\": $w, \"height\": $h}"
             set response [::WebDriver::Protocol::dispatch -query $json \
-             [$_session session_url]/window/$_handle/size]
+                [$_session session_url]/window/$_handle/size]
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "set window size to ${w}x${h}"
+            }
 
             # there can be a delay due to window manager animation etc.
             set interval 50
@@ -126,6 +145,7 @@ namespace eval WebDriver {
                     break
                 }
             }
+
             if {$i == 5} {
                 raise ::WebDriver::UnknownError "failed to resize window."
             }
@@ -147,6 +167,11 @@ namespace eval WebDriver {
             set json "{\"x\": $x, \"y\": $y}"
             set response [::WebDriver::Protocol::dispatch -query $json \
              [$_session session_url]/window/$_handle/position]
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "set window position to (${x}, ${y})"
+            }
 
             # there can be a delay due to window manager animation etc
             set interval 50
@@ -180,18 +205,36 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/window/$_handle/maximize]
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "maximize window"
+            }
+
             after 100
             ::itcl::delete object $response
         }
 
         method name {} {
             $this focus
-            return [$this execute "window.name"]
+            set rval [$this execute "window.name"]
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "window name is '$rval'"
+            }
+
+            return $rval
         }
 
         method set_url {url} {
             $this focus
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "open '$url'"
+            }
+ 
             set json "{ \"url\": \"$url\" }"
             set response [::WebDriver::Protocol::dispatch -query $json \
                 [$_session session_url]/url]
@@ -212,6 +255,11 @@ namespace eval WebDriver {
         method forward {} {
             $this focus
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "go forward in history"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/forward]
@@ -221,6 +269,11 @@ namespace eval WebDriver {
         method back {} {
             $this focus
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "go back in history"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/back]
@@ -229,6 +282,11 @@ namespace eval WebDriver {
 
         method refresh {} {
             $this focus
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "refresh"
+            }
 
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
@@ -241,6 +299,14 @@ namespace eval WebDriver {
 
             set script [::OOSupport::json_escape_chars $script]
             set json "{ \"script\": \"$script\", \"args\": \[[join $args ", "]\] }"
+
+            if {[$_session logging_enabled]} {
+                set log_str "execute script [string range $script 0 50]"
+                if {[string length $script] > 50} {
+                    append log_str "..."
+                }
+                ::WebDriver::log [$_session session_id] $log_str
+            }
 
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
@@ -288,6 +354,17 @@ namespace eval WebDriver {
             set script [lindex $args 0]
             set args   [lreplace $args 0 0]
 
+            if {[$_session logging_enabled]} {
+                set log_str "execute script asynchronously\
+                    [::OOSupport::json_escape_chars \
+                        [string range $script 0 50]]"
+
+                if {[string length $script] > 50} {
+                    append log_str "..."
+                }
+                ::WebDriver::log [$_session session_id] $log_str
+            }
+
             # execute script in new thread
             set thread_id [if 1 "::thread::create $joinable {
                 package require Itcl
@@ -334,6 +411,10 @@ namespace eval WebDriver {
 
             $this focus
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] "take screenshot"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/screenshot]
 
@@ -349,6 +430,11 @@ namespace eval WebDriver {
 
         method cookies {} {
             $this focus
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "read all cookies"
+            }
 
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/cookie]
@@ -391,7 +477,12 @@ namespace eval WebDriver {
         method set_cookie {name value {domain ""} {path "/"}
                 {secure false} {expiry null} } \
         {
-            $this focus 
+            $this focus
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "set cookie '$name'"
+            }
 
             if {$domain eq ""} {
                 array set url [::uri::split [$this url]]
@@ -431,6 +522,12 @@ namespace eval WebDriver {
 
         method delete_cookie {cookie_name} {
             $this focus
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "delete cookie '$cookie_name'"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 -method DELETE \
                 [$_session session_url]/cookie/$cookie_name]
@@ -439,6 +536,11 @@ namespace eval WebDriver {
 
         method purge_cookies {} {
             $this focus
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "purge cookies"
+            }
 
             set response [::WebDriver::Protocol::dispatch \
                 -method DELETE \
@@ -465,6 +567,12 @@ namespace eval WebDriver {
                 [$_session session_url]/title]
             set title [$response value]
             ::itcl::delete object $response
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "page title is '$title'"
+            }
+
             return $title
         }
 
@@ -481,7 +589,7 @@ namespace eval WebDriver {
         }
 
         method active_element {} {
-            $this focus
+            #$this focus
 
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/element/active]
@@ -489,6 +597,12 @@ namespace eval WebDriver {
                 [[::WebDriver::WebElement #auto $_session] from_tcl \
                     [$response value]]]
             ::itcl::delete object $response
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "active element: [$element ELEMENT]"
+            }
+
             return $element
         }
 
@@ -504,6 +618,11 @@ namespace eval WebDriver {
 
         method set_orientation {orientation} {
             set orientation [string toupper $orientation]
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "set orientation to $orientation"
+            }
 
             set interval 50
             for {set i 0} {$i < 5} {incr i} {
@@ -533,6 +652,11 @@ namespace eval WebDriver {
             set alert_text [$response value]
             ::itcl::delete object $response
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "alert text: '$alert_text'"
+            }
+
             return $alert_text
         }
 
@@ -547,6 +671,11 @@ namespace eval WebDriver {
         }
 
         method accept_alert {} {
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "accept alert"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/accept_alert]
@@ -554,6 +683,11 @@ namespace eval WebDriver {
         }
 
         method dismiss_alert {} {
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "dismiss alert"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/dismiss_alert]
@@ -562,6 +696,11 @@ namespace eval WebDriver {
 
         method move_to {xoffset yoffset} {
             set json "{ \"xoffset\": $xoffset, \"yoffset\": $yoffset }"
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "move mouse (x+$xoffset, y+$yoffset)"
+            }
 
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
@@ -574,6 +713,11 @@ namespace eval WebDriver {
                 left   0
                 middle 1
                 right  2
+            }
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "press $button button"
             }
 
             set button $button2num($button)
@@ -592,6 +736,11 @@ namespace eval WebDriver {
                 right  2
             }
 
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "release $button button"
+            }
+
             set button $button2num($button)
             set json "{ \"button\": $button }"
 
@@ -602,6 +751,11 @@ namespace eval WebDriver {
         }
 
         method doubleclick {} {
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "double click"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/doubleclick]

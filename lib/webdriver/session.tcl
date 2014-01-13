@@ -36,12 +36,17 @@ package require uri
 
 namespace eval WebDriver {
 
+    proc log {session_id log_string} {
+        puts "WebDriver\[$session_id]: $log_string"
+    }
+
     ::itcl::class Session {
 
         common attributes {
-            {string  session_url  ""    rw}
-            {string  session_id   ""    rw}
-            {bool    cloned       false rw}
+            {string  session_url      ""    rw}
+            {string  session_id       ""    rw}
+            {bool    cloned           false rw}
+            {bool    logging_enabled  false rw}
         }
 
         # these are not serializable
@@ -77,7 +82,7 @@ namespace eval WebDriver {
                 } else {
                     set _session_url "$url/session/[$response session_id]"
                 }
-                set _session_id [lindex [split $_session_url) /] end]
+                set _session_id [lindex [split $_session_url /] end]
 
                 ::itcl::delete object $response
             }
@@ -102,6 +107,10 @@ namespace eval WebDriver {
             -skip_undefined
 
         method capabilities {} {
+            if {$_logging_enabled} {
+                ::WebDriver::log $_session_id "query session capabilities"
+            }
+
             set response [::WebDriver::Protocol::dispatch $_session_url]
 
             # parse capabilities
@@ -117,12 +126,22 @@ namespace eval WebDriver {
                 $_session_url/log/types]
 
             set rval [$response value]
+
+            if {$_logging_enabled} {
+                ::WebDriver::log $_session_id \
+                    "available log types: [join $rval ", "]"
+            }
+
             ::itcl::delete object $response
             return $rval
         }
 
         method get_log {type} {
             set json "{ \"type\": \"$type\" }"
+
+            if {$_logging_enabled} {
+                ::WebDriver::log $_session_id "fetch $type log"
+            }
 
             set response [::WebDriver::Protocol::dispatch -query $json \
                 $_session_url/log]
@@ -139,6 +158,10 @@ namespace eval WebDriver {
                     "invalid timeout value '$ms' for page load timeout"
             }
 
+            if {$_logging_enabled} {
+                ::WebDriver::log $_session_id "set page load timeout to ${ms}ms"
+            }
+
             set json "{ \"type\": \"page load\", \"ms\": $ms }"
             set response [::WebDriver::Protocol::dispatch -query $json \
                 $_session_url/timeouts]
@@ -151,6 +174,11 @@ namespace eval WebDriver {
                     "invalid timeout value '$ms' for async script timeout"
             }
 
+            if {$_logging_enabled} {
+                ::WebDriver::log $_session_id \
+                    "set async script timeout to ${ms}ms"
+            }
+
             set json "{ \"ms\": $ms }"
             set response [::WebDriver::Protocol::dispatch -query $json \
                 $_session_url/timeouts/async_script]
@@ -161,6 +189,11 @@ namespace eval WebDriver {
             if {![regexp {^\d+$} $ms]} {
                 raise ::ValueError \
                     "invalid timeout value '$ms' for implicit wait timeout"
+            }
+
+            if {$_logging_enabled} {
+                ::WebDriver::log $_session_id \
+                    "set implicit wait timeout to ${ms}ms"
             }
 
             set json "{ \"ms\": $ms }"
@@ -235,6 +268,15 @@ namespace eval WebDriver {
             }
             set _windows [array get windows]
 
+            if {$_logging_enabled} {
+                set handles {}
+                foreach {w} $result {
+                    lappend handles [$w handle]
+                }
+                ::WebDriver::log $_session_id "session windows:\
+                    [join $handles ", "]"
+            }
+
             return $result
         }
 
@@ -268,6 +310,21 @@ namespace eval WebDriver {
             set strategy $by2text($by)
             set locator [::OOSupport::json_escape_chars $locator]
             set json "{ \"using\": \"$strategy\", \"value\": \"$locator\" }"
+
+            if {$_logging_enabled} {
+                if {$single == true} {
+                    set what "element"
+                } else {
+                    set what "elements"
+                }
+                set log_str "get $what by $strategy "
+                if {$root ne {null}} {
+                    append log_str "'$root/$locator'"
+                } else {
+                    append log_str "'$locator'"
+                }
+                ::WebDriver::log $_session_id $log_str
+            }
 
             set result ""
 
