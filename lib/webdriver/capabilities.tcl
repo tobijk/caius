@@ -48,7 +48,7 @@ namespace eval WebDriver {
             { bool   web_storage_enabled         true        rw }
             { bool   rotatable                   true        rw }
             { bool   accept_ssl_certs            true        rw }
-            { bool   native_events               true        rw }
+            { bool   native_events               false       rw }
             { ::WebDriver::Proxy  proxy          new         rw }
         }
 
