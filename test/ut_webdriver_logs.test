@@ -1,0 +1,85 @@
+#!/usr/bin/tclsh
+
+package require Itcl
+
+package require tcltest
+namespace import tcltest::*
+
+package require WebDriver
+package require Error
+package require OOSupport
+namespace import OOSupport::*
+
+package require OutputStream
+
+#
+# TEST CASES
+#
+
+test ut_webdriver_driver_log {
+    Fetch the driver log types and client log.
+} {
+    -result 0
+    -setup {
+        set cap [WebDriver::Capabilities #auto]
+        $cap set_browser_name "firefox"
+    }
+    -body {
+
+        except {
+            set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+            set log_types [$session log_types]
+            if {[list length $log_types] < 4} {
+                error "expected at least four standard log types."
+            }
+
+            set log [$session get_log client]
+            if {[string length $log] == 0} {
+                error "expected client log not to be empty."
+            }
+
+            ::itcl::delete object $session
+        } e {
+            ::Exception {
+                error [$e msg]
+            }
+        }
+
+        return 0
+    }
+}
+
+test ut_webdriver_logging_enabled {
+    Test Tcl drivers internal logging mechanism.
+} {
+    -result 0
+    -setup {
+        set cap [WebDriver::Capabilities #auto]
+        $cap set_browser_name "htmlunit"
+        set capture [OutputStream::Capture #auto]
+    }
+    -body {
+        except {
+            set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            $session set_logging_enabled true
+
+            chan push stdout $capture
+            set window [$session active_window]
+
+            if {![regexp {WebDriver\[[^\]]+\]: active window: \d+} [$capture get]]} {
+                error "expected log message showing active window."
+            }
+
+            chan pop stdout
+            ::itcl::delete object $capture
+        } e {
+            ::Exception {
+                error [$e msg]
+            }
+        }
+
+        return 0
+    }
+}
+
