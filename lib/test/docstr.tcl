@@ -37,17 +37,18 @@ namespace eval Testing {
 
         method get_docstr {function_name} {
             if {[catch {
-                    set body [$this info function $function_name -body] 
+                    set body [string trim [$this info function $function_name -body]]
                 }] != 0} \
             {
                 return ""
             }
 
-            if {[lindex $body 0] ne "docstr"} {
+            if {[string range $body 0 5] ne "docstr"} {
                 return ""
             }
 
-            set docstr [string map {\r\n \n \r \n} [lindex $body 1]]
+            regexp {\"((?:[^\"]|\\\")*)\"} $body match docstr
+            set docstr [string map {\r\n \n \r \n} $docstr]
 
             set lbreak [string first \n $docstr]
             if {$lbreak != -1} {
@@ -59,9 +60,10 @@ namespace eval Testing {
                 ]
 
                 set rest [string trimright $rest]
+                set docstr [join [list $first_line $rest] ""]
             }
 
-            return [join [list $first_line $rest] ""]
+            return $docstr
         }
     }
 }
