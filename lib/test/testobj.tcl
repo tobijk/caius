@@ -66,7 +66,8 @@ namespace eval Testing {
                         puts "                     'text'  - Pretty-printed text (default)         "
                         puts " -l, --list          Print list of available tests in this class.    "
                         puts " -i, --info          Print doc strings of tests and exit.            "
-                        return
+
+                        return $this
                     }
                     -f -
                     --format {
@@ -126,17 +127,18 @@ namespace eval Testing {
                             puts "  \[No description available]\n"
                         }
                     }
-
-                    return
                 }
 
                 "list" {
                     puts [join [$this ::Testing::TestObject::list_tests] "\n"]
-                    return
+                }
+
+                default {
+                    $this ::Testing::TestObject::execute $tests_to_run
                 }
             }
 
-            $this ::Testing::TestObject::execute $tests_to_run
+            return $this
         }
 
         public method execute {{tests_to_run {}}} {
@@ -164,6 +166,7 @@ namespace eval Testing {
             }
 
             $result module_start [$this info class]
+            $this ::Testing::TestObject::setup setup_before
 
             foreach {test} $all_tests {
                 set verdict "PASS"
@@ -203,7 +206,9 @@ namespace eval Testing {
                 incr count
             }
 
+            $this ::Testing::TestObject::teardown teardown_after
             $result module_end
+
             ::itcl::delete object $result
         }
 
@@ -226,25 +231,25 @@ namespace eval Testing {
             return $all_tests
         }
 
-        private method setup {} {
+        private method setup {{method setup}} {
             foreach {class} [lreverse [$this info heritage]] {
-                if {![catch { lassign [$this info function ${class}::setup \
+                if {![catch { lassign [$this info function ${class}::${method} \
                         -protection -type] protection type }]} \
                 {
                     if {$type eq "method" && $protection eq "public"} {
-                        $this ${class}::setup
+                        $this ${class}::${method}
                     }
                 }
             }
         }
 
-        private method teardown {} {
+        private method teardown {{method teardown}} {
             foreach {class} [$this info heritage] {
-                if {![catch { lassign [$this info function ${class}::teardown \
+                if {![catch { lassign [$this info function ${class}::${method} \
                         -protection -type] protection type }]} \
                 {
                     if {$type eq "method" && $protection eq "public"} {
-                        $this ${class}::teardown
+                        $this ${class}::${method}
                     }
                 }
             }
