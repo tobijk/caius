@@ -249,6 +249,12 @@ namespace eval WebDriver {
 
             set url [$response value]
             ::itcl::delete object $response
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "current url '$url'"
+            }
+
             return $url
         }
 
