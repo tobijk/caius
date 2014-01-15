@@ -48,7 +48,7 @@ namespace eval Testing {
             }
 
             regexp {\"((?:[^\"]|\\\")*)\"} $body match docstr
-            set docstr [string map {\r\n \n \r \n} $docstr]
+            set docstr [string map {\r\n \n \r \n \\\" \"} $docstr]
 
             set lbreak [string first \n $docstr]
             if {$lbreak != -1} {
