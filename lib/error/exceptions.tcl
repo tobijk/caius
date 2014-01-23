@@ -29,6 +29,10 @@
 package require Itcl
 package require OOSupport
 
+## 
+# This is the mother of all exception classes. While it is not mandatory, it
+# is recommended that all custom exception classes derive from Exception.
+#
 ::itcl::class Exception {
 
     common attributes {
@@ -37,8 +41,11 @@ package require OOSupport
         { number line        null rw }
     }
 
+    ## \private
     private variable _msg
 
+    ## 
+    # @param msg  a string describing the exception that occurred.
     constructor {msg} {
         OOSupport::init_attributes
         set _msg $msg
@@ -48,11 +55,15 @@ package require OOSupport
 
     OOSupport::bless_attributes
 
+    ##
+    # Returns the description stored with the exception.
     method msg {} {
         return $_msg
     }
 }
 
+##
+# This exception indicates a generic runtime error.
 ::itcl::class RuntimeError {
     inherit ::Exception
 
@@ -60,6 +71,8 @@ package require OOSupport
     destructor {}
 }
 
+##
+# This exception indicates that input data didn't match an expected format.
 ::itcl::class ValueError {
     inherit ::RuntimeError
 
@@ -67,12 +80,33 @@ package require OOSupport
     destructor {}
 }
 
+##
+# This exception indicates that a generic Tcl error occurred. When code is
+# wrapped inside an `except` block, generic errors can be caught as shown
+# in the following example:
+#
+# ~~~~~~~~~~~~{.tcl}
+# except {
+#     error "I'm a generic Tcl error."
+# } e {
+#     TclError {
+#         puts [$e msg]
+#     }
+# }
+# ~~~~~~~~~~~~
+#     
 ::itcl::class TclError {
     inherit ::RuntimeError
 
     constructor {msg} { ::RuntimeError::constructor $msg } {}
     destructor {}
 
+    ##
+    # Stores the stack trace associated with the exception that occurred. This
+    # function is meant for internal use by the exception framework.
+    #
+    # @param stack_trace  a string containing a stack trace.
+    #
     method set_stack_trace {stack_trace} {
         $this ::Exception::set_stack_trace "::TclError: $stack_trace"
     }

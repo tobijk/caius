@@ -26,17 +26,73 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+
 package require Itcl
 
+##
+# Raises an exception.
+#
+# @param exception_type  the class name of the exception to be thrown
+# @param msg             the error message associated with the exception
+#
 proc raise {exception_type msg} {
     set exception_obj [::itcl::code [$exception_type #auto $msg]]
     error "$exception_obj" "[$exception_obj info class]: $msg"
 }
 
+##
+# Re-raises an exception.
+#
+# @param exception_obj  an exception object instance.
+#
+# `reraise` may only be used inside an exception handler block like this:
+#
+# ~~~~~~~~~~{.tcl}
+# except {
+#     raise RuntimeError "something went wrong..."
+# } e {
+#     RuntimeError {
+#        puts [$e msg]
+#        reraise $e
+#     }
+# }
+# ~~~~~~~~~~
+#
 proc reraise {exception_obj} {
     uplevel "error \"$exception_obj\""
 }
 
+##
+# Catch all errors and exceptions in a block of code.
+#
+# ~~~~~~~~~~{.tcl}
+# except {
+#     # your code here
+# } e {
+#     TclError {
+#         puts "Caught a Tcl error: [$e msg]"
+#     }
+#     ValueError {
+#         puts "Caught a ValueError: [$e msg]"
+#     }
+#     Exception {
+#         puts "Caught a generic Exception"
+#         reraise $e
+#     }
+# } final {
+#     puts "I'm executed no matter what."
+# }
+# ~~~~~~~~~~
+#
+# The exception types listed in the handler block are evaluated in the order
+# in which they are listed. For each entry a check is made, whether the
+# exception object `e` has the given type in its inheritance chain. If yes,
+# the handler is invoked. If no, the next entry is evaluated.
+#
+# An optional `final` clause will always be executed, whether an exception
+# occurred or not.
+#
 proc except {block exception_var clauses {final_kw ""} {final_block ""}} {
 
     # handle case where no catch clauses exist
