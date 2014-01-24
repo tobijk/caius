@@ -26,51 +26,26 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief Functions for converting markdown to HTML.
+
+##
+# \brief Functions for converting markdown to HTML.
+#
 namespace eval markdown {
 
     namespace export convert
 
-    variable _mode
-    variable _html4
-
-    proc convert {args} {
-        variable _mode fragment
-        variable _html4 0
-
-        while {[llength $args] > 0 &&
-               [string index [lindex $args 0] 0] eq "-"} \
-        {
-            set opt [lindex $args 0]
-            set val [lindex $args 1]
-
-            switch $opt {
-                -mode {
-                    switch $val {
-                        fragment -
-                        full {
-                            set _mode $val
-                        }
-                        default {
-                            error "markdown conversion -mode must be 'fragment' or 'full'"
-                        }
-                    }
-                    set args [lreplace $args 0 1]
-                }
-                -html4 {
-                    set _html4 1
-                    set args [lreplace $args 0 0]
-                }
-                default {
-                    error "unknown option '$opt'"
-                }
-            }
-        }
-
-        if {[llength $args] != 1} {
-            error "invalid number of arguments"
-        }
-
-        set markdown [lindex $args 0]
+    ##
+    #
+    # Converts text written in markdown to HTML.
+    #
+    # @param markdown  currently takes as a single argument the text in markdown
+    #
+    # The output of this function is only a fragment, not a complete HTML
+    # document. The format of the output is generic XHTML.
+    #
+    proc convert {markdown} {
         append markdown \n
 
         regsub -all {\r\n}  $markdown \n     markdown
@@ -85,6 +60,7 @@ namespace eval markdown {
         return [apply_templates markdown]
     }
 
+    ## \private
     proc collect_references {markdown_var} {
         upvar $markdown_var markdown
 
@@ -124,6 +100,7 @@ namespace eval markdown {
         return [array get references]
     }
 
+    ## \private
     proc apply_templates {markdown_var {parent {}}} {
         upvar $markdown_var markdown
 
@@ -430,6 +407,7 @@ namespace eval markdown {
         return $result
     }
 
+    ## \private
     proc parse_inline {text} {
         set text [regsub -all -lineanchor {[ ]{2,}$} $text <br/>]
 
@@ -610,10 +588,12 @@ namespace eval markdown {
         return $result
     }
 
+    ## \private
     proc is_empty_line {line} {
         return [regexp {^\s*$} $line]
     }
 
+    ## \private
     proc html_escape {text} {
         return [string map {& &amp; < &lt; > &gt; ' &apos; \" &quot;} $text]
     }
