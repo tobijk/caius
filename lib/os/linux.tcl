@@ -49,6 +49,15 @@ namespace eval OS {
 
     proc process_exists {pid} {
         if {[file exists "/proc/$pid"]} {
+
+            set fp [open "/proc/$pid/stat"]
+            set stats [read $fp]
+            close $fp
+
+            if {[lindex $stats 2] eq {Z}} {
+                return 0
+            }
+
             return 1
         }
 
