@@ -54,8 +54,10 @@ namespace eval OS {
             set stats [read $fp]
             close $fp
 
-            if {[lindex $stats 2] eq {Z}} {
-                return 0
+            if {[regexp {\d+ \([^)]+\) (\S+)} $stats match state]} {
+                if {$state eq {Z}} {
+                    return 0
+                }
             }
 
             return 1
