@@ -26,14 +26,28 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief A wrapper for controlling SSH with Expect.
+
 package require Itcl
 package require Error
 
 namespace eval Cli {
 
+    ##
+    # \brief A convenience class for controlling SSH with Expect.
+    #
     ::itcl::class Ssh {
         inherit Cli::Core
 
+        ##
+        # \brief Initiates an SSH session controlled by Expect.
+        # 
+        # @param args  the parameters to the SSH command
+        # 
+        # The parameters are passed through unmodified to whatever SSH client
+        # is installed on your platform.
+        #
         constructor {args} {
             except {
                 spawn ssh {*}$args

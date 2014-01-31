@@ -26,14 +26,28 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief A wrapper for controlling a serial line with Expect.
+
 package require Itcl
 package require Error
 
 namespace eval Cli {
 
+    ##
+    # \brief A convenience class for controlling a serial line with Expect.
+    #
     ::itcl::class Stty {
         inherit Cli::Core
 
+        ##
+        # Connects an Expect session object to a serial line.
+        #
+        # @param port       the serial port to open
+        # @param baud       the baud rate (default 56000)
+        # @param parity     parity (default n)
+        # @param bits       data bits (default 8)
+        # @param stop_bits  stop bits (default 1)
         constructor {port {baud 56000} {parity n} {data_bits 8} {stop_bits 1}} {
             except {
                 set fp [open $port r+]

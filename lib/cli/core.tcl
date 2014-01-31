@@ -26,6 +26,9 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief An object-oriented wrapper around Expect (core functionality).
+
 package require Itcl
 package require OS
 package require Error
@@ -39,8 +42,19 @@ catch {
 
 namespace eval Cli {
 
+    ##
+    # \brief An object-oriented wrapper around Expect (abstract base class).
+    #
+    # Don't use this class directly, but rather one of
+    #
+    # * Cli::Stty
+    # * Cli::Spawn
+    # * Cli::Ssh
+    # * Cli::Telnet
+    #
     ::itcl::class Core {
 
+        ## \private
         protected variable _spawn_id ""
 
         constructor {} {}
@@ -49,6 +63,9 @@ namespace eval Cli {
             $this close
         }
 
+        ##
+        # Closes the connection and terminates the process attached to the
+        # spawn id associated with this object. Returns the exit code.
         method close {} {
             set exit_code ""
 
@@ -56,6 +73,9 @@ namespace eval Cli {
                 except {
                     set pid [exp_pid -i $_spawn_id]
                     ::close -i $_spawn_id
+
+                    # hack to reap dead background processes
+                    exec true
 
                     # if spawn_id was pointing to a process
                     if {$pid} {
@@ -79,20 +99,38 @@ namespace eval Cli {
             return $exit_code
         }
 
+        ##
+        # Sends a string of characters to the spawned program. This method
+        # invokes `exp_send` and implicitely passes it the `spawn_id`
+        # associated with this object. All parameters are passed on unmodified.
         method send {args} {
             uplevel "::exp_send -i $_spawn_id $args"
         }
 
+        ##
+        # Expects a certain string or pattern to occur in the output of the
+        # spawned program. This method invokes `::expect` in the global
+        # namespace and implicitely passes it the `spawn_id` associated with
+        # this object. All parameters are passed on unmodified.
         method expect {args} {
             uplevel \
                 "set spawn_id $_spawn_id
                 ::expect $args"
         }
 
+        ##
+        # Sets or gets the maximum match buffer size for the `spawn_id`
+        # associated with this object.
+        #
+        # @param size  specifies the buffer size in bytes
+        #
+        # If `size` is not set, the current buffer size will be returned.
         method match_max {{size ""}} {
             return [match_max -i $_spawn_id $size]
         }
 
+        ##
+        # Returns the `spawn_id` associated with this object.
         method spawn_id {} {
             return $_spawn_id
         }

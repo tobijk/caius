@@ -26,14 +26,28 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file spawn.tcl
+# \brief A wrapper for controlling subprocesses with Expect.
+
 package require Itcl
 package require Error
 
 namespace eval Cli {
 
+    ##
+    # \brief A convenience class for controlling subprocesses with Expect.
+    #
     ::itcl::class Spawn {
         inherit Cli::Core
 
+        ##
+        # Connects an Expect session object to a subprocess.
+        #
+        # @param args  the command to execute
+        #
+        # The parameter list passed to the constructor is interpreted as the
+        # command line to be executed to launch the subprocess.
+        #
         constructor {args} {
             except {
                 spawn {*}$args

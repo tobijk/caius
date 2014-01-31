@@ -26,14 +26,28 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief A wrapper for controlling Telnet with Expect.
+
 package require Itcl
 package require Error
 
 namespace eval Cli {
 
+    ##
+    # \brief A convenience class for controlling Telnet with Expect.
+    #
     ::itcl::class Telnet {
         inherit Cli::Core
 
+        ##
+        # \brief Initiates a Telnet session controlled by Expect.
+        #
+        # @param args  parameters to the telnet command
+        #
+        # The parameters are passed through unmodified to whatever Telnet
+        # client is installed on your platform.
+        #
         constructor {args} {
             except {
                 spawn telnet {*}$args
