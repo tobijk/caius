@@ -27,6 +27,7 @@
 #
 
 ## \file
+# \brief Functions for exception handling.
 
 package require Itcl
 
