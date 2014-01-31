@@ -41,9 +41,9 @@ namespace eval Testing {
         private variable _tostdout
 
         constructor {} {
-            set _indent   [::itcl::code [OutputStream::Indenter #auto "    "]]
+            set _indent   [::itcl::code [OutputStream::Indent #auto "    "]]
             set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix [::itcl::code [OutputStream::FlipNewlines #auto unix]]
+            set _dos2unix [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
         }
 
@@ -128,7 +128,7 @@ namespace eval Testing {
 
         constructor {} {
             set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix [::itcl::code [OutputStream::FlipNewlines #auto unix]]
+            set _dos2unix [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
         }
 
@@ -204,7 +204,7 @@ namespace eval Testing {
             set _capture   [::itcl::code [OutputStream::Capture #auto]]
             set _xmlescape [::itcl::code [OutputStream::XMLEscape #auto]]
             set _escape    [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix  [::itcl::code [OutputStream::FlipNewlines #auto unix]]
+            set _dos2unix  [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
 
             set _warnings {}
@@ -329,7 +329,7 @@ namespace eval Testing {
             set _capture   [::itcl::code [OutputStream::Capture #auto]]
             set _xmlescape [::itcl::code [OutputStream::XMLEscape #auto]]
             set _escape    [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix  [::itcl::code [OutputStream::FlipNewlines #auto unix]]
+            set _dos2unix  [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
 
             set _warnings {}
