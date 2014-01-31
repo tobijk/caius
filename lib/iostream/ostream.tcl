@@ -26,31 +26,64 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief Classes for modifying the behavior of output streams (Tcl channels).
+
 package require Tcl 8.6
 package require Itcl
 
 namespace eval OutputStream {
 
-    ::itcl::class Indenter {
+    ##
+    # \brief A channel filter that prefixes each line with a given string.
+    #
+    ::itcl::class Indent {
+        ## \private
         private variable _indent
+        ## \private
         private variable _state
 
+        ##
+        # Creates an Indent object.
+        #
+        # @param indent  the string to prefix to each line (default 4 spaces)
+        #
+        # To indent each line written to stdout by the specified amount,
+        # create and apply the Indent as follows:
+        #
+        # ~~~~~~~~~~{.tcl}
+        # set indent [OutputStream::Indent #auto "  "]
+        #
+        # chan push stdout $indent
+        # puts "This will be indented by two spaces."
+        #
+        # chan pop stdout
+        # puts "Back to normal."
+        # ~~~~~~~~~~
+        #
+        # Please note that the Indent expects to operate on line-buffered
+        # data. There is no logic to deal with incomplete lines for the time
+        # being.
+        #
         constructor {{indent "    "}} {
             set _indent $indent
             set _state  :start
         }
 
+        ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
-                error "OutputStream::Indenter can only be opened for writing."
+                error "OutputStream::Indent can only be opened for writing."
             }
             return {initialize finalize write}
         }
 
+        ## \private
         method finalize {channel} {
             set _state :start
         }
 
+        ## \private
         method write {channel data} {
             set lines [regexp -inline -all -line -- {^.*(?:\r?\n)?} $data]
 
@@ -70,13 +103,35 @@ namespace eval OutputStream {
         }
     }
 
+    ##
+    # \brief A channel modifier that redirects all input to another channel.
+    #
     ::itcl::class Redirect {
+        ## \private
         private variable _target
 
+        ##
+        # Creates a Redirect object.
+        #
+        # @param target  the name of the channel to redirect to
+        #
+        # For example, if you wanted to redirect everything written to stderr
+        # to stdout instead, you could do it like this:
+        #
+        # ~~~~~~~~~~{.tcl}
+        # set redirect [OutputStream::Redirect #auto stdout]
+        #
+        # chan push stderr $redirect
+        # puts stderr "This will go to stdout."
+        #
+        # chan pop stderr
+        # ~~~~~~~~~~
+        #
         constructor {{target stdout}} {
             set _target $target
         }
 
+        ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
                 error "OutputStream::Redirect can only be opened for writing."
@@ -84,18 +139,24 @@ namespace eval OutputStream {
             return {initialize finalize write}
         }
 
+        ## \private
         method finalize {channel} {
             flush $_target
         }
 
+        ## \private
         method write {channel data} {
             puts -nonewline $_target $data
             return {}
         }
     }
 
+    ##
+    # \brief A channel filter that removes common ANSI escape sequences.
+    #
     ::itcl::class AnsiEscapeFilter {
 
+        ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
                 error "OutputStream::AnsiEscapeFilter can only be opened for writing."
@@ -103,8 +164,10 @@ namespace eval OutputStream {
             return {initialize finalize write}
         }
 
+        ## \private
         method finalize {channel} {}
 
+        ## \private
         method write {channel data} {
             set regex1 {\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]}
             set regex2 {\x1B\]0;[^\x07]+\x07}
@@ -113,9 +176,18 @@ namespace eval OutputStream {
         }
     }
 
-    ::itcl::class FlipNewlines {
+    ##
+    # \brief A channel filter that converts line endings.
+    #
+    ::itcl::class NormalizeNewlines {
+        ## \private
         private variable _newline
 
+        ##
+        # Creates a NormalizeNewlines object.
+        #
+        # @param style  one of 'unix' or 'windows'
+        #
         constructor {{style unix}} {
             switch $style {
                 unix {
@@ -130,27 +202,35 @@ namespace eval OutputStream {
             }
         }
 
+        ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
-                error "OutputStream::FlipNewlines can only be opened for writing."
+                error "OutputStream::NormalizeNewlines can only be opened for writing."
             }
             return {initialize finalize write}
         }
 
+        ## \private
         method finalize {channel} {}
 
+        ## \private
         method write {channel data} {
             return [regsub -all {\r*\n} $data $_newline]
         }
     }
 
+    ##
+    # \brief Capture things written to a channel in memory.
+    #
     ::itcl::class Capture {
+        ## \private
         private variable _buffer
 
         constructor {} {
             set _buffer {}
         }
 
+        ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
                 error "OutputStream::Capture can only be opened for writing."
@@ -158,25 +238,37 @@ namespace eval OutputStream {
             return {initialize finalize write}
         }
 
+        ## \private
         method finalize {channel} {}
 
+        ## \private
         method write {channel data} {
             append _buffer $data
             return {}
         }
 
+        ##
+        # Returns the captured content.
+        #
         method get {} {
             return $_buffer
         }
 
+        ##
+        # Clears the buffer.
+        #
         method clear {} {
             set _buffer {}
         }
     }
 
+    ##
+    # \brief A channel filter to escape XML special characters.
+    #
     ::itcl::class XMLEscape {
         constructor {} {}
 
+        ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
                 error "OutputStream::XMLEscape can only be opened for writing."
@@ -184,8 +276,10 @@ namespace eval OutputStream {
             return {initialize finalize write}
         }
 
+        ## \private
         method finalize {channel} {}
 
+        ## \private
         method write {channel data} {
             return [string map {& &amp; < &lt; > &gt; \" &quot;} $data]
         }
