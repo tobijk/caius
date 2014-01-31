@@ -26,12 +26,17 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+## \file
+# \brief Definition of core exception classes.
+
 package require Itcl
 package require OOSupport
 
 ## 
-# This is the mother of all exception classes. While it is not mandatory, it
-# is recommended that all custom exception classes derive from Exception.
+# \brief The mother of all exceptions.
+#
+# While it is not mandatory, it is recommended that all custom exception
+# classes derive from Exception.
 #
 ::itcl::class Exception {
 
@@ -63,7 +68,7 @@ package require OOSupport
 }
 
 ##
-# This exception indicates a generic runtime error.
+# \brief Execption that indicates a generic runtime error.
 ::itcl::class RuntimeError {
     inherit ::Exception
 
@@ -72,7 +77,7 @@ package require OOSupport
 }
 
 ##
-# This exception indicates that input data didn't match an expected format.
+# \brief Exception that indicates a data type or format mismatch.
 ::itcl::class ValueError {
     inherit ::RuntimeError
 
@@ -81,9 +86,19 @@ package require OOSupport
 }
 
 ##
-# This exception indicates that a generic Tcl error occurred. When code is
-# wrapped inside an `except` block, generic errors can be caught as shown
-# in the following example:
+# \brief This exception is thrown, when a timeout occurs.
+::itcl::class TimeoutError {
+    inherit ::RuntimeError
+
+    constructor {msg} { ::RuntimeError::constructor $msg } {}
+    destructor {}
+}
+
+##
+# \brief Exception which indicates that a generic Tcl error occurred.
+#
+# When code is wrapped inside an `except` block, generic errors can be caught
+# as shown in the following example:
 #
 # ~~~~~~~~~~~~{.tcl}
 # except {
@@ -94,7 +109,7 @@ package require OOSupport
 #     }
 # }
 # ~~~~~~~~~~~~
-#     
+#
 ::itcl::class TclError {
     inherit ::RuntimeError
 
