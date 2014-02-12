@@ -45,7 +45,7 @@ package require cmdline
         }
 
         array set params [::cmdline::getoptions args $options]
-  
+
         set mutex [::thread::mutex create]
         set cond  [::thread::cond  create]
 
@@ -54,6 +54,8 @@ package require cmdline
                 ::thread::detach $params($fd)
             }
         }
+
+        ::tsv::set _subprocess_started $this 0
 
         set _thread_id [if 1 "::thread::create -joinable {
             package require OS
@@ -96,7 +98,11 @@ package require cmdline
                 }
             } final {
                 close \$pipe_write_end
+
+                ::thread::mutex lock $mutex
+                ::tsv::set _subprocess_started $this 1
                 ::thread::cond notify $cond
+                ::thread::mutex unlock $mutex
             }
 
             set pid \[::pid \$pipe_stdio]
@@ -201,7 +207,9 @@ package require cmdline
         }"]
 
         ::thread::mutex lock $mutex
-        ::thread::cond wait $cond $mutex
+        while {![::tsv::get _subprocess_started $this]} {
+            ::thread::cond wait $cond $mutex
+        }
         ::thread::mutex unlock $mutex
 
         ::thread::mutex destroy $mutex
@@ -216,6 +224,9 @@ package require cmdline
         }
         if {[::tsv::exists subprocess_status $this]} {
             ::tsv::unset _subprocess_status $this
+        }
+        if {[::tsv::exists _subprocess_started $this]} {
+            ::tsv::unset _subprocess_started $this
         }
 
         except {
