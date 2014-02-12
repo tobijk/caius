@@ -55,7 +55,7 @@ package require cmdline
             }
         }
 
-        ::tsv::set _subprocess_started $this 0
+        ::tsv::set _subprocess_$this started 0
 
         set _thread_id [if 1 "::thread::create -joinable {
             package require OS
@@ -82,7 +82,7 @@ package require cmdline
             array set params {[array get params]}
             set stop($this) false
 
-            ::tsv::set _subprocess_status $this -1
+            ::tsv::set _subprocess_$this status -1
             lassign \[chan pipe] pipe_stderr pipe_write_end
 
             except {
@@ -100,13 +100,13 @@ package require cmdline
                 close \$pipe_write_end
 
                 ::thread::mutex lock $mutex
-                ::tsv::set _subprocess_started $this 1
+                ::tsv::set _subprocess_$this started 1
                 ::thread::cond notify $cond
                 ::thread::mutex unlock $mutex
             }
 
             set pid \[::pid \$pipe_stdio]
-            ::tsv::set _subprocess_pid $this \$pid
+            ::tsv::set _subprocess_$this pid \$pid
 
             fconfigure \$pipe_stdio    -buffering none -translation binary -blocking 0
             fconfigure \$pipe_stderr   -buffering none -translation binary -blocking 0
@@ -203,11 +203,11 @@ package require cmdline
                     \"subprocess did not finish within \${params(timeout)}ms.\"
             }
 
-            ::tsv::set _subprocess_status $this \$exitcode
+            ::tsv::set _subprocess_$this status \$exitcode
         }"]
 
         ::thread::mutex lock $mutex
-        while {![::tsv::get _subprocess_started $this]} {
+        while {![::tsv::get _subprocess_$this started]} {
             ::thread::cond wait $cond $mutex
         }
         ::thread::mutex unlock $mutex
@@ -218,16 +218,7 @@ package require cmdline
 
     destructor {
         $this kill
-
-        if {[::tsv::exists _subprocess_pid $this]} {
-            ::tsv::unset _subprocess_pid $this
-        }
-        if {[::tsv::exists subprocess_status $this]} {
-            ::tsv::unset _subprocess_status $this
-        }
-        if {[::tsv::exists _subprocess_started $this]} {
-            ::tsv::unset _subprocess_started $this
-        }
+        ::tsv::unset _subprocess_$this
 
         except {
             ::thread::join $_thread_id
@@ -240,19 +231,19 @@ package require cmdline
 
     method terminate {} {
         if {[$this process_exists]} {
-            ::OS::terminate [::tsv::get _subprocess_pid $this]
+            ::OS::terminate [::tsv::get _subprocess_$this pid]
         }
     }
 
     method kill {} {
         if {[$this process_exists]} {
-            ::OS::kill [::tsv::get _subprocess_pid $this]
+            ::OS::kill [::tsv::get _subprocess_$this pid]
         }
     }
 
     method process_exists {} {
-        if {[::tsv::exists _subprocess_pid $this] && \
-                [::OS::process_exists [::tsv::get _subprocess_pid $this]]}\
+        if {[::tsv::exists _subprocess_$this pid] && \
+                [::OS::process_exists [::tsv::get _subprocess_$this pid]]}\
         {
             return 1
         }
@@ -262,7 +253,7 @@ package require cmdline
 
     method wait {} {
         ::thread::join $_thread_id
-        return [::tsv::get _subprocess_status $this]
+        return [::tsv::get _subprocess_$this status]
     }
 }
 
