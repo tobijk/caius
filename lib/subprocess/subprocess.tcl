@@ -26,6 +26,7 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+package require Thread
 package require OOSupport
 package require OS
 package require Error
@@ -33,166 +34,224 @@ package require cmdline
 
 ::itcl::class Subprocess {
 
-    common attributes {
-        { number  pid      "" ro }
-        { number  exitcode 0  ro }
-        { string  stdio    {} ro }
-        { string  stderr   {} ro }
-    }
-
-    common _stop
-    array set _stop {}
-    common _timeout_occurred
-    array set _timeout_occurred {}
-
-    private variable _output_stdout stdout
-    private variable _output_stderr stderr
+    private variable _thread_id {}
 
     constructor {args} {
-        ::OOSupport::init_attributes
+        set options {
+            {stdout.arg  stdout "set the channel to which to redirect stdout"}
+            {stderr.arg  stderr "set the channel to which to redirect stderr"}
+            {stdin.arg   stdin  "set the channel to which to redirect stdin" }
+            {timeout.arg 0      "timeout in seconds"                         }
+        }
 
-        lassign [chan pipe] _stderr _write_end
-        set _stdio [open "|$args 2>@$_write_end" r+]
-        close $_write_end
+        array set params [::cmdline::getoptions args $options]
+  
+        set mutex [::thread::mutex create]
+        set cond  [::thread::cond  create]
 
-        set _pid [::pid $_stdio]
+        foreach {fd} {stdout stderr stdin} {
+            if {$params($fd) ne $fd} {
+                ::thread::detach $params($fd)
+            }
+        }
+
+        set _thread_id [if 1 "::thread::create -joinable {
+            package require OS
+            package require Error
+
+            proc read_incoming {input output {check read_end}} {
+                global stop
+
+                if {\$check eq {read_end}} {
+                    if {\[eof \$input]} {
+                        set stop($this) true
+                        return
+                    }
+                } else {
+                    if {\[eof \$output]} {
+                        set stop($this) true
+                        return
+                    }
+                }
+
+                puts -nonewline \$output \[::read \$input]
+            }
+
+            array set params {[array get params]}
+            set stop($this) false
+
+            ::tsv::set _subprocess_status $this -1
+            lassign \[chan pipe] pipe_stderr pipe_write_end
+
+            except {
+                set pipe_stdio \[open \"|$args 2>@\$pipe_write_end\" r+]
+            } e {
+                Exception {
+                    if {\[info exists pipe_stdio]} {
+                        close \$pipe_stdio
+                    }
+
+                    close \$pipe_stderr
+                    error \[\$e msg]
+                }
+            } final {
+                close \$pipe_write_end
+                ::thread::cond notify $cond
+            }
+
+            set pid \[::pid \$pipe_stdio]
+            ::tsv::set _subprocess_pid $this \$pid
+
+            fconfigure \$pipe_stdio    -buffering none -translation binary -blocking 0
+            fconfigure \$pipe_stderr   -buffering none -translation binary -blocking 0
+            fconfigure \$params(stdin) -translation binary -blocking 0
+
+            fileevent \$pipe_stdio    readable \[list read_incoming \$pipe_stdio  \$params(stdout)]
+            fileevent \$pipe_stderr   readable \[list read_incoming \$pipe_stderr \$params(stderr)]
+            fileevent \$params(stdin) readable \[list read_incoming stdin \$pipe_stdio write_end]
+
+            set timeout_occurred($this) 0
+            set deadline 0
+
+            # set timeout action and deadline
+            if {\$params(timeout) > 0} {
+                set script {
+                    set stop($this) 1
+                    set timeout_occurred($this) 1
+                }
+                set deadline \[expr \[clock milliseconds] + \$params(timeout)]
+                after \$params(timeout) \$script
+            }
+
+            # attach alternative channels
+            foreach {fd} {stdout stderr stdin} {
+                if {\$params(\$fd) ne \$fd} {
+                    ::thread::attach \$params(\$fd)
+                }
+            }
+
+            # sits in event loop until pipe closed
+            vwait stop($this)
+
+            # maybe process just shut down a channel for fun
+            while {\[::OS::process_exists \$pid] && !\$timeout_occurred($this)} {
+                after 100
+
+                read_incoming \$pipe_stdio \$params(stdout)
+                read_incoming \$pipe_stderr \$params(stderr)
+                read_incoming \$params(stdin) \$pipe_stdio
+
+                if {(\$params(timeout) > 0) && \[clock milliseconds] > \$deadline} {
+                    set timeout_occurred($this) 1
+                }
+            }
+
+            # close alternative channels
+            foreach {fd} {stdout stderr stdin} {
+                if {\$params(\$fd) ne \$fd} {
+                    close \$params(\$fd)
+                }
+            }
+
+            # process timed out, kill it
+            if {\$timeout_occurred($this)} {
+                if {\[::OS::process_exists \$pid]} {
+                    ::OS::terminate \$pid
+                    after 250
+
+                    if {\[::OS::process_exists \$pid]} {
+                        ::OS::kill \$pid
+                    }
+                }
+            }
+
+            # else close will not get the exit status
+            fconfigure \$pipe_stdio -blocking 1
+
+            set exitcode 0
+
+            except {
+                ::close \$pipe_stdio
+            } e {
+                ::TclError {
+                    set details \[\$e code]
+                    switch \[lindex \$details 0] {
+                        \"CHILDSTATUS\" {
+                            set exitcode \[lindex \$details 2]
+                        }
+                        \"CHILDKILLED\" {
+                            set exitcode -1
+                        }
+                        default {
+                            reraise \$e
+                        }
+                    }
+                }
+            } final {
+                ::close \$pipe_stderr
+            }
+
+            # raise timeout after cleaning up
+            if {\$timeout_occurred($this)} {
+                raise ::TimeoutError \
+                    \"subprocess did not finish within \${params(timeout)}ms.\"
+            }
+
+            ::tsv::set _subprocess_status $this \$exitcode
+        }"]
+
+        ::thread::mutex lock $mutex
+        ::thread::cond wait $cond $mutex
+        ::thread::mutex unlock $mutex
+
+        ::thread::mutex destroy $mutex
+        ::thread::cond destroy $cond
     }
 
-    ::OOSupport::bless_attributes
+    destructor {
+        $this kill
+
+        if {[::tsv::exists _subprocess_pid $this]} {
+            ::tsv::unset _subprocess_pid $this
+        }
+        if {[::tsv::exists subprocess_status $this]} {
+            ::tsv::unset _subprocess_status $this
+        }
+
+        except {
+            ::thread::join $_thread_id
+        } e {
+            ::Exception {
+                # pass
+            }
+        }
+    }
 
     method terminate {} {
-        if {$_pid ne {}} {
-            ::OS::terminate $_pid
+        if {[$this process_exists]} {
+            ::OS::terminate [::tsv::get _subprocess_pid $this]
         }
     }
 
     method kill {} {
-        if {$_pid ne {}} {
-            ::OS::kill $_pid
+        if {[$this process_exists]} {
+            ::OS::kill [::tsv::get _subprocess_pid $this]
         }
     }
 
     method process_exists {} {
-        if {$_pid ne {} && [::OS::process_exists $_pid]} {
+        if {[::tsv::exists _subprocess_pid $this] && \
+                [::OS::process_exists [::tsv::get _subprocess_pid $this]]}\
+        {
             return 1
         }
 
         return 0
     }
 
-    method wait {args} {
-        set options {
-            {stdout.arg  stdout "set the channel to which to redirect stdout"}
-            {stderr.arg  stderr "set the channel to which to redirect stderr"}
-            {timeout.arg 0      "timeout in seconds"                         }
-        }
-
-        array set params [::cmdline::getoptions args $options]
-
-        set _output_stdout $params(stdout)
-        set _output_stderr $params(stderr)
-
-        fconfigure $_stdio  -buffering none -translation binary -blocking 0
-        fconfigure $_stderr -buffering none -translation binary -blocking 0
-
-        fileevent $_stdio  readable [list [::itcl::code $this] \
-            read_incoming_stdio ]
-        fileevent $_stderr readable [list [::itcl::code $this] \
-            read_incoming_stderr]
-
-        # write input data then start "recording"
-        foreach {data} $args {
-            puts -nonewline $_stdio $data
-        }
-
-        set _timeout_occurred($this) 0
-        set deadline 0
-
-        # set timeout action and deadline
-        if {$params(timeout) > 0} {
-            set script "\
-                set ::Subprocess::_stop($this) 1
-                set ::Subprocess::_timeout_occurred($this) 1"
-            set deadline [expr [clock milliseconds] + $params(timeout) * 1000]
-            after [expr $params(timeout) * 1000] $script
-        }
-
-        # sits in event loop until pipe closed
-        vwait ::Subprocess::_stop($this)
-
-        # maybe process just shut down a channel for fun
-        while {[$this process_exists] && !$_timeout_occurred($this)} {
-            after 250
-
-            read_incoming_stdio
-            read_incoming_stderr
-
-            if {($params(timeout) > 0) && [clock milliseconds] > $deadline} {
-                set _timeout_occurred($this) 1
-            }
-        }
-
-        # process timed out, kill it
-        if {$_timeout_occurred($this)} {
-            if {[$this process_exists]} {
-                $this terminate
-                after 250
-
-                if {[$this process_exists]} {
-                    $this kill
-                }
-            }
-        }
-
-        # else close will not get the exit status
-        fconfigure $_stdio -blocking 1
-
-        except {
-            ::close $_stdio
-        } e {
-            ::TclError {
-                set details [$e code]
-                switch [lindex $details 0] {
-                    "CHILDSTATUS" {
-                        set _exitcode [lindex $details 2]
-                    }
-                    "CHILDKILLED" {
-                        set _exitcode -1
-                    }
-                    default {
-                        reraise $e
-                    }
-                }
-            }
-        } final {
-            ::close $_stderr
-        }
-
-        # raise timeout after cleaning up
-        if {$_timeout_occurred($this)} {
-            raise ::TimeoutError \
-                "subprocess did not finish within ${params(timeout)} seconds."
-        }
-
-        return $_exitcode
-    }
-
-    method read_incoming_stdio {} {
-        if {[eof $_stdio]} {
-            set _stop($this) true
-            return
-        }
-
-        puts -nonewline $_output_stdout [::read $_stdio]
-    }
-
-    method read_incoming_stderr {} {
-        if {[eof $_stderr]} {
-            set _stop($this) true
-            return
-        }
-
-        puts -nonewline $_output_stderr [::read $_stderr]
+    method wait {} {
+        ::thread::join $_thread_id
+        return [::tsv::get _subprocess_status $this]
     }
 }
 
