@@ -379,9 +379,18 @@ namespace eval OutputStream {
         # Returns the captured content.
         #
         method get {} {
-            set handle [open $_buffer_file r]
-            set buf [read $handle]
-            close $handle
+            set buf {}
+
+            if {$_handle ne {}} {
+                seek $_handle 0 start
+                set buf [read $handle]
+                seek $_handle 0 end
+            } elseif {$_buffer_file ne {}} {
+                set handle [open $_buffer_file r]
+                set buf [read $handle]
+                close $handle
+            }
+
             return $buf
         }
 
@@ -390,8 +399,15 @@ namespace eval OutputStream {
         #
         method clear {} {
             if {$_handle ne {}} {
-                chan truncate $_handle 0
+                close $_handle
             }
+
+            if {[file exists $_buffer_file]} {
+                file delete $_buffer_file
+            }
+
+            close [file tempfile _buffer_file]
+            set _handle [open $_buffer_file a]
         }
     }
 
