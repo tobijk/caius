@@ -60,6 +60,8 @@ package require cmdline
         set _thread_id [if 1 "::thread::create -joinable {
             package require OS
             package require Error
+            package require OutputStream
+            package require Itcl
 
             proc read_incoming {input output {check read_end}} {
                 global stop
@@ -78,6 +80,9 @@ package require cmdline
 
                 puts -nonewline \$output \[::read \$input]
             }
+
+            [OutputStream::transforms_create_code stdout]
+            [OutputStream::transforms_create_code stderr]
 
             array set params {[array get params]}
             set stop($this) false
@@ -202,6 +207,10 @@ package require cmdline
                 raise ::TimeoutError \
                     \"subprocess did not finish within \${params(timeout)}ms.\"
             }
+
+
+            [OutputStream::transforms_destroy_code stdout]
+            [OutputStream::transforms_destroy_code stderr]
 
             ::tsv::set _subprocess_$this status \$exitcode
         }"]
