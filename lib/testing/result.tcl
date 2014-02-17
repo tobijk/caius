@@ -95,17 +95,17 @@ namespace eval Testing {
 
         method log_start {} {
             puts "- Log:"
-            chan push stdout $_indent
-            chan push stdout $_dos2unix
-            chan push stdout $_escape
-            chan push stderr $_tostdout
+            OutputStream::push stdout $_indent
+            OutputStream::push stdout $_dos2unix
+            OutputStream::push stdout $_escape
+            OutputStream::push stderr $_tostdout
         }
 
         method log_end {} {
-            chan pop stderr
-            chan pop stdout
-            chan pop stdout
-            chan pop stdout
+            OutputStream::pop stderr
+            OutputStream::pop stdout
+            OutputStream::pop stdout
+            OutputStream::pop stdout
         }
 
         method log_warning {msg} {
@@ -159,15 +159,15 @@ namespace eval Testing {
         }
 
         method log_start {} {
-            chan push stdout $_dos2unix
-            chan push stdout $_escape
-            chan push stderr $_tostdout
+            OutputStream::push stdout $_dos2unix
+            OutputStream::push stdout $_escape
+            OutputStream::push stderr $_tostdout
         }
 
         method log_end {} {
-            chan pop stderr
-            chan pop stdout
-            chan pop stdout
+            OutputStream::pop stderr
+            OutputStream::pop stdout
+            OutputStream::pop stdout
         }
 
         method log_warning {msg} {
@@ -264,19 +264,19 @@ namespace eval Testing {
         }
 
         method log_start {} {
-            chan push stdout $_capture
-            chan push stdout $_xmlescape
-            chan push stdout $_dos2unix
-            chan push stdout $_escape
-            chan push stderr $_tostdout
+            OutputStream::push stdout $_capture
+            OutputStream::push stdout $_xmlescape
+            OutputStream::push stdout $_dos2unix
+            OutputStream::push stdout $_escape
+            OutputStream::push stderr $_tostdout
         }
 
         method log_end {} {
-            chan pop stderr
-            chan pop stdout
-            chan pop stdout
-            chan pop stdout
-            chan pop stdout
+            OutputStream::pop stderr
+            OutputStream::pop stdout
+            OutputStream::pop stdout
+            OutputStream::pop stdout
+            OutputStream::pop stdout
             set _log [$_capture get]
         }
 
@@ -436,19 +436,19 @@ namespace eval Testing {
         }
 
         method log_start {} {
-            chan push stdout $_capture
-            chan push stdout $_xmlescape
-            chan push stdout $_dos2unix
-            chan push stdout $_escape
-            chan push stderr $_tostdout
+            OutputStream::push stdout $_capture
+            OutputStream::push stdout $_xmlescape
+            OutputStream::push stdout $_dos2unix
+            OutputStream::push stdout $_escape
+            OutputStream::push stderr $_tostdout
         }
 
         method log_end {} {
-            chan pop stderr
-            chan pop stdout
-            chan pop stdout
-            chan pop stdout
-            chan pop stdout
+            OutputStream::pop stderr
+            OutputStream::pop stdout
+            OutputStream::pop stdout
+            OutputStream::pop stdout
+            OutputStream::pop stdout
             set _log [$_capture get]
         }
 
