@@ -31,15 +31,103 @@
 
 package require Tcl 8.6
 package require Itcl
+package require OOSupport
 
 namespace eval OutputStream {
+
+    variable filter_stack
+    array set filter_stack {}
+
+    proc push {channel filter} {
+        variable filter_stack
+
+        if {![info exists filter_stack($channel)]} {
+            set filter_stack($channel) {}
+        }
+
+        set transform [chan push $channel $filter]
+        lappend filter_stack($channel) $filter
+    }
+
+    proc pop {channel} {
+        variable filter_stack
+
+        if {[info exists filter_stack($channel)]} {
+            set filter_stack($channel) \
+                [lreplace $filter_stack($channel) end end]
+        }
+
+        chan pop $channel
+    }
+
+    proc transforms {channel} {
+        variable filter_stack
+
+        if {[info exists filter_stack($channel)]} {
+            return $filter_stack($channel)
+        }
+
+        return {}
+    }
+
+    proc transforms_create_code {channel} {
+        variable filter_stack
+
+        set code {}
+
+        if {[info exists filter_stack($channel)]} {
+            set i 0
+
+            foreach {filter} $filter_stack($channel) {
+                set class [$filter info class]
+
+                append code "
+                if {{$class} eq {::OutputStream::Capture}} {
+                    set _filter_${channel}_$i \[$class #auto true]
+                } else {
+                    set _filter_${channel}_$i \[$class #auto]
+                }
+                \$_filter_${channel}_$i from_json {[$filter to_json]}
+                chan push $channel \$_filter_${channel}_$i
+                "
+
+                incr i
+            }
+        }
+
+        return $code
+    }
+
+    proc transforms_destroy_code {channel} {
+        variable filter_stack
+
+        set code {}
+
+        if {[info exists filter_stack($channel)]} {
+            set i 0
+
+            foreach {filter} $filter_stack($channel) {
+                append code "chan pop $channel
+                ::itcl::delete object \$_filter_${channel}_$i
+                "
+
+                incr i
+            }
+        }
+
+        return $code
+    }
 
     ##
     # \brief A channel filter that prefixes each line with a given string.
     #
     ::itcl::class Indent {
+
         ## \private
-        private variable _indent
+        common attributes {
+            {string indent "    " ro}
+        }
+
         ## \private
         private variable _state
 
@@ -69,6 +157,8 @@ namespace eval OutputStream {
             set _indent $indent
             set _state  :start
         }
+
+        OOSupport::bless_attributes -json_support
 
         ## \private
         method initialize {channel mode} {
@@ -108,7 +198,9 @@ namespace eval OutputStream {
     #
     ::itcl::class Redirect {
         ## \private
-        private variable _target
+        common attributes {
+            {string target {} ro}
+        }
 
         ##
         # Creates a Redirect object.
@@ -130,6 +222,8 @@ namespace eval OutputStream {
         constructor {{target stdout}} {
             set _target $target
         }
+
+        OOSupport::bless_attributes -json_support
 
         ## \private
         method initialize {channel mode} {
@@ -156,6 +250,10 @@ namespace eval OutputStream {
     #
     ::itcl::class AnsiEscapeFilter {
 
+        common attributes {}
+
+        OOSupport::bless_attributes -json_support
+
         ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
@@ -181,7 +279,9 @@ namespace eval OutputStream {
     #
     ::itcl::class NormalizeNewlines {
         ## \private
-        private variable _newline
+        common attributes {
+            {string newline "\n" ro}
+        }
 
         ##
         # Creates a NormalizeNewlines object.
@@ -201,6 +301,8 @@ namespace eval OutputStream {
                 }
             }
         }
+
+        OOSupport::bless_attributes -json_support
 
         ## \private
         method initialize {channel mode} {
@@ -224,26 +326,52 @@ namespace eval OutputStream {
     #
     ::itcl::class Capture {
         ## \private
-        private variable _buffer
-
-        constructor {} {
-            set _buffer {}
+        common attributes {
+            {string buffer_file {}    ro}
         }
+
+        private variable _handle {}
+        private variable _shared false
+
+        constructor {{shared false}} {
+            OOSupport::init_attributes
+            set _shared $shared
+        }
+
+        destructor {
+            if {!$_shared && [file exists $_buffer_file]} {
+                file delete $_buffer_file
+            }
+        }
+
+        OOSupport::bless_attributes -json_support
 
         ## \private
         method initialize {channel mode} {
             if {[llength $mode] != 1 || [lindex $mode 0] ne "write"} {
                 error "OutputStream::Capture can only be opened for writing."
             }
+
+            if {$_buffer_file eq {}} {
+                close [file tempfile _buffer_file]
+            }
+
+            if {$_handle eq {}} {
+                set _handle [open $_buffer_file a]
+            }
+
             return {initialize finalize write}
         }
 
         ## \private
-        method finalize {channel} {}
+        method finalize {channel} {
+            close $_handle
+            set _handle {}
+        }
 
         ## \private
         method write {channel data} {
-            append _buffer $data
+            puts -nonewline $_handle $data
             return {}
         }
 
@@ -251,14 +379,19 @@ namespace eval OutputStream {
         # Returns the captured content.
         #
         method get {} {
-            return $_buffer
+            set handle [open $_buffer_file r]
+            set buf [read $handle]
+            close $handle
+            return $buf
         }
 
         ##
         # Clears the buffer.
         #
         method clear {} {
-            set _buffer {}
+            if {$_handle ne {}} {
+                chan truncate $_handle 0
+            }
         }
     }
 
@@ -266,7 +399,12 @@ namespace eval OutputStream {
     # \brief A channel filter to escape XML special characters.
     #
     ::itcl::class XMLEscape {
+        ## \private
+        common attributes {}
+
         constructor {} {}
+
+        OOSupport::bless_attributes -json_support
 
         ## \private
         method initialize {channel mode} {
