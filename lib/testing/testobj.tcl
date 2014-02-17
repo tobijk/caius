@@ -174,9 +174,9 @@ namespace eval Testing {
                 $result test_start $test $count $num_tests
                 $result test_desc  [$this get_docstr $test]
 
+                set start_time [clock milliseconds]
                 except {
                     $result log_start
-                    set start_time [clock milliseconds]
                     $this ::Testing::TestObject::setup
                     $this $test
                 } e {
