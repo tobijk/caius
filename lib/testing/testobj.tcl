@@ -166,7 +166,6 @@ namespace eval Testing {
             }
 
             $result module_start [$this info class]
-            $this ::Testing::TestObject::setup setup_before
 
             foreach {test} $all_tests {
                 set verdict "PASS"
@@ -174,9 +173,13 @@ namespace eval Testing {
                 $result test_start $test $count $num_tests
                 $result test_desc  [$this get_docstr $test]
 
+                $result log_start
+                if {$count == 1} {
+                    $this ::Testing::TestObject::setup setup_before
+                }
+
                 set start_time [clock milliseconds]
                 except {
-                    $result log_start
                     $this ::Testing::TestObject::setup
                     $this $test
                 } e {
@@ -192,7 +195,6 @@ namespace eval Testing {
                         }
                     } final {
                         set stop_time [clock milliseconds]
-                        $result log_end
                     }
                 }
                 set total_time [expr $stop_time - $start_time]
@@ -201,12 +203,16 @@ namespace eval Testing {
                     $result log_error [$e stack_trace]
                 }
 
+                if {$count == $num_tests} {
+                    $this ::Testing::TestObject::teardown teardown_after
+                }
+                $result log_end
+
                 $result test_end $verdict $total_time
                 $result reset
                 incr count
             }
 
-            $this ::Testing::TestObject::teardown teardown_after
             $result module_end
 
             ::itcl::delete object $result
