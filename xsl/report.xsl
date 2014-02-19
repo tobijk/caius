@@ -45,6 +45,7 @@
 
 body {
     font-family: sans-serif;
+    font-size: 14px;
 }
 
 .l1 {
