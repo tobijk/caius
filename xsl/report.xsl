@@ -268,6 +268,9 @@ span.action {
                         </xsl:otherwise>
                     </xsl:choose>
                 </li>
+                <li>
+                    <xsl:value-of select="@time"/>
+                </li>
             </ul>
         </div>
 
