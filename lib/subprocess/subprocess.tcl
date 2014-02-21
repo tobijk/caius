@@ -30,6 +30,7 @@ package require Thread
 package require OOSupport
 package require OS
 package require Error
+package require OutputStream
 package require cmdline
 
 ::itcl::class Subprocess {
@@ -157,13 +158,6 @@ package require cmdline
                 }
             }
 
-            # close alternative channels
-            foreach {fd} {stdout stderr stdin} {
-                if {\$params(\$fd) ne \$fd} {
-                    close \$params(\$fd)
-                }
-            }
-
             # process timed out, kill it
             if {\$timeout_occurred($this)} {
                 if {\[::OS::process_exists \$pid]} {
@@ -173,6 +167,18 @@ package require cmdline
                     if {\[::OS::process_exists \$pid]} {
                         ::OS::kill \$pid
                     }
+                }
+
+                ::tsv::set _subprocess_$this timeout_occurred 1
+
+                puts -nonewline \$params(stderr) \\
+                    \"::TimeoutError: subprocess did not finish within \$params(timeout) ms\"
+            }
+
+            # close alternative channels
+            foreach {fd} {stdout stderr stdin} {
+                if {\$params(\$fd) ne \$fd} {
+                    close \$params(\$fd)
                 }
             }
 
@@ -201,13 +207,6 @@ package require cmdline
             } final {
                 ::close \$pipe_stderr
             }
-
-            # raise timeout after cleaning up
-            if {\$timeout_occurred($this)} {
-                raise ::TimeoutError \
-                    \"subprocess did not finish within \${params(timeout)}ms.\"
-            }
-
 
             [OutputStream::transforms_destroy_code stdout]
             [OutputStream::transforms_destroy_code stderr]
@@ -263,6 +262,14 @@ package require cmdline
     method wait {} {
         ::thread::join $_thread_id
         return [::tsv::get _subprocess_$this status]
+    }
+
+    method timeout_occurred {} {
+        if {[::tsv::exists _subprocess_$this timeout_occurred]} {
+            return 1
+        }
+
+        return 0
     }
 }
 
