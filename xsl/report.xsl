@@ -76,6 +76,11 @@ body {
     color: white;
 }
 
+.timeout {
+    background-color: #b1610c;
+    color: white;
+}
+
 .info {
     border: 1px dotted #aaaaaa;
     background-color: #ffffff;
@@ -170,7 +175,7 @@ span.action {
 
     <xsl:template match="testset">
         <xsl:variable name="testset.total_count" select="count(test)"/>
-        <xsl:variable name="testset.fail_count"  select="count(test[@verdict = 'FAIL'])"/>
+        <xsl:variable name="testset.fail_count"  select="count(test[@verdict != 'PASS'])"/>
         <xsl:variable name="testset.pass_count"  select="count(test[@verdict = 'PASS'])"/>
 
         <xsl:variable name="testset.class">
@@ -218,7 +223,7 @@ span.action {
 
     <xsl:template match="test">
         <xsl:variable name="test.class">
-            <xsl:value-of select="translate(@verdict, 'PASSFAIL', 'passfail')"/>
+            <xsl:value-of select="translate(@verdict, 'PASSFAILTIMEOUT', 'passfailtimeout')"/>
         </xsl:variable>
 
         <xsl:variable name="test.description.class">
