@@ -31,7 +31,8 @@ namespace eval OS {
     namespace export \
         terminate \
         kill \
-        process_exists
+        process_exists \
+        find_executable
 
     namespace ensemble create
 
@@ -64,6 +65,16 @@ namespace eval OS {
         }
 
         return 0
+    }
+
+    proc find_executable {executable} {
+        foreach {path} [split $::env(PATH) ':'] {
+            if {[file executable $path/$executable]} {
+                return $path/$executable
+            }
+        }
+
+        return {}
     }
 }
 
