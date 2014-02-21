@@ -36,8 +36,9 @@ namespace eval Testing {
         inherit Docstrings
 
         private variable _outformat "text"
+        private variable _verdict PASS
 
-        public method run {{argc 0} {argv {}}} {
+        public method run {{argv {}}} {
             set tests_to_run {}
             set special_action none
 
@@ -53,19 +54,39 @@ namespace eval Testing {
                 switch $o {
                     -h -
                     --help {
-                        puts "Caius Functional Testing Framework - Test Module [$this info class]  "
-                        puts "                                                                     "
-                        puts "Usage: [file tail $::argv0] \[OPTIONS] \[<test1> <test2> ...]        "
-                        puts "                                                                     "
-                        puts "Options:                                                             "
-                        puts " -h, --help          Print this help message end exit                "
-                        puts " -f, --format <fmt>  Output test results in one of these formats:    "
-                        puts "                     'xml'   - Caius native XML reporting format     "
-                        puts "                     'junit' - JUnit-compatible XML output           "
-                        puts "                     'zero'  - Don't apply special formatting        "
-                        puts "                     'text'  - Pretty-printed text (default)         "
-                        puts " -l, --list          Print list of available tests in this class.    "
-                        puts " -i, --info          Print doc strings of tests and exit.            "
+                        puts "Caius Functional Testing Framework - Test Module [$this info class]   "
+                        puts "                                                                      "
+                        puts "Usage: [file tail $::argv0] \[OPTIONS] \[<test1> <test2> ...]         "
+                        puts "                                                                      "
+                        puts "Options:                                                              "
+                        puts " -h, --help           Print this help message end exit                "
+                        puts "                                                                      "
+                        puts " -f, --format <fmt>   Output test results in one of these formats:    "
+                        puts "                                                                      "
+                        puts "                      junit:                                          "
+                        puts "                       XML output compatible with what Ant produces   "
+                        puts "                       for JUnit tests. This format is useful for     "
+                        puts "                       running Caius in Java-centric CI systems.      "
+                        puts "                                                                      "
+                        puts "                      text:                                           "
+                        puts "                       Verbose test logs in plain text format. This   "
+                        puts "                       format is most suitable during development or  "
+                        puts "                       to replay and analyze failing tests.           "
+                        puts "                                                                      "
+                        puts "                      xml:                                            "
+                        puts "                       This is Caius' native XML reporting format and "
+                        puts "                       the default when executing tests via the test- "
+                        puts "                       executor tool.                                 "
+                        puts "                                                                      "
+                        puts "                      zero:                                           "
+                        puts "                       No formatting whatsoever is applied to the     "
+                        puts "                       test output. Choose this when using a test     "
+                        puts "                       executor which does its own formatting. It is  "
+                        puts "                       generally necessary to call tests individually "
+                        puts "                       when using this mode.                          "
+                        puts "                                                                      "
+                        puts " -i, --info           Print test descriptions, don't run the tests.   "
+                        puts " -l, --list           Print list of tests in given modules.           "
 
                         return $this
                     }
@@ -138,7 +159,11 @@ namespace eval Testing {
                 }
             }
 
-            return $this
+            if {$_verdict ne {PASS}} {
+                return 1
+            }
+
+            return 0
         }
 
         public method execute {{tests_to_run {}}} {
@@ -200,6 +225,7 @@ namespace eval Testing {
                 set total_time [expr $stop_time - $start_time]
 
                 if {$verdict eq "FAIL"} {
+                    set _verdict FAIL
                     $result log_error [$e stack_trace]
                 }
 
