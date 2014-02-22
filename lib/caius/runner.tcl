@@ -39,7 +39,6 @@ namespace eval Caius {
         private variable _config
 
         method usage {} {
-            ::Caius::version_info
             puts "                                                                      "
             puts "Usage: caius run \[OPTIONS] <executable>                              "
             puts "                                                                      "
@@ -70,6 +69,10 @@ namespace eval Caius {
             set _config(out_file) result.xml
             set _config(work_dir) .
 
+            if {[llength $argv] == 0} {
+                lappend argv --help-me-please-i-have-no-clue
+            }
+
             for {set i 0} {$i < [llength $argv]} {incr i} {
                 set o [lindex $argv $i]
                 set v {}
@@ -81,8 +84,14 @@ namespace eval Caius {
 
                 switch $o {
                     -h -
+                    --help-me-please-i-have-no-clue -
                     --help {
                         $this usage
+
+                        if {$o eq {--help-me-please-i-have-no-clue}} {
+                            exit 1
+                        }
+
                         exit 0
                     }
                     -d -
@@ -90,14 +99,14 @@ namespace eval Caius {
                         if {$v eq {}} { set v [lindex $argv [incr i]] }
                         set _config(work_dir) $v
                         if {![file isdirectory $v]} {
-                            raise RuntimeError "'$v' does not exist or isn't a directory"
+                            raise ::Caius::Error "'$v' does not exist or isn't a directory"
                         }
                     }
                     -t -
                     --timeout {
                         if {$v eq {}} { set v [lindex $argv [incr i]] }
                         if {![string is integer $v]} {
-                            raise RuntimeError "invalid timeout, expected integer but got '$v'"
+                            raise ::Caius::Error "invalid timeout, expected integer but got '$v'"
                         }
                         set _config(timeout) [expr $v * 1000]
                     }
@@ -113,13 +122,13 @@ namespace eval Caius {
                     }
                     default {
                         if {[string index $o 0] eq "-"} {
-                            raise RuntimeError "unknown command line parameter '$o'"
+                            raise ::Caius::Error "unknown command line parameter '$o'"
                         } else {
                             set test_cmd $o
 
                             if {![file executable $test_cmd] && \
                                     [set test_cmd [OS::find_executable $o]] eq {}} {
-                                raise RuntimeError "could not find executable '$o'"
+                                raise ::Caius::Error "could not find executable '$o'"
                             }
 
                             set _config(test_binary) $test_cmd
@@ -195,7 +204,7 @@ namespace eval Caius {
                     set xml_dom [dom parse $xml]
                 } e {
                     ::TclError {
-                        puts "unable to construct and parse test result XML"
+                        raise ::Caius::Error "unable to construct and parse test result XML"
                     }
                 }
             }

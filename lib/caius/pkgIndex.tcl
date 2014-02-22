@@ -27,7 +27,6 @@
 #
 
 package ifneeded Caius 1.0 "
-    source \[file join \[list $dir] usage.tcl   ]
     source \[file join \[list $dir] error.tcl   ]
     source \[file join \[list $dir] report.tcl  ]
     source \[file join \[list $dir] runner.tcl  ]

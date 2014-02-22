@@ -26,4 +26,75 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+package require Itcl
+package require Error
+package require tdom
+
+namespace eval Caius {
+
+    ::itcl::class Testplan {
+
+        private variable _config
+
+        method usage {} {
+            puts "                                                                      "
+            puts "Usage: caius testplan \[OPTIONS] <testplan>                           "
+            puts "                                                                      "
+            puts "Summary:                                                              "
+            puts "                                                                      "
+            puts " Executes all tests listed in the testplan. The testplan is written in"
+            puts " an XML-based format. An example testplan can be found in the source  "
+            puts " distribution.                                                        "
+            puts "                                                                      "
+            puts "Options:                                                              "
+            puts "                                                                      "
+            puts " -d, --work-dir <dir> Change working directory before running tests.  "
+            puts "                                                                      "
+        }
+
+        method parse_command_line {{argv {}}} {
+            set _config(work_dir) .
+
+            if {[llength $argv] == 0} {
+                lappend argv --help-me-please-i-have-no-clue
+            }
+
+            for {set i 0} {$i < [llength $argv]} {incr i} {
+                set o [lindex $argv $i]
+                set v {}
+
+                if {[set pos [string first = $o]] != -1} {
+                    set v [string range $o [expr $pos + 1] end]
+                    set o [string range $o 0 [expr $pos - 1]]
+                }
+
+                switch $o {
+                    -h -
+                    --help-me-please-i-have-no-clue -
+                    --help {
+                        $this usage
+
+                        if {$o eq {--help-me-please-i-have-no-clue}} {
+                            exit 1
+                        }
+
+                        exit 0
+                    }
+                    -d -
+                    --work-dir {
+                        if {$v eq {}} { set v [lindex $argv [incr i]] }
+                        set _config(work_dir) $v
+                        if {![file isdirectory $v]} {
+                            raise ::Caius::Error "'$v' does not exist or isn't a directory"
+                        }
+                    }
+                }
+            }
+        }
+
+        method execute {argv} {
+            parse_command_line $argv
+        }
+    }
+}
 
