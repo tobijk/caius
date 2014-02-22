@@ -173,6 +173,10 @@ span.action {
         </html>
     </xsl:template>
 
+    <xsl:template match="testsuite">
+        <xsl:apply-templates/>
+    </xsl:template>
+
     <xsl:template match="testset">
         <xsl:variable name="testset.total_count" select="count(test)"/>
         <xsl:variable name="testset.fail_count"  select="count(test[@verdict != 'PASS'])"/>
