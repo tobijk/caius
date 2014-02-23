@@ -132,6 +132,7 @@ namespace eval Caius {
                             }
 
                             set _config(test_binary) $test_cmd
+                            set test_cmd [file normalize $test_cmd]
 
                             append test_cmd { } [lrange $argv [incr i] end]
                             set _config(test_cmd) $test_cmd
