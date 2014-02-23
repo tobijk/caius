@@ -46,12 +46,13 @@
 body {
     font-family: sans-serif;
     font-size: 14px;
+    background-color: #eeddcc;
 }
 
 .l1 {
     font-weight: bold;
     padding: 10px;
-    margin: 1px 0px;
+    margin: 5px 0px 1px 0px;
     overflow: auto;
 }
 
@@ -64,6 +65,16 @@ body {
     padding: 5px 10px 5px 10px;
     margin: 1px 10px;
     overflow: auto;
+}
+
+.testset-fail {
+    background-color: #880707;
+    color: white;
+}
+
+.testset-pass {
+    background-color: #116611;
+    color: white;
 }
 
 .fail {
@@ -185,10 +196,10 @@ span.action {
         <xsl:variable name="testset.class">
             <xsl:choose>
                 <xsl:when test="$testset.fail_count &gt; 0">
-                    <xsl:text>fail</xsl:text>
+                    <xsl:text>testset-fail</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:text>pass</xsl:text>
+                    <xsl:text>testset-pass</xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
