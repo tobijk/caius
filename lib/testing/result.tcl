@@ -39,12 +39,14 @@ namespace eval Testing {
         private variable _escape
         private variable _dos2unix
         private variable _tostdout
+        private variable _errors
 
         constructor {} {
             set _indent   [::itcl::code [OutputStream::Indent #auto "    "]]
             set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
             set _dos2unix [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
+            set _errors {}
         }
 
         destructor {
@@ -74,12 +76,17 @@ namespace eval Testing {
 
         method test_desc {text} {
             if {$text ne ""} {
-                puts "- Description:\n[regsub -all \
-                    -lineanchor {^} $text "    "]\n"
+                puts "\n- Description:\n[regsub -all \
+                    -lineanchor {^} $text "    "]"
             }
         }
 
         method test_end {verdict milliseconds} {
+            if {$_errors ne {}} {
+                puts "\n- Errors:"
+                puts [string trimright [join $_errors "\n\n"]]
+            }
+
             set m  [expr $milliseconds / (60000)]
             set s  [expr ($milliseconds - $m * 60000) / 1000]
             set ms [expr $milliseconds % 1000]
@@ -94,7 +101,7 @@ namespace eval Testing {
         }
 
         method log_start {} {
-            puts "- Log:"
+            puts "\n- Log:"
             OutputStream::push stdout $_indent
             OutputStream::push stdout $_dos2unix
             OutputStream::push stdout $_escape
@@ -108,15 +115,13 @@ namespace eval Testing {
             OutputStream::pop stdout
         }
 
-        method log_warning {msg} {
-            puts "\n- Warning:\n[regsub -all -lineanchor {^} $msg "    "]"
-        }
-
         method log_error {msg} {
-            puts "\n- Error:\n[regsub -all -lineanchor {^} $msg "    "]"
+            lappend _errors [regsub -all -lineanchor {^} $msg "    "]
         }
 
-        method reset {} {}
+        method reset {} {
+            set _errors {}
+        }
     }
 
     ::itcl::class ZeroFormatter {
@@ -125,11 +130,13 @@ namespace eval Testing {
         private variable _escape
         private variable _dos2unix
         private variable _tostdout
+        private variable _errors
 
         constructor {} {
             set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
             set _dos2unix [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
+            set _errors {}
         }
 
         destructor {
@@ -155,7 +162,9 @@ namespace eval Testing {
         }
 
         method test_end {verdict milliseconds} {
-            # do nothing
+            if {$_errors ne {}} {
+                puts stderr [join $_errors "\n\n"]
+            }
         }
 
         method log_start {} {
@@ -170,15 +179,13 @@ namespace eval Testing {
             OutputStream::pop stdout
         }
 
-        method log_warning {msg} {
-            puts stderr $msg
-        }
-
         method log_error {msg} {
-            puts stderr $msg
+            lappend _errors [string trim $msg]
         }
 
-        method reset {} {}
+        method reset {} {
+            set _errors {}
+        }
     }
 
     ::itcl::class XMLFormatter {
@@ -191,7 +198,6 @@ namespace eval Testing {
         private variable _tostdout
 
         # warnings, errors, log
-        private variable _warnings
         private variable _errors
         private variable _log
         private variable _desc
@@ -207,7 +213,6 @@ namespace eval Testing {
             set _dos2unix  [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
 
-            set _warnings {}
             set _errors   {}
             set _log      {}
             set _desc     {}
@@ -250,15 +255,16 @@ namespace eval Testing {
             set total_time [format "%02d:%02d.%03d" $m $s $ms]
 
             puts "  <test name=\"$_test_name\" time=\"$total_time\" verdict=\"$verdict\">"
-            if {$_desc ne ""} {
+            if {$_desc ne {}} {
                 puts "    <description>$_desc</description>"
             }
-            puts "    <log>$_log</log>"
-            foreach {warning} $_warnings {
-                puts "    <warning>$warning</warning>"
+            if {$_log ne {}} {
+                puts "    <log>$_log</log>"
             }
-            foreach {err} $_errors {
-                puts "    <error>$err</error>"
+            if {$_errors ne {}} {
+                puts -nonewline "    <error>"
+                puts -nonewline [join $_errors "\n\n"]
+                puts "</error>"
             }
             puts "  </test>"
         }
@@ -280,20 +286,14 @@ namespace eval Testing {
             set _log [$_capture get]
         }
 
-        method log_warning {msg} {
-            lappend _warnings [string map \
-                {& &amp; < &lt; > &gt; \" &quot;} $msg]
-        }
-
         method log_error {msg} {
             lappend _errors [string map \
-                {& &amp; < &lt; > &gt; \" &quot;} $msg]
+                {& &amp; < &lt; > &gt; \" &quot;} [string trim $msg]]
         }
 
         method reset {} {
             $_capture clear
 
-            set _warnings {}
             set _errors   {}
             set _log      {}
             set _desc     {}
@@ -310,7 +310,6 @@ namespace eval Testing {
         private variable _tostdout
 
         # warnings, errors, log
-        private variable _warnings
         private variable _errors
         private variable _log
 
@@ -332,7 +331,6 @@ namespace eval Testing {
             set _dos2unix  [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
             set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
 
-            set _warnings {}
             set _errors   {}
             set _log      {}
 
@@ -372,7 +370,6 @@ namespace eval Testing {
                     test_verdict \
                     test_time \
                     test_log \
-                    test_warnings \
                     test_errors
 
                 set test_class [namespace qualifiers $test_name]
@@ -421,12 +418,10 @@ namespace eval Testing {
         method test_end {verdict milliseconds} {
             set seconds  [expr $milliseconds / 1000.0]
 
-            set _errors   [join $_errors   "\n"]
-            set _warnings [join $_warnings "\n"]
+            set _errors   [join $_errors "\n\n"]
 
-            lappend _result_sets [list \
-                $_test_name $verdict $seconds $_log $_warnings $_errors \
-            ]
+            lappend _result_sets \
+                [list $_test_name $verdict $seconds $_log $_errors]
 
             if {$verdict eq {FAIL}} {
                 incr _num_failed_tests
@@ -452,11 +447,6 @@ namespace eval Testing {
             set _log [$_capture get]
         }
 
-        method log_warning {msg} {
-            lappend _warnings [string map \
-                {& &amp; < &lt; > &gt; \" &quot;} $msg]
-        }
-
         method log_error {msg} {
             lappend _errors [string map \
                 {& &amp; < &lt; > &gt; \" &quot;} $msg]
@@ -465,7 +455,6 @@ namespace eval Testing {
         method reset {} {
             $_capture clear
 
-            set _warnings {}
             set _errors   {}
             set _log      {}
             set _desc     {}

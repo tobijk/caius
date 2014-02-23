@@ -35,7 +35,7 @@ namespace eval Testing {
     ::itcl::class TestObject {
         inherit Docstrings
 
-        private variable _outformat "text"
+        private variable _outformat "xml"
         private variable _verdict PASS
 
         public method run {{argv {}}} {
@@ -88,7 +88,7 @@ namespace eval Testing {
                         puts " -i, --info           Print test descriptions, don't run the tests.   "
                         puts " -l, --list           Print list of tests in given modules.           "
 
-                        return $this
+                        return 0
                     }
                     -f -
                     --format {
@@ -200,7 +200,13 @@ namespace eval Testing {
 
                 $result log_start
                 if {$count == 1} {
-                    $this ::Testing::TestObject::setup setup_before
+                    except {
+                        $this ::Testing::TestObject::setup setup_before
+                    } e {
+                        ::Exception {
+                            $result log_error [$e stack_trace]
+                        }
+                    }
                 }
 
                 set start_time [clock milliseconds]
@@ -216,7 +222,7 @@ namespace eval Testing {
                         $this ::Testing::TestObject::teardown
                     } et {
                         ::Exception {
-                            $result log_warning [$et stack_trace]
+                            $result log_error [$et stack_trace]
                         }
                     } final {
                         set stop_time [clock milliseconds]
@@ -230,8 +236,15 @@ namespace eval Testing {
                 }
 
                 if {$count == $num_tests} {
-                    $this ::Testing::TestObject::teardown teardown_after
+                    except {
+                        $this ::Testing::TestObject::teardown teardown_after
+                    } e {
+                        ::Exception {
+                            $result log_error [$e stack_trace]
+                        }
+                    }
                 }
+
                 $result log_end
 
                 $result test_end $verdict $total_time
