@@ -102,7 +102,7 @@ namespace eval Caius {
 
         method find_stylesheet {} {
             if {[file type $::argv0] eq {link}} {
-                set my_argv0 [file readlinke $::argv0]
+                set my_argv0 [file readlink $::argv0]
             } else {
                 set my_argv0 $::argv0
             }
@@ -125,6 +125,7 @@ namespace eval Caius {
             # try to load XSL stylesheet
             set style_file_name [$this find_stylesheet]
             set fp [open $style_file_name r]
+            chan configure $fp -encoding utf-8
             set xsl_doc [dom parse -channel $fp]
             close $fp
             $xsl_doc toXSLTcmd stylesheet
@@ -143,6 +144,7 @@ namespace eval Caius {
 
                     except {
                         set fp [open "$dir/result.xml"]
+                        chan configure $fp -encoding utf-8
                         set xml_testset [dom parse -channel $fp]
                         set xml_testset_root [$xml_testset documentElement]
                         $xml_testset removeChild $xml_testset_root
@@ -163,6 +165,7 @@ namespace eval Caius {
 
             $stylesheet transform $xml_testsuite result_doc
             set fp [open result.html w+]
+            chan configure $fp -encoding utf-8
             $result_doc asXML -channel $fp
             close $fp
 
