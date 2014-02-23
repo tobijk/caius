@@ -153,6 +153,9 @@ namespace eval Caius {
             set out [open $out_name r]
             set err [open $err_name r]
 
+            chan configure $out -encoding utf-8
+            chan configure $err -encoding utf-8
+
             set xml_dom {}
 
             if {[file size $out_name] <= $d10mb} {
@@ -214,7 +217,7 @@ namespace eval Caius {
             chan configure $fp -encoding "utf-8"
 
             puts $fp "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-            puts -nonewline $fp [$xml_dom asXML]
+            puts -nonewline $fp [$xml_dom asXML -indent none]
 
             close $fp
             $xml_dom delete
