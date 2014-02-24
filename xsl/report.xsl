@@ -114,8 +114,13 @@ ul.list {
 }
 
 ul.list li {
-    display: inline;
-    margin: 0px 10px;
+    display: inline-block;
+    margin: 0px 5px 0px 10px;
+}
+
+li.count {
+    width: 5em;
+    text-align: right;
 }
 
 span.action {
@@ -221,13 +226,13 @@ span.action {
                 onClick="toggle_expand({$testset.tests})">
             <b><u><xsl:value-of select="@name"/></u></b>
             <ul class="list">
-                <li>
+                <li class="count">
                     <xsl:value-of select="$testset.pass_count"/>  pass
                 </li>
-                <li>
+                <li class="count">
                     <xsl:value-of select="$testset.fail_count"/>  fail
                 </li>
-                <li>
+                <li class="count">
                     <xsl:value-of select="$testset.total_count"/> total
                 </li>
             </ul>
