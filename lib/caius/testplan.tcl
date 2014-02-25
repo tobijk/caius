@@ -136,14 +136,16 @@ namespace eval Caius {
                 if {[$child nodeName] ne {run}} { continue }
 
                 set cmd [string trim [$child text]]
+                set timeout [$child getAttribute timeout 0]
 
                 set subdir [format "%03d_%s" [incr count] \
-                    [regsub {\.tcl$} [file tail [lindex [split $cmd] 0]] {}]\
+                    [regsub {[-.]} [file tail [lindex [split $cmd] 0]] {_}]\
                 ]
                 file mkdir $cwd/$subdir
 
                 except {
-                    $runner execute "-d $cwd/$subdir $cmd"
+                    puts "Running '$cmd'"
+                    $runner execute "-d $cwd/$subdir -t $timeout $cmd"
                 } e {
                     ::Exception {
                         puts stderr "Warning: [$e msg]"
