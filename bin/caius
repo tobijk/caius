@@ -80,7 +80,7 @@ except {
     exit [$executor execute [lrange $::argv 1 end]]
 } e {
     ::Exception {
-        puts stderr "caius $command: [$e stack_trace]"
+        puts stderr "caius $command: [$e msg]"
         exit 1
     }
 }

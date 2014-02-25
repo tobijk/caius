@@ -48,7 +48,7 @@ namespace eval Caius {
             puts "                                                                      "
             puts "Options:                                                              "
             puts "                                                                      "
-            puts " -d, --work-dir <dir> Change working directory before running tests.  "
+            puts " -d, --work-dir <dir>  Change working directory before running tests. "
             puts "                                                                      "
         }
 
@@ -88,12 +88,72 @@ namespace eval Caius {
                             raise ::Caius::Error "'$v' does not exist or isn't a directory"
                         }
                     }
+                    default {
+                        if {$i < [expr [llength $argv] - 1]} {
+                            $this usage
+                            exit 1
+                        }
+
+                        if {![file isfile $o]} {
+                            raise ::Caius::Error "testplan file '$o' not found"
+                        }
+
+                        set _config(testplan) [file normalize $o]
+                    }
                 }
+            }
+
+            if {![info exists _config(testplan)]} {
+                $this usage
+                exit 1
             }
         }
 
         method execute {argv} {
             parse_command_line $argv
+
+            set fp {}
+            except {
+                set fp [open $_config(testplan) r]
+                set testplan [dom parse -channel $fp]
+            } e {
+                ::Exception {
+                    raise ::Caius::Error "failed to read testplan: '[$e msg]'"
+                }
+            } final {
+                if {$fp ne {}} { close $fp }
+            }
+
+            set runner [::Caius::Runner #auto]
+            set root [$testplan documentElement]
+
+            # change work dir
+            cd $_config(work_dir)
+
+            set count 0
+            set cwd [pwd]
+            foreach {child} [$root childNodes] {
+                if {[$child nodeName] ne {run}} { continue }
+
+                set cmd [string trim [$child text]]
+
+                set subdir [format "%03d_%s" [incr count] \
+                    [regsub {\.tcl$} [file tail [lindex [split $cmd] 0]] {}]\
+                ]
+                file mkdir $cwd/$subdir
+
+                except {
+                    $runner execute "-d $cwd/$subdir $cmd"
+                } e {
+                    ::Exception {
+                        puts stderr "Warning: [$e msg]"
+                    }
+                }
+            }
+
+            ::itcl::delete object $runner
+
+            return 0
         }
     }
 }
