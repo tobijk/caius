@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ln -s /usr/share/tcltk/tcl8.6/bin/caius /usr/bin/caius
+
