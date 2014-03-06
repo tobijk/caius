@@ -44,7 +44,7 @@ proc usage {} {
     puts "                                                                     "
     puts "  report                                                             "
     puts "  run                                                                "
-    puts "  testplan                                                           "
+    puts "  runplan                                                            "
     puts "                                                                     "
     puts "Type 'caius <command> --help' for command-specific usage information."
     puts "                                                                     "
@@ -61,7 +61,7 @@ switch $command {
     run {
         set executor [::Caius::Runner #auto]
     }
-    testplan {
+    runplan {
         set executor [::Caius::Testplan #auto]
     }
     --help -

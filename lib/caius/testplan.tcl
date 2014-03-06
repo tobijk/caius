@@ -38,7 +38,7 @@ namespace eval Caius {
 
         method usage {} {
             puts "                                                                      "
-            puts "Usage: caius testplan \[OPTIONS] <testplan>                           "
+            puts "Usage: caius runplan \[OPTIONS] <testplan>                            "
             puts "                                                                      "
             puts "Summary:                                                              "
             puts "                                                                      "
