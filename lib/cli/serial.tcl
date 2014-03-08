@@ -31,6 +31,7 @@
 
 package require Itcl
 package require Error
+package require cmdline
 
 namespace eval Cli {
 
@@ -43,16 +44,27 @@ namespace eval Cli {
         ##
         # Connects an Expect session object to a serial line.
         #
-        # @param port       the serial port to open
-        # @param baud       the baud rate (default 56000)
-        # @param parity     parity (default n)
-        # @param bits       data bits (default 8)
-        # @param stop_bits  stop bits (default 1)
-        constructor {port {baud 56000} {parity n} {data_bits 8} {stop_bits 1}} {
+        # @param port              the serial port to open
+        # @param -baud rate        the baud rate (default 56000)
+        # @param -parity <parity>  parity (y or n, default n)
+        # @param -bits <bits>      data bits (default 8)
+        # @param -stop_bits <bits> stop bits (default 1)
+        constructor {port args} {
+            set options {
+                {baud.arg  56000 "set the channel to which to redirect stdout"}
+                {parity.arg    n "set the channel to which to redirect stderr"}
+                {data_bits.arg 8 "set the channel to which to redirect stdin" }
+                {stop_bits.arg 1 "timeout in seconds"                         }
+            }
+
+            array set params [::cmdline::getoptions args $options]
+
             except {
+                set tty_mode [join [list $params(baud) $params(parity) \
+                    $params(data_bits) $params(stop_bits)] ","]
                 set fp [open $port r+]
                 fconfigure $fp -buffering none -translation binary \
-                    -mode $baud,$parity,$data_bits,$stop_bits -eofchar {}
+                    -mode $tty_mode -eofchar {}
                 spawn -open $fp
                 set _spawn_id $spawn_id
             } e {
