@@ -30,7 +30,7 @@ set CAPABILITIES_JSON \
 	"webStorageEnabled": true,
 	"rotatable": true,
 	"acceptSslCerts": true,
-	"nativeEvents": true,
+	"nativeEvents": false,
 	"proxy":
 	{
 		"proxyType": "direct"
@@ -53,6 +53,8 @@ test ut_webdriver_capabilities {
         if {[$cap to_json] == $CAPABILITIES_JSON} {
             return 0
         }
+
+        puts [$cap to_json]
 
         error "error in JSON"
     }
