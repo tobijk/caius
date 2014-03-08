@@ -28,6 +28,7 @@
 
 package require Itcl
 package require OOSupport
+package require cmdline
 
 namespace eval WebDriver {
 
@@ -52,8 +53,37 @@ namespace eval WebDriver {
             { ::WebDriver::Proxy  proxy          new         rw }
         }
 
-        constructor {} {
+        constructor {args} {
             OOSupport::init_attributes
+
+            set options {
+                {browser_name.arg               htmlunit "the browser to use (htmlunit|chrome|firefox|ie|...)"}
+                {javascript_enabled.arg         true     "enable JavaScript (true|false)"}
+                {takes_screenshot.arg           true     "enable taking screenshots (true|false)"}
+                {handles_alerts.arg             true     "enable alert handling (true|false)"}
+                {database_enabled.arg           true     "enable using browser database storage (true|false)"}
+                {location_context_enabled.arg   true     "allow accessing the browser's location context (true|false)"}
+                {application_cache_enabled.arg  true     "allow session to interact with application cache (true|false)"}
+                {browser_connection_enabled.arg true     "allow querying and modifying browser connectivity (true|false)"}
+                {css_selectors_enabled.arg      true     "enable use of CSS selectors (true|false)"}
+                {web_storage_enabled.arg        true     "enable interaction with storage objects (true|false"}
+                {rotatable.arg                  true     "enable rotation on mobile platforms (true|false)"}
+                {accept_ssl_certs.arg           true     "accept all SSL certificates by default (true|false)"}
+                {native_events.arg              false    "whether session can generate native input events (true|false)"}
+                {proxy.arg                      new      "a WebDriver::Proxy object"}
+            }
+
+            array set params [::cmdline::getoptions args $options]
+
+            foreach {key val} [array get params] {
+                if {$key ne {proxy}} {
+                    set _${key} $val
+                } else {
+                    if {$val ne {new}} {
+                        set _${key} $val
+                    }
+                }
+            }
         }
 
         destructor {}
