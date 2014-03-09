@@ -47,8 +47,17 @@ namespace eval Testing {
                 return ""
             }
 
-            regexp {\"((?:[^\"]|\\\")*)\"} $body match docstr
-            set docstr [string map {\r\n \n \r \n \\\" \"} $docstr]
+            regexp {docstr\s+(?:\{((?:[^\}]|\\\})*)\}|\"((?:[^\"]|\\\")*)\")} \
+                $body match group1 group2
+
+            if {$group1 ne {}} {
+                set docstr $group1
+            } else {
+                set docstr $group2
+            }
+
+            set docstr [string map {\r\n \n \r \n \\\" \"} \
+                [subst -novariables -nocommands $docstr]]
 
             set lbreak [string first \n $docstr]
             if {$lbreak != -1} {
