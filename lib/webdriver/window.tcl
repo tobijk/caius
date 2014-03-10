@@ -29,6 +29,7 @@
 package require Itcl
 package require OOSupport
 package require Error
+package require cmdline
 
 namespace eval WebDriver {
 
@@ -480,9 +481,25 @@ namespace eval WebDriver {
             return $result
         }
 
-        method set_cookie {name value {domain ""} {path "/"}
-                {secure false} {expiry null} } \
-        {
+        method set_cookie {args} {
+            set options {
+                {path.arg      "/"  "the cookie path"                                }
+                {domain.arg    ""   "the cookie domain"                              }
+                {secure.arg    null "whether the cookie is a secure cookie"          }
+                {http_only.arg null "whether the cookie is an http only cookie"      }
+                {expiry.arg    null "expiry in seconds since midnight 1 Jan 1970 UTC"}
+            }
+
+            array set params [::cmdline::getoptions args $options]
+
+            if {[llength $args] != 2} {
+                error "method set_cookie requires two non-keyword\
+                    arguments for cookie name and value"
+            }
+
+            set name  [lindex $args 0]
+            set value [lindex $args 1]
+
             $this focus
 
             if {[$_session logging_enabled]} {
@@ -490,12 +507,12 @@ namespace eval WebDriver {
                     "set cookie '$name'"
             }
 
-            if {$domain eq ""} {
+            if {$params(domain) eq ""} {
                 array set url [::uri::split [$this url]]
-                set domain $url(host)
+                set params(domain) $url(host)
             }
 
-            set c_name "${domain}+${name}"
+            set c_name "${params(domain)}+${name}"
             array set session_cookies $_cookies
 
             if {[info exists session_cookies($c_name)]} {
@@ -506,18 +523,21 @@ namespace eval WebDriver {
                 set session_cookies($c_name) $cookie
             }
 
-            $cookie set_domain $domain
-            $cookie set_path   $path
-            $cookie set_secure $secure
-            $cookie set_expiry $expiry
+            $cookie set_domain    $params(domain)
+            $cookie set_path      $params(path)
+            $cookie set_secure    $params(secure)
+            $cookie set_http_only $params(http_only)
+            $cookie set_expiry    $params(expiry)
+
+            set json "{\"sessionId\": \"[$_session session_id]\", \"cookie\": [$cookie to_json]}"
 
             except {
                 set response [::WebDriver::Protocol::dispatch \
-                    -query [$cookie to_json] [$_session session_url]/cookie]
+                    -query $json [$_session session_url]/cookie]
                 ::itcl::delete object $response
             } e {
                 ::Exception {
-                    ::itcl::delete $cookie
+                    ::itcl::delete object $cookie
                     reraise $e
                 }
             }

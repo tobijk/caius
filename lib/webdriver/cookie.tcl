@@ -34,12 +34,13 @@ namespace eval WebDriver {
     ::itcl::class Cookie {
 
         common attributes {
-            { string name   ""   "rw" }
-            { string value  ""   "rw" }
-            { string path   ""   "rw" }
-            { string domain ""   "rw" }
-            { bool   secure null "rw" }
-            { bool   expiry null "rw" }
+            { string name      ""   "rw" }
+            { string value     ""   "rw" }
+            { string path      "/"  "rw" }
+            { string domain    ""   "rw" }
+            { bool   secure    null "rw" }
+            { bool   http_only null "rw" }
+            { number expiry    null "rw" }
         }
 
         constructor {{name ""} {value ""}} {
