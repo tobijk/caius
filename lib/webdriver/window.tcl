@@ -485,8 +485,8 @@ namespace eval WebDriver {
             set options {
                 {path.arg      "/"  "the cookie path"                                }
                 {domain.arg    ""   "the cookie domain"                              }
-                {secure.arg    null "whether the cookie is a secure cookie"          }
-                {http_only.arg null "whether the cookie is an http only cookie"      }
+                {secure             "whether the cookie is a secure cookie"          }
+                {http_only          "whether the cookie is an http only cookie"      }
                 {expiry.arg    null "expiry in seconds since midnight 1 Jan 1970 UTC"}
             }
 
