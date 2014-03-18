@@ -40,17 +40,17 @@ catch {
     log_file -a -leaveopen stdout
 }
 
-namespace eval Cli {
+namespace eval CliDriver {
 
     ##
     # \brief An object-oriented wrapper around Expect (abstract base class).
     #
     # Don't use this class directly, but rather one of
     #
-    # * Cli::Stty
-    # * Cli::Spawn
-    # * Cli::Ssh
-    # * Cli::Telnet
+    # * CliDriver::Stty
+    # * CliDriver::Spawn
+    # * CliDriver::Ssh
+    # * CliDriver::Telnet
     #
     ::itcl::class Core {
 

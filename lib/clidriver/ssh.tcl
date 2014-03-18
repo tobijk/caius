@@ -26,12 +26,40 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-package ifneeded Cli 1.0 "
-    source \[file join [list $dir] core.tcl\]
-    source \[file join [list $dir] telnet.tcl\]
-    source \[file join [list $dir] ssh.tcl\]
-    source \[file join [list $dir] serial.tcl\]
-    source \[file join [list $dir] spawn.tcl\]
-    source \[file join [list $dir] version.tcl\]
-"
+## \file
+# \brief A wrapper for controlling SSH with Expect.
+
+package require Itcl
+package require Error
+
+namespace eval CliDriver {
+
+    ##
+    # \brief A convenience class for controlling SSH with Expect.
+    #
+    ::itcl::class Ssh {
+        inherit CliDriver::Core
+
+        ##
+        # \brief Initiates an SSH session controlled by Expect.
+        # 
+        # @param args  the parameters to the SSH command
+        # 
+        # The parameters are passed through unmodified to whatever SSH client
+        # is installed on your platform.
+        #
+        constructor {args} {
+            except {
+                spawn ssh {*}$args
+                set _spawn_id $spawn_id
+            } e {
+                ::TclError {
+                    reraise $e
+                }
+            }
+        }
+
+        destructor {}
+    }
+}
 

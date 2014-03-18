@@ -32,13 +32,13 @@
 package require Itcl
 package require Error
 
-namespace eval Cli {
+namespace eval CliDriver {
 
     ##
     # \brief A convenience class for controlling Telnet with Expect.
     #
     ::itcl::class Telnet {
-        inherit Cli::Core
+        inherit CliDriver::Core
 
         ##
         # \brief Initiates a Telnet session controlled by Expect.

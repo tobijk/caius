@@ -33,13 +33,13 @@ package require Itcl
 package require Error
 package require cmdline
 
-namespace eval Cli {
+namespace eval CliDriver {
 
     ##
     # \brief A convenience class for controlling a serial line with Expect.
     #
     ::itcl::class Stty {
-        inherit Cli::Core
+        inherit CliDriver::Core
 
         ##
         # Connects an Expect session object to a serial line.

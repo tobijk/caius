@@ -26,5 +26,12 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-package provide Cli 1.0
+package ifneeded CliDriver 1.0 "
+    source \[file join [list $dir] core.tcl\]
+    source \[file join [list $dir] telnet.tcl\]
+    source \[file join [list $dir] ssh.tcl\]
+    source \[file join [list $dir] serial.tcl\]
+    source \[file join [list $dir] spawn.tcl\]
+    source \[file join [list $dir] version.tcl\]
+"
 

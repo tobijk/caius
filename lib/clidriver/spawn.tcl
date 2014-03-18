@@ -26,31 +26,31 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-## \file
-# \brief A wrapper for controlling SSH with Expect.
+## \file spawn.tcl
+# \brief A wrapper for controlling subprocesses with Expect.
 
 package require Itcl
 package require Error
 
-namespace eval Cli {
+namespace eval CliDriver {
 
     ##
-    # \brief A convenience class for controlling SSH with Expect.
+    # \brief A convenience class for controlling subprocesses with Expect.
     #
-    ::itcl::class Ssh {
-        inherit Cli::Core
+    ::itcl::class Spawn {
+        inherit CliDriver::Core
 
         ##
-        # \brief Initiates an SSH session controlled by Expect.
-        # 
-        # @param args  the parameters to the SSH command
-        # 
-        # The parameters are passed through unmodified to whatever SSH client
-        # is installed on your platform.
+        # Connects an Expect session object to a subprocess.
+        #
+        # @param args  the command to execute
+        #
+        # The parameter list passed to the constructor is interpreted as the
+        # command line to be executed to launch the subprocess.
         #
         constructor {args} {
             except {
-                spawn ssh {*}$args
+                spawn {*}$args
                 set _spawn_id $spawn_id
             } e {
                 ::TclError {
