@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-ln -s /usr/share/tcltk/tcl8.6/bin/caius /usr/bin/caius
+ln -s -f /usr/share/tcltk/tcl8.6/caius/bin/caius /usr/bin/caius
 

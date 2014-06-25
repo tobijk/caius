@@ -1,0 +1,25 @@
+#!/usr/bin/tclsh
+
+package require tcltest
+namespace import tcltest::*
+
+package require Testing
+
+#
+# PREAMBLE
+#
+
+#
+# TEST CASES
+#
+
+test ut_testing_docstr {
+    Extract a docstring from a method body.
+} {
+    -result 0
+    -setup {
+    }
+    -body {
+    }
+}
+
