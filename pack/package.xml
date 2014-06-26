@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE control [
+  <!ENTITY caius SYSTEM "caius.xml">
+  <!ENTITY rules SYSTEM "rules.xml">
+  <!ENTITY changelog SYSTEM "changelog.xml">
+]>
+<control xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <source name="caius" architecture-independent="false">
+        <description>
+            <summary>a functional testing framework in object-oriented Tcl</summary>
+            <p>
+            Caius is a functional testing framework for the 21st century.
+            It was born out of the need for a contemporary replacement for
+            DejaGnu.
+            </p>
+            <p>
+            Caius is written in object-oriented Tcl and provides easy-to-use
+            programming interfaces to Selenium WebDriver and Expect. Through
+            its extensible reporting system, Caius integrates well with
+            modern CI systems and test management tools.
+            </p>
+        </description>
+
+        <sources>
+        </sources>
+
+        <requires>
+            <package name="debhelper" version="&gt;= 8.0.0"/>
+        </requires>
+
+        <!-- build rules -->
+        &rules;
+    </source>
+
+    <!-- package rules -->
+    &caius;
+
+    <!-- changelog -->
+    &changelog;
+
+</control> 

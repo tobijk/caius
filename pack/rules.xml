@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rules>
+
+    <prepare>
+    <![CDATA[
+    ]]>
+    </prepare>
+
+    <build>
+    <![CDATA[
+    ]]>
+    </build>
+
+    <install>
+    <![CDATA[
+
+CAIUS_INSTALL_DIR="$XPACK_INSTALL_DIR/usr/share/tcltk/tcl8.6/caius"
+
+mkdir -p "$CAIUS_INSTALL_DIR/bin"
+
+cp -a $XPACK_BASE_DIR/lib/*     "$CAIUS_INSTALL_DIR/"
+cp -a "$XPACK_BASE_DIR/xsl"       "$CAIUS_INSTALL_DIR/"
+cp -a "$XPACK_BASE_DIR/bin/caius" "$CAIUS_INSTALL_DIR/bin/"
+
+    ]]>
+    </install>
+
+    <clean>
+    <![CDATA[
+
+rm -fr "$XPACK_SOURCE_DIR" "$XPACK_INSTALL_DIR"
+
+    ]]>
+    </clean>
+
+</rules>
