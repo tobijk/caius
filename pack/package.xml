@@ -20,6 +20,11 @@
             its extensible reporting system, Caius integrates well with
             modern CI systems and test management tools.
             </p>
+            <p>
+            Among other things, Caius is ideal for testing headless devices that
+            are configurable from the command line or via a Web-based management
+            interface.
+            </p>
         </description>
 
         <sources>
