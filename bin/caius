@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh8.6
+#!/usr/bin/env tclsh
 #
 # Caius Functional Testing Framework
 #
