@@ -4,19 +4,24 @@
 # Run command inside tcl_shell and return subprocess' stdout.
 #
 proc tcl_shell_eval {tcl_shell command} {
-    return [exec echo $command | $tcl_shell]
+    return [string trim [exec echo $command | $tcl_shell]]
 }
 
 #
 # Check if tcl_shell has the required version and necessary extensions.
 #
 proc test_tcl_shell {tcl_shell} {
+    puts [format "* %-50s" "Checking Tcl shell $tcl_shell..."]
+
+    puts -nonewline [format "  - %-50s " "Check Tcl version >= 8.6:"]
     set result [tcl_shell_eval $tcl_shell {puts $::tcl_version}]
 
-    if {$result ne "8.6"} {
+    lassign [split $result .] major minor
+    if {$major < 8 || ($major == 8 && $minor < 6)} {
+        puts "fail"
         return 0
     }
-    puts [format "* %-50s" "Checking Tcl shell $tcl_shell..."]
+    puts "ok"
 
     puts -nonewline [format "  - %-50s " "Check for thread support:"]
     set result [tcl_shell_eval $tcl_shell \
@@ -127,11 +132,25 @@ proc install_caius {} {
 
     puts -nonewline [format "  - %-50s " "Copying files:"]
     if {[catch {
-        file mkdir $install_dir
+        file mkdir $install_dir/bin
 
-        foreach {name} [glob lib/* xsl bin] {
+        foreach {name} [glob lib/* xsl] {
             file copy $name $install_dir
         }
+
+        set src_fp [open bin/caius r]
+        set caius_script [read $src_fp]
+        close $src_fp
+
+        # set the right interpreter
+        set caius_script [regsub -line {^#!.*$} $caius_script "#!$tcl_shell"]
+
+        set dst_fp [open $install_dir/bin/caius w+]
+        puts -nonewline $dst_fp $caius_script
+        close $dst_fp
+
+        # make caius executable
+        file attributes $install_dir/bin/caius -permissions 0755
 
         set caius_symlink /usr/local/bin/caius
 
