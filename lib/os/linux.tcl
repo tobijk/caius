@@ -69,7 +69,8 @@ namespace eval OS {
 
     proc find_executable {executable} {
         foreach {path} [split $::env(PATH) ':'] {
-            if {[file executable $path/$executable]} {
+            if {[file isfile $path/$executable] && \
+                    [file executable $path/$executable]} {
                 return $path/$executable
             }
         }

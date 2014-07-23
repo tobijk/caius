@@ -69,10 +69,6 @@ namespace eval Caius {
             set _config(out_file) result.xml
             set _config(work_dir) .
 
-            if {[llength $argv] == 0} {
-                lappend argv --help-me-please-i-have-no-clue
-            }
-
             for {set i 0} {$i < [llength $argv]} {incr i} {
                 set o [lindex $argv $i]
                 set v {}
@@ -84,14 +80,8 @@ namespace eval Caius {
 
                 switch $o {
                     -h -
-                    --help-me-please-i-have-no-clue -
                     --help {
                         $this usage
-
-                        if {$o eq {--help-me-please-i-have-no-clue}} {
-                            exit 1
-                        }
-
                         exit 0
                     }
                     -d -
@@ -126,7 +116,7 @@ namespace eval Caius {
                         } else {
                             set test_cmd $o
 
-                            if {![file executable $test_cmd] && \
+                            if {!([file isfile $test_cmd] && [file executable $test_cmd]) && \
                                     [set test_cmd [OS::find_executable $o]] eq {}} {
                                 raise ::Caius::Error "could not find executable '$o'"
                             }
@@ -142,7 +132,12 @@ namespace eval Caius {
                 }
             }
 
-            if {![info exist _config(test_name)]} {
+            if {[llength $argv] == 0 || ![info exists _config(test_binary)]} {
+                $this usage
+                exit 1
+            }
+
+            if {![info exists _config(test_name)]} {
                 set _config(test_name) [file tail $_config(test_binary)]
             }
         }
