@@ -91,7 +91,7 @@ namespace eval Caius {
 
                         if {![file isdirectory $o]} {
                             raise ::Caius::Error \
-                                "directory '$o' is not a directory or does not exist."
+                                "'$o' is not a directory or does not exist."
                         }
 
                         set _config(work_dir) $o
