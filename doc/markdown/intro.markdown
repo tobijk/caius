@@ -24,7 +24,13 @@ Caius requires Tcl 8.6 or later with thread support and a recent version of
 tcllib. In addition, the tdom package is required for results parsing and
 report generation.
 
-## Installing the Binary Packages
-
 ## Installation from Source
+
+Caius comes with a simple installer script that will copy modules and scripts
+into your Tcl package path. After unpacking the sources, execute the installer
+script via
+
+    sudo ./install.tcl
+
+After that you should be able to call `caius` from the command line.
 
