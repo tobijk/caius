@@ -43,6 +43,16 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
+    puts -nonewline [format "  - %-50s " "Check for Expect:"]
+    set result [tcl_shell_eval $tcl_shell \
+        {puts [catch {package require Expect}]}]
+
+    if {$result ne "0"} {
+        puts "fail"
+        return 0
+    }
+    puts "ok"
+
     puts -nonewline [format "  - %-50s " "Check for tdom extension:"]
     set result [tcl_shell_eval $tcl_shell \
         {puts [catch {package require tdom}]}]
