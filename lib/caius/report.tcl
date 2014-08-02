@@ -147,6 +147,7 @@ namespace eval Caius {
                         chan configure $fp -encoding utf-8
                         set xml_testset [dom parse -channel $fp]
                         set xml_testset_root [$xml_testset documentElement]
+                        $xml_testset_root setAttribute artifacts_path $dir
                         $xml_testset removeChild $xml_testset_root
                         $xml_testsuite_root appendChild $xml_testset_root
                         $xml_testset delete

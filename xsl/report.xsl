@@ -46,13 +46,13 @@
 body {
     font-family: sans-serif;
     font-size: 14px;
-    background-color: #eeddcc;
+    background-color: #ddddcc;
 }
 
 .l1 {
     font-weight: bold;
     padding: 10px;
-    margin: 5px 0px 1px 0px;
+    margin: 2px 0px 1px 0px;
     overflow: auto;
 }
 
@@ -290,6 +290,16 @@ span.action {
                         </xsl:when>
                         <xsl:otherwise>
                             <span class="action">error</span>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </li>
+                <li>
+                    <xsl:choose>
+                        <xsl:when test="ancestor::testset/@artifacts_path">
+                            <a href="{ancestor::testset/@artifacts_path}">artifacts</a>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <span class="action">artifacts</span>
                         </xsl:otherwise>
                     </xsl:choose>
                 </li>
