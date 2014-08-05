@@ -20,9 +20,9 @@ Caius is developed and tested on Debian/GNU Linux but should run on other
 Linux distributions without problems. Using Caius on BSD or other Unix-like
 systems may require minor modifications.
 
-Caius requires Tcl 8.6 or later with thread support and a recent version of
-tcllib. In addition, the tdom package is required for results parsing and
-report generation.
+Caius requires Tcl 8.6 or later with thread support, a recent version of
+tcllib and Expect. In addition, the tdom package is required for results
+parsing and report generation.
 
 ## Installation from Source
 

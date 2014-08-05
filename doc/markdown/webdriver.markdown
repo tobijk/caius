@@ -47,7 +47,7 @@ is optional and denotes the *required* capabilities. If the server cannot
 satisfy the requested required capabilities, an error will be thrown.
 
 The table below shows the capabilities that can be specified and their default
-values upon creation of a `Capabilities` object. These default values do not
+values upon creation of a `Capabilities` object. These default values *do not*
 represent the defaults offered by any given browser.
 
 <table>
@@ -210,7 +210,7 @@ $window forward
 ## Retrieving and Setting Cookies
 
 Cookies are represented by `WebDriver::Cookie` objects. You can add a `Cookie`
-for the currently active domain using the `Window` object's `set_cookie`
+for the currently active domain using the window object's `set_cookie`
 method:
 
 ~~~~{.tcl}
@@ -252,23 +252,174 @@ You may set the following attributes on the `Cookie` object:
     </tbody>
 </table>
 
+You can obtain a list of cookies set for the currently active domain, by
+calling the `cookies` method on the window object:
+
+~~~~{.tcl}
+set cookie_list [$window cookies]
+
+foreach {c_obj} $cookie_list {
+    puts "[$c_obj name]: [$c_obj value]"
+}
+~~~~
+
+The result is a list of `WebDriver::Cookie` objects, whose name, value and
+additional attributes you may query. The cookie object references are
+maintained internally by the window, you *must not* delete them.
+
 ## Working with Page Elements
+
+In order to test anything about your Web application, you need to be able to
+access the elements on the pages you load into the browser, and query and
+manipulate their states.
 
 ### Finding an Element
 
+There are several ways to lookup page elements. Selenium supports a number of
+so-called locator strategies, as listed below.
+
+<table>
+    <thead>
+        <tr>
+            <th>Strategy</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>by_class_name</td><td>Class name</td>
+        </tr>
+        <tr>
+            <td>by_css_selector</td><td>A CSS selector</td>
+        </tr>
+        <tr>
+            <td>by_id</td><td>The unique ID of an element</td>
+        </tr>
+        <tr>
+            <td>by_name</td><td>The name of an element</td>
+        </tr>
+        <tr>
+            <td>by_link_text</td><td>The text of a hyperlink</td>
+        </tr>
+        <tr>
+            <td>by_partial_link_text</td><td>Partial text of a hyperlink</td>
+        </tr>
+        <tr>
+            <td>by_tag_name</td><td>The name of the HTML element</td>
+        </tr>
+        <tr>
+            <td>by_xpath</td><td>An XPATH expression</td>
+        </tr>
+    </tbody>
+</table>
+
+In order to get a reference to an input field with the id *username*, you
+would call the `element` method on the window object like this:
+
+~~~~{.tcl}
+set username_field [$window element by_id username]
+~~~~
+
+A call to `element` will only ever return a single object reference (the first
+that matches), even if multiple objects match the locator. To get a list of all
+objects matching the locator, call `elements` instead.
+
+Once you are done with an object reference, you have to manually delete it by
+calling `itcl::delete` on it.
+
 ### Checking if the Element is Being Displayed
+
+You may now want to check if the element is actually displayed within the
+visibile canvas:
+
+~~~~{.tcl}
+set username_field [$window element by_id username]
+set is_displayed [$username_field displayed]
+::itcl::delete $username_field
+~~~~
+
+Note how we explicitely delete the element reference, once we have obtained
+the information that we needed.
 
 ### Reading Element Attributes and CSS Properties
 
+You can read the value of an element's attribute by calling
+
+~~~~{.tcl}
+set value [$element attribute <attribute_name>]
+~~~~
+
 ### Clicking an Element
+
+Clicking an element is as simple as
+
+~~~~{.tcl}
+$element click
+~~~~
+
+You would be well-advised to first ensure that the element is actually on the
+visible canvas, for example by issuing a `move_to` or by checking the return
+value of `displayed`.
 
 ### Getting the Text of an Element
 
+The text of an element can be retrieved with a simple call:
+
+~~~~{.tcl}
+set element_text [$element text]
+~~~~
+
 ### Sending Text to an Input Field
+
+In order to send input to an element, make sure it is focused then use the
+`send_keys` method:
+
+~~~~{.tcl}
+set element [$window element by_id username]
+$element click
+$element clear
+$element send_keys "jonathan"
+itcl::delete $element
+~~~~
 
 ### Determining the State of a Choice Field
 
+In order to check the state of an input field of type checkbox or of a
+combobox, call
+
+~~~~{.tcl}
+$element selected
+~~~~
+
 ### Testing two Page Elements for Equality
 
+Using the `element` or `elements` methods on the window object, you can retrieve
+element references. And you can retrieve multiple references representing the
+same element.
+
+In order to find out, if any given two references are for the same element, call
+the `equals` method:
+
+~~~~{.tcl}
+if {[$element1 equals $element2]} {
+    puts "same element"
+} else {
+    puts "different elements"
+}
+~~~~
+
 ## Taking Screenshots
+
+You may take a screenshot of the active page at any time by calling
+
+~~~~{.tcl}
+set screenshot [$window screenshot -decode]
+
+set fp [open "test.png" "w+b"]
+puts $fp $screenshot
+close $fp
+~~~~
+
+Without the `-decode` parameter, the `screenshot` method returns the image
+Base64 encoded.
 

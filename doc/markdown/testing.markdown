@@ -187,8 +187,7 @@ scan for results.
 
 The directory should contain subdirectories created by a previous call to
 `caius runplan`. Each of these in turn should contain exactly one results XML
-file named *result.xml* plus any number of artifcats, which will be linked into
-the test report.
+file named *result.xml* plus any number of artifacts.
 
 The test report will be created inside the given directory as one or more HTML
 files.

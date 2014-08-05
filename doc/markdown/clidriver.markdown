@@ -107,7 +107,7 @@ they match your requirements, it is sufficient to specify the port.
 ## Expecting from Multiple Sources
 
 If you need to expect from multiple processes simultaneously, you currently
-have to harvest the spawn ids from your CliDriver objects and use a traditional
+have to harvest the spawn ids from your `CliDriver` objects and use a traditional
 expect call. A more user-friendly way of doing this may be implemented in future
 versions of Caius.
 
