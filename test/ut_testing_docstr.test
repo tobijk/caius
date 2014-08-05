@@ -3,11 +3,20 @@
 package require tcltest
 namespace import tcltest::*
 
+package require Itcl
 package require Testing
 
 #
 # PREAMBLE
 #
+itcl::class  MyTest {
+    inherit Testing::TestObject
+
+    method test_something {} {
+        docstr "This tests something."
+    }
+}
+
 
 #
 # TEST CASES
@@ -18,8 +27,15 @@ test ut_testing_docstr {
 } {
     -result 0
     -setup {
+        set the_test [MyTest #auto]
     }
     -body {
+        set the_doc_str [$the_test get_docstr test_something]
+        if {$the_doc_str eq "This tests something."} {
+            return 0
+        }
+
+        return 1
     }
 }
 
