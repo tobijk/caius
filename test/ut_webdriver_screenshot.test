@@ -35,12 +35,11 @@ test ut_webdriver_screenshot {
             set window  [$session active_window]
 
             $window set_url $TEST_PAGE
-            after 1
-            set screenshot [$window screenshot -decode]
+            set screenshot [$window screenshot]
 
-            set fp [open "test.png" "w+b"]
-            puts $fp $screenshot
-            close $fp
+            if {$screenshot eq {}} {
+                error "screenshot is empty"
+            }
 
             ::itcl::delete object $session
         } e {
