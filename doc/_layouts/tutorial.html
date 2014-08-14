@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+    <title>{{ page.title }}</title>
+
+    <link href="../assets/css/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/grid.css"      rel="stylesheet" type="text/css" />
+    <link href="../assets/css/navbar.css"    rel="stylesheet" type="text/css" />
+    <link href="../assets/css/masthead.css"  rel="stylesheet" type="text/css" />
+    <link href="../assets/css/footer.css"    rel="stylesheet" type="text/css" />
+    <link href="../assets/css/style.css"     rel="stylesheet" type="text/css" />
+    <link href="../assets/css/toc.css"       rel="stylesheet" type="text/css" />
+    <link href="../assets/css/highlight.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row" style="border-bottom: 1px dotted black;">
+        <div class="span03">
+          <a href="index.html"><img src="../assets/img/logo-inverse.png" class="logo"/></a>
+        </div>
+        <div class="span06 tutorial-title">
+
+          Tutorial - {{ page.title }}
+
+        </div>
+        <div class="span03 tutorial-nav-elements">
+          {% if page.previous %}
+          <a href="{{ page.previous }}.html" alt="previous"><img src="../assets/img/prev.gif"/></a>
+          {% endif %}
+          <a href="index.html" alt="table of contents"><img src="../assets/img/up.gif"/></a>
+          {% if page.next %}
+          <a href="{{ page.next }}.html" alt="next"><img src="../assets/img/next.gif"/></a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+
+          {{ content }}
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 2ex;">
+      <div class="row" style="border-top: 1px dotted black; line-height: 36px;">
+        <div class="span04">
+          {% if page.previous %}
+            Prev: <a href="{{ page.previous }}.html" alt="previous">{{ page.previous_title }}</a>
+          {% else %}
+            &nbsp;
+          {% endif %}
+        </div>
+        <div class="span04" style="text-align: center;">
+          Up: <a href="index.html">Table of Contents</a>
+        </div>
+        <div class="span04" style="text-align: right;">
+          {% if page.next %}
+            Next: <a href="{{ page.next }}.html">{{ page.next_title }}</a>
+          {% else %}
+            &nbsp;
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

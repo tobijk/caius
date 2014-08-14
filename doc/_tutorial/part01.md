@@ -1,3 +1,46 @@
+---
+title:  "Part I: Getting Started"
+next: part02
+next_title: "Driving the Command Line"
+layout: tutorial
+---
+
+# Introduction
+
+Caius is a functional testing framework written in object-oriented Tcl using
+the \[incr Tcl] extension. It provides intuitive, object-oriented programming 
+interfaces to Expect and Selenium WebDriver.
+
+The `caius` command line tool provides a generic test runner which allows you
+to execute tests written in any programming language and test framework. The
+integrated report generator collects test results and turns them into legible,
+clean test reports.
+
+# Installation
+
+In order to install and try out Caius on your system, follow the instructions
+in this section.
+
+## Pre-requisites
+
+Caius is developed and tested on Debian/GNU Linux but should run on other
+Linux distributions without problems. Using Caius on BSD or other Unix-like
+systems may require minor modifications.
+
+Caius requires Tcl 8.6 or later with thread support, a recent version of
+tcllib and Expect. In addition, the tdom package is required for results
+parsing and report generation.
+
+## Installation from Source
+
+Caius comes with a simple installer script that will copy modules and scripts
+into your Tcl package path. After unpacking the sources, execute the installer
+script via
+
+    sudo ./install.tcl
+
+After that you should be able to call `caius` from the command line.
+
 # Writing Tests
 
 This section explains how to write test modules and how to execute them.
@@ -7,7 +50,7 @@ This section explains how to write test modules and how to execute them.
 In Caius, test modules are classes which derive from `Testing::TestObject`. A
 minimal test module looks like this:
 
-~~~~{.tcl}
+~~~ tcl
 package require Itcl
 package require Testing
 
@@ -24,7 +67,7 @@ itcl::class MyTests {
 }
 
 exit [[MyTestModule #auto] run $::argv]
-~~~~
+~~~
 
 The test class `MyTests` inherits a lot of functionality from
 `Testing::TestObject`, most importantly the `run` method. The `run` method is
@@ -57,7 +100,7 @@ destructor of your test class for this purpose. Instead define methods
 In order to document your tests, you may define *docstrings* for your test
 methods as shown in the following example:
 
-~~~~{.tcl}
+~~~~{tcl}
 itcl::class MyTest {
     inherit Testing::TestObject
 
@@ -92,9 +135,7 @@ brackets and quotation marks need to be escaped.
 In order to make a test script executable, simply add a shebang line at the top
 of the script:
 
-~~~~{.tcl}
-#!/usr/bin/tclsh
-~~~~
+    #!/usr/bin/tclsh
 
 Then mark the script as executable:
 
@@ -123,7 +164,7 @@ command line:
 
     ./test.tcl test1 test2 ...
 
-In order to see which tests are available in your module, use the '--list'
+In order to see which tests are available in your module, use the `--list`
 command line switch:
 
     ./test.tcl -l
@@ -163,7 +204,7 @@ with a non-zero exit status on failure.
 Test plans are written in a simple XML format and define a sequence of test
 scripts to be executed. The following listing shows a basic example:
 
-~~~~{.xml}
+~~~~{xml}
 <testplan>
     <run timeout="60">/home/tobias/Demo/test1.tcl</run>
     <run timeout="60">/home/tobias/Demo/test2.tcl</run>

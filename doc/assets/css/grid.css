@@ -1,0 +1,28 @@
+
+.container {
+  margin: 0px auto;
+  padding: 0px 15px;
+  width: 930px;
+  overflow: auto;
+  clear: both;
+}
+
+.row {
+  margin: 0px -15px;
+  width: 960px;
+  overflow: auto;
+}
+
+.span01 { float: left; width:   50px; padding: 0 15px; }
+.span02 { float: left; width:  130px; padding: 0 15px; }
+.span03 { float: left; width:  210px; padding: 0 15px; }
+.span04 { float: left; width:  290px; padding: 0 15px; }
+.span05 { float: left; width:  370px; padding: 0 15px; }
+.span06 { float: left; width:  450px; padding: 0 15px; }
+.span07 { float: left; width:  530px; padding: 0 15px; }
+.span08 { float: left; width:  610px; padding: 0 15px; }
+.span09 { float: left; width:  690px; padding: 0 15px; }
+.span10 { float: left; width:  770px; padding: 0 15px; }
+.span11 { float: left; width:  850px; padding: 0 15px; }
+.span12 { float: left; width:  930px; padding: 0 15px; }
+

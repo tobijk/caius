@@ -1,3 +1,12 @@
+---
+title:  "Part II: Driving the Command Line"
+previous: part01
+previous_title: "Getting Started"
+next: part03
+next_title: "Driving the Web Browser"
+layout: tutorial
+---
+
 # Driving the Command Line with Expect
 
 Expect has been copied many times, and bindings to libexpect exist for many
@@ -12,7 +21,7 @@ functionality in an object-oriented programming interface.
 In order to spawn a process and interact with it through the standard channels,
 create a `CliDriver::Spawn` instance like this:
 
-~~~~{.tcl}
+~~~~{tcl}
 package require CliDriver
 
 set p [CliDriver::Spawn #auto telnet localhost]
@@ -21,7 +30,7 @@ set p [CliDriver::Spawn #auto telnet localhost]
 You can then invoke `send` and `expect` on the object `p` as you would with
 classic expect:
 
-~~~~{.tcl}
+~~~~{tcl}
 
 set count 0
 set timeout 5
@@ -59,7 +68,7 @@ process. Caius does this for you implicitly.
 
 If you need to, you can still access the spawn id like this
 
-~~~~{.tcl}
+~~~~{tcl}
 set spawn_id [$p spawn_id]
 ~~~~
 
@@ -78,7 +87,7 @@ the convenience classes `CliDriver::Telnet` and `CliDriver:Ssh` are available.
 They are used in the same way as `Spawn` but implicitely invoke the `telnet`
 or `ssh` command installed in the system.
 
-~~~~{.tcl}
+~~~~{tcl}
 package require CliDriver
 
 set ssh [CliDriver::Ssh #auto user@host]
@@ -94,7 +103,7 @@ one is for running Expect on a serial connection. The constructor takes various
 optional parameters, such as the baud rate, that are used to configure the
 terminal device, as shown in the following example:
 
-~~~~{.tcl}
+~~~~{tcl}
 package require CliDriver
 
 set serial [CliDriver::Stty #auto /dev/ttyS0 \

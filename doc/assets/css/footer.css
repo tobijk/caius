@@ -1,0 +1,19 @@
+
+.footer {
+  line-height: 60px;
+  width: 100%;
+  min-width: 960px;
+  font-size: 90%;
+  color: #ffffff;
+  background-color: black;
+  margin-top: 1em;
+}
+
+.footer a {
+  color: #88bbee;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

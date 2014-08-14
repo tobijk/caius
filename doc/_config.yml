@@ -1,0 +1,18 @@
+title: Caius
+email: tobias.koch@gmail.com
+url: "http://caiusproject.com"
+baseurl: ""
+
+description: "Caius is a functional testing framework for the 21st century. It was born out of the need for a contemporary replacement for DejaGnu. Caius is written in object-oriented Tcl and provides easy-to-use programming interfaces to Selenium WebDriver and Expect. Through its extensible reporting system, Caius integrates well with modern CI systems and test management tools."
+
+markdown:    redcarpet
+highlighter: pygments
+permalink:   pretty
+
+redcarpet:
+  extensions: [with_toc_data]
+
+collections:
+  tutorial:
+    output: true
+

@@ -1,0 +1,51 @@
+
+.navbar {
+  position: relative;
+  width: 100%;
+  min-width: 960px;
+  background-color: black;
+  height: 60px;
+  line-height: 60px;
+}
+
+.navbar .inverse {
+  background-color: white;
+}
+
+.logo {
+  margin: 4px 8em 2px -4px;
+  display: inline;
+  float: left;
+}
+
+.navbar ul {
+  margin: 0;
+  padding: 0;
+}
+
+.navbar li {
+  display: inline;
+  float: left;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar li a {
+  display: inline-block;
+  margin: 0;
+  padding: 0 2em;
+  color: #bbbbbb;
+  text-decoration: none;
+  line-height: 60px;
+}
+
+.navbar li a.active {
+  color: #ffffff;
+  background-color: #222222;
+}
+
+.navbar li a:hover {
+  color: #ffffff;
+}
+

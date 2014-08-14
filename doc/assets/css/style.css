@@ -1,0 +1,79 @@
+
+html, body {
+  color: #444444;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 150%;
+}
+
+.content {
+    margin: 10px 0 20px 0;
+}
+
+.text {
+  padding: 0 10px;
+}
+
+h1 {
+  font-size: 26px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h1, h2, h3 {
+  margin: 2ex 0em 1ex 0em;
+}
+
+a {
+  color: #333333;
+}
+
+p {
+  margin: 1ex 0em 1ex 0em;
+}
+
+pre {
+  padding: 10px 20px;
+}
+
+table {
+  margin: 25px 0px;
+  border-collapse: collapse;
+}
+
+th {
+  color: black;
+  font-weight: bold;
+  padding: 2px 5px;
+  border: 1px solid white;
+  background-color: #bbbbbb;
+}
+
+td {
+  padding: 2px 5px;
+  border: 1px solid white;
+  background-color: #dfeeff;
+}
+
+.tutorial-title {
+  color: #666666;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 28px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.tutorial-nav-elements {
+  text-align: right;
+}
+
+.tutorial-nav-elements a img {
+  margin-top: 12px;
+}
