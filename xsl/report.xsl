@@ -36,10 +36,11 @@
 
     <xsl:template match="/">
         <!-- page start -->
-        <html>
+        <html xml:lang="en" lang="en" dir="ltr">
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-                <meta name="generator" content="Caius Functional Testing Framework"/>
+                <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+                <meta name="generator" content="Caius Test Report Generator"/>
 
                 <style type="text/css">
 
@@ -105,6 +106,11 @@ body {
 
 a {
     color: white;
+}
+
+a.action-button {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 ul.list {
@@ -263,7 +269,7 @@ span.action {
                 <li>
                     <xsl:choose>
                         <xsl:when test="description">
-                            <a href="#" onClick="toggle_visibility('test::{
+                            <a class="action-button" onClick="toggle_visibility('test::{
                                 generate-id(.)}::description')">description</a>
                         </xsl:when>
                         <xsl:otherwise>
@@ -274,7 +280,7 @@ span.action {
                 <li>
                     <xsl:choose>
                         <xsl:when test="log">
-                            <a href="#" onClick="toggle_visibility('test::{
+                            <a class="action-button" onClick="toggle_visibility('test::{
                                 generate-id(.)}::log')">log</a>
                         </xsl:when>
                         <xsl:otherwise>
@@ -285,7 +291,7 @@ span.action {
                 <li>
                     <xsl:choose>
                         <xsl:when test="error">
-                            <a href="#" onClick="toggle_visibility('test::{
+                            <a class="action-button" onClick="toggle_visibility('test::{
                                 generate-id(.)}::error')">error</a>
                         </xsl:when>
                         <xsl:otherwise>
@@ -311,18 +317,21 @@ span.action {
 
         <xsl:if test="description">
             <div name="test::{generate-id(.)}::description" class="l2 info" style="display: none;">
+                <xsl:comment>//</xsl:comment>
                 <xsl:copy-of select="description/*"/>
             </div>
         </xsl:if>
 
         <xsl:if test="log">
             <div name="test::{generate-id(.)}::log" class="l2 info verbatim" style="display: none;">
+                <xsl:comment>//</xsl:comment>
                 <xsl:value-of select="log"/>
             </div>
         </xsl:if>
 
         <xsl:if test="error">
             <div name="test::{generate-id(.)}::error" class="l2 info verbatim" style="display: none;">
+                <xsl:comment>//</xsl:comment>
                 <xsl:value-of select="error"/>
             </div>
         </xsl:if>
