@@ -48,5 +48,5 @@ itcl::class TestSubprocess {
 
 }
 
-exit [[STestSubprocess #auto] run $::argv]
+exit [[TestSubprocess #auto] run $::argv]
 
