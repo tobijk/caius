@@ -1,3 +1,4 @@
 *.swp
 doc/_includes/tutorial_toc.html
 doc/_site/**
+test/spool/**
