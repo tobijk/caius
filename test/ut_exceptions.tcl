@@ -1,10 +1,8 @@
 #!/usr/bin/tclsh
 
-package require tcltest
-namespace import tcltest::*
-
 package require Itcl
 package require Error
+package require Testing
 
 #
 # PREAMBLE
@@ -34,18 +32,18 @@ package require Error
 # TEST CASES
 #
 
-test ut_exceptions_01 {
-    Catch exception by exact class name
-} {
-    -result 0
-    -body {
+::itcl::class TestExceptions {
+    inherit Testing::TestObject
+
+    method test_catch_exception_by_exact_class_name {} {
+        docstr "Test catching an exception by its exact class name."
 
         except {
             raise ::ExceptionA "class A exception"
         } e {
             ::ExceptionA {
                 if {[$e info class] == "::ExceptionA"} {
-                    return 0
+                    return
                 }
 
                 error "exception has wrong type"
@@ -54,20 +52,16 @@ test ut_exceptions_01 {
 
         error "exception was not caught"
     }
-}
 
-test ut_exceptions_02 {
-    Catch exception by base class
-} {
-    -result 0
-    -body {
+    method test_catch_exception_by_base_class {} {
+        docstr "Test catching an exception by a base class' name."
 
         except {
             raise ::ExceptionAA "class AA exception"
         } e {
             ::ExceptionA {
                 if {[$e info class] == "::ExceptionAA"} {
-                    return 0
+                    return
                 }
 
                 error "exception has wrong type"
@@ -76,19 +70,16 @@ test ut_exceptions_02 {
 
         error "exception was not caught"
     }
-}
 
-test ut_exceptions_03 {
-    Catch exception on first base class match (1st occurrence)
-} {
-    -result 0
-    -body {
+    method test_catch_exception_on_first_base_class_match_1st_occurence {} {
+        docstr "Test that exception is caught by first valid base class in
+        list."
 
         except {
             raise ::ExceptionAA "class AA exception"
         } e {
             ::Exception {
-                return 0
+                return
             }
             ::ExceptionA {
                 error "exception caught incorrectly as ExceptionA"
@@ -100,13 +91,10 @@ test ut_exceptions_03 {
 
         error "exception was not caught"
     }
-}
 
-test ut_exceptions_04 {
-    Catch exception on first base class match (in between)
-} {
-    -result 0
-    -body {
+    method test_catch_exception_on_first_base_class_match_in_between {} {
+        docstr "Test that exception is caught by base class match in between
+        unrelated handler clauses."
 
         except {
             raise ::ExceptionA "class AA exception"
@@ -115,7 +103,7 @@ test ut_exceptions_04 {
                 error "exception caught incorrectly as ExceptionAA"
             }
             ::Exception {
-                return 0
+                return
             }
             ::ExceptionA {
                 error "exception caught incorrectly as ExceptionA"
@@ -124,13 +112,10 @@ test ut_exceptions_04 {
 
         error "exception was not caught"
     }
-}
 
-test ut_exception_05 {
-    Catch exception by exact class match (in between)
-} {
-    -result 0
-    -body {
+    method test_catch_exception_by_exact_class_match_in_between {} {
+        docstr "Test that exception is caught be exact class name match in
+        between unrelated handler clauses."
 
         except {
             raise ::ExceptionA "class A exception"
@@ -148,13 +133,9 @@ test ut_exception_05 {
 
         error "exception was not caught"
     }
-}
 
-test ut_exceptions_06 {
-    Catch an ordinary Tcl error as TclError exception object.
-} {
-    -result 0
-    -body {
+    method test_catch_a_tcl_error_as_tclerror_exception_object {} {
+        docstr "Test catching a Tcl error as a `TclError` object."
 
         except {
             error "this is an ordinary Tcl error"
@@ -164,19 +145,15 @@ test ut_exceptions_06 {
                     error "expected exception object of class ::Exception::TclError"
                 }
 
-                return 0
+                return
             }
         }
 
         error "Tcl error was not caught"
     }
-}
 
-test ut_exceptions_07 {
-    Uncaught exceptions propagate through cascading except blocks.
-} {
-    -result 0
-    -body {
+    method test_uncaught_exceptions_propagate_through_except_blocks {} {
+        docstr "Test that uncaught exceptions propagate through except blocks."
 
         except {
             except {
@@ -188,23 +165,19 @@ test ut_exceptions_07 {
             }
         } e2 {
             ::ValueError {
-                return 0
+                return
             }
         }
 
         error "exception was not caught"
     }
-}
 
-test ut_exceptions_08 {
-    Execute final clause when exception occurs and is caught.
-} {
-    -result 0
-    -setup {
+    method test_execute_final_clause_when_exception_occurs_and_is_caught {} {
+        docstr "Test that final clause is executed when exception is caught."
+
         set exception_caught 0
         set final_run 0
-    }
-    -body {
+
         except {
             raise ExceptionA "catch me and run final clause"
         } e {
@@ -223,19 +196,15 @@ test ut_exceptions_08 {
             error "final clause was not run"
         }
 
-        return 0
+        return
     }
-}
 
-test ut_exceptions_09 {
-    Execute final clause when exception occurs and is NOT caught.
-} {
-    -result 0
-    -setup {
+    method test_execute_final_clause_when_exception_occurs_and_is_not_caught {} {
+        docstr "Test that final clause is also executed when exception is not
+        caught."
+
         set exception_caught 0
         set final_run 0
-    }
-    -body {
 
         except {
             except {
@@ -261,19 +230,14 @@ test ut_exceptions_09 {
             error "final clause was not run"
         }
 
-        return 0
+        return
     }
-}
 
-test ut_exceptions_10 {
-    Handle empty catch block.
-} {
-    -result 0
-    -setup {
+    method test_handle_empty_catch_block {} {
+        docstr "Test that catch block can be empty."
+
         set exception_propagated 0
         set final_run 0
-    }
-    -body {
 
         except {
             except {
@@ -297,19 +261,13 @@ test ut_exceptions_10 {
             error "final clause was not run"
         }
 
-        return 0
+        return
     }
-}
 
+    method test_execute_final_clause_when_no_exception_occurs {} {
+        docstr "Test that the final clause is executed when no exception occurs."
 
-test ut_exceptions_11 {
-    Execute final clause when no exception occurs!
-} {
-    -result 0
-    -setup {
         set final_run 0
-    }
-    -body {
 
         except {
 
@@ -323,7 +281,9 @@ test ut_exceptions_11 {
             error "final clause was not run"
         }
 
-        return 0
+        return
     }
 }
+
+exit [[TestExceptions #auto] run $::argv]
 

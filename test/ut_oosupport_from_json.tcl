@@ -1,12 +1,8 @@
 #!/usr/bin/tclsh
 
 package require Itcl
-
-package require tcltest
-namespace import tcltest::*
-
 package require OOSupport
-namespace import OOSupport::*
+package require Testing
 
 #
 # PREAMBLE
@@ -19,10 +15,10 @@ namespace import OOSupport::*
     }
 
     method constructor {} {
-        init_attributes
+        OOSupport::init_attributes
     }
 
-    bless_attributes -json_support -collapse_underscore
+    OOSupport::bless_attributes -json_support -collapse_underscore
 }
 
 ::itcl::class ObjectB {
@@ -32,10 +28,10 @@ namespace import OOSupport::*
     }
 
     method constructor {} {
-        init_attributes
+        OOSupport::init_attributes
     }
 
-    bless_attributes -json_support -collapse_underscore
+    OOSupport::bless_attributes -json_support -collapse_underscore
 }
 
 ::itcl::class CompoundObject {
@@ -45,7 +41,7 @@ namespace import OOSupport::*
     }
 
     method constructor {} {
-        init_attributes
+        OOSupport::init_attributes
 
         set obj_b [::itcl::code [::ObjectB #auto]]
         $this set_obj_b $obj_b
@@ -57,7 +53,7 @@ namespace import OOSupport::*
         $this set_obj_array $result
     }
 
-     bless_attributes -json_support -collapse_underscore
+    OOSupport::bless_attributes -json_support -collapse_underscore
 }
 
 set COMPOUND_OBJ_JSON_DUMP \
@@ -107,20 +103,23 @@ set COMPOUND_OBJ_JSON_DUMP \
 # TEST CASES
 #
 
-test ut_oosupport_from_json {
-    Initialize a compound object structure from JSON
-} {
-    -result 0
-    -setup {
+::itcl::class TestDeserializeFromJson {
+    inherit Testing::TestObject
+
+    method test_initialize_compound_object_from_json {} {
+        docstr "Re-create a compount object structure by reading in the
+        corresponding JSON dump."
+
         set compound_obj [::CompoundObject #auto]
-        $compound_obj from_json $COMPOUND_OBJ_JSON_DUMP
-    }
-    -body {
-        if {[$compound_obj to_json] != $COMPOUND_OBJ_JSON_DUMP} {
+        $compound_obj from_json $::COMPOUND_OBJ_JSON_DUMP
+
+        if {[$compound_obj to_json] != $::COMPOUND_OBJ_JSON_DUMP} {
             error "error in JSON"
         }
 
         return 0
     }
 }
+
+exit [[TestDeserializeFromJson #auto] run $::argv]
 

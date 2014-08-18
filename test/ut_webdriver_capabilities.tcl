@@ -1,11 +1,8 @@
 #!/usr/bin/tclsh
 
-package require tcltest
-namespace import tcltest::*
-
 package require WebDriver
 package require OOSupport
-namespace import OOSupport::*
+package require Testing
 
 #
 # PREAMBLE
@@ -41,16 +38,16 @@ set CAPABILITIES_JSON \
 # TEST CASES
 #
 
-test ut_webdriver_capabilities {
-    Set browser name to 'firefox' and dump as JSON
-} {
-    -result 0
-    -setup {
+::itcl::class TestWebDriverCapabilities {
+    inherit Testing::TestObject
+
+    method test_webdriver_capabilities {} {
+        docstr "Test that capabilities can be created and modified."
+
         set cap [WebDriver::Capabilities new]
         $cap set_browser_name firefox
-    }
-    -body {
-        if {[$cap to_json] == $CAPABILITIES_JSON} {
+
+        if {[$cap to_json] == $::CAPABILITIES_JSON} {
             return 0
         }
 
@@ -58,22 +55,20 @@ test ut_webdriver_capabilities {
 
         error "error in JSON"
     }
-}
 
-test ut_webdriver_required_capabilities {
-    Set browser name to 'chrome' and dump as JSON
-} {
-    -result 0
-    -setup {
+    method test_webdriver_required_capabilities {} {
+        docstr "Test that required capabilities can be created an modified."
+
         set req_cap [WebDriver::RequiredCapabilities #auto]
         $req_cap set_browser_name chrome
-    }
-    -body {
-        if {[$req_cap to_json] == $REQUIRED_CAPABILITIES_JSON} {
+
+        if {[$req_cap to_json] == $::REQUIRED_CAPABILITIES_JSON} {
             return 0
         }
 
         error "error in JSON"
     }
 }
+
+exit [[TestWebDriverCapabilities #auto] run $::argv]
 

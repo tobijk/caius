@@ -1,12 +1,8 @@
 #!/usr/bin/tclsh
 
 package require Itcl
-
-package require tcltest
-namespace import tcltest::*
-
 package require OOSupport
-namespace import OOSupport::*
+package require Testing
 
 #
 # PREAMBLE
@@ -21,24 +17,22 @@ namespace import OOSupport::*
     }
 
     method constructor {} {
-        init_attributes
+        OOSupport::init_attributes
     }
 
-    bless_attributes
+    OOSupport::bless_attributes
 }
 
 #
 # TEST CASES
 #
 
-test ut_oosupport_attribute_accessors {
-    Test automatic attribute accessor generation
-} {
-    -result 0
-    -setup {
+::itcl::class TestOOSupportAttributes {
+    inherit Testing::TestObject
+
+    method test_attribute_accessor_generation {} {
         set obj [ClassBlessed #auto]
-    }
-    -body {
+
         set rval [catch {
             $obj set_read_only_attr "overwritten"
         } err ]
@@ -76,7 +70,9 @@ test ut_oosupport_attribute_accessors {
             error "read/write attribute was not successfully changed"
         }
 
-        return 0
+        return
     }
 }
+
+exit [[TestOOSupportAttributes #auto] run $::argv]
 

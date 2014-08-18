@@ -1,14 +1,10 @@
 #!/usr/bin/tclsh
 
 package require Itcl
-
-package require tcltest
-namespace import tcltest::*
-
 package require WebDriver
 package require Error
 package require OOSupport
-namespace import OOSupport::*
+package require Testing
 
 set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
 
@@ -16,20 +12,21 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
 # TEST CASES
 #
 
-test ut_webdriver_failed_command {
-    Inject invalid JavaScript and expect a WebDriver exception to be thrown.
-} {
-    -result 0
-    -setup {
+::itcl::class TestWebDriverFailedCommand {
+    inherit Testing::TestObject
+
+    method test_webdriver_exception_on_invalid_javascript {} {
+        docstr "Inject invalid JavaScript and expect a WebDriver exception to be thrown."
+
         set cap [::itcl::code [WebDriver::Capabilities #auto]]
         $cap set_browser_name "htmlunit"
-    }
-    -body {
+
         except {
             set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+            $session set_logging_enabled 1
             set window  [$session active_window]
 
-            $window set_url "file://$DATA_DIR/html/page1.html"
+            $window set_url "file://$::DATA_DIR/html/page1.html"
 
             # inject javascript
             set script {
@@ -48,4 +45,6 @@ test ut_webdriver_failed_command {
         error "injected script should have caused an exception to occur"
     }
 }
+
+exit [[TestWebDriverFailedCommand #auto] run $::argv]
 

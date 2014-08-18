@@ -1,10 +1,7 @@
 #!/usr/bin/tclsh
 
 package require Itcl
-
-package require tcltest
-namespace import tcltest::*
-
+package require Testing
 package require markdown
 
 set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
@@ -13,17 +10,15 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
 # TEST CASES
 #
 
-test ut_markdown {
-    Test the markdown converter on various source files
-} {
-    -result 0
-    -setup {
-    }
-    -body {
+::itcl::class TestMarkdown {
+    inherit Testing::TestObject
+
+    method test_markdown_converter {} {
+        docstr "Test the markdown converter on a variety of source files"
 
         foreach {doc} {bq code inline lists p_br_h_hr} {
-            set markdown_file $DATA_DIR/markdown/$doc.text
-            set html_file     $DATA_DIR/markdown/$doc.html
+            set markdown_file $::DATA_DIR/markdown/$doc.text
+            set html_file     $::DATA_DIR/markdown/$doc.html
 
             set fp [open $markdown_file]
             set markdown [read $fp]
@@ -41,7 +36,9 @@ test ut_markdown {
             }
         }
 
-        return 0
+        return
     }
 }
+
+exit [[TestMarkdown #auto] run $::argv]
 

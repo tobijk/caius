@@ -1,15 +1,9 @@
 #!/usr/bin/tclsh
 
 package require Itcl
-
-package require tcltest
-namespace import tcltest::*
-
 package require WebDriver
 package require Error
-
-package require OOSupport
-namespace import OOSupport::*
+package require Testing
 
 set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
 set PAGE_URL "file://$DATA_DIR/html/page_select.html"
@@ -18,19 +12,20 @@ set PAGE_URL "file://$DATA_DIR/html/page_select.html"
 # TEST CASES
 #
 
-test ut_webdriver_text {
-    Test reading and setting text of an element.
-} {
-    -result 0
-    -setup {
-        set cap [WebDriver::Capabilities #auto]
+::itcl::class TestWebDriverCheckElements {
+    inherit Testing::TestObject
+
+    method test_handling_checkboxes {} {
+        docstr "Test checking checkboxes and reading their state."
+
+        set cap [::itcl::code [WebDriver::Capabilities #auto]]
         $cap set_browser_name "htmlunit"
-    }
-    -body {
+
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+        $session set_logging_enabled 1
         set window [$session active_window]
 
-        $window set_url $PAGE_URL
+        $window set_url $::PAGE_URL
 
         set checkbox [$window element by_id id_enable]
         if {[$checkbox selected]} {
@@ -43,6 +38,20 @@ test ut_webdriver_text {
         }
 
         ::itcl::delete object $checkbox
+        ::itcl::delete object $session
+    }
+
+    method test_handling_comboboxes {} {
+        docstr "Test selecting from a combobox."
+
+        set cap [::itcl::code [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "htmlunit"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url $::PAGE_URL
 
         set combobox [$window element by_id id_select]
         set option_b [$combobox descendant by_xpath "//option\[2]"]
@@ -57,7 +66,8 @@ test ut_webdriver_text {
         ::itcl::delete object $combobox
 
         ::itcl::delete object $session
-        return 0
     }
 }
+
+exit [[TestWebDriverCheckElements #auto] run $::argv]
 
