@@ -65,6 +65,7 @@ namespace eval Caius {
 
         method parse_command_line {{argv {}}} {
             set test_cmd {}
+            array unset _config
             set _config(timeout) 0
             set _config(out_file) result.xml
             set _config(work_dir) .
