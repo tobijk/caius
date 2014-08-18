@@ -170,9 +170,6 @@ package require cmdline
                 }
 
                 ::tsv::set _subprocess_$this timeout_occurred 1
-
-                puts -nonewline \$params(stderr) \\
-                    \"::TimeoutError: subprocess did not finish within \$params(timeout) ms\"
             }
 
             # close alternative channels
