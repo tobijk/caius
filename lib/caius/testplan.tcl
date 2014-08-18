@@ -99,6 +99,8 @@ namespace eval Caius {
                         }
 
                         set _config(testplan) [file normalize $o]
+                        set _config(testplan_dir) [file dirname \
+                            $_config(testplan)]
                     }
                 }
             }
@@ -137,6 +139,10 @@ namespace eval Caius {
 
                 set cmd [string trim [$child text]]
                 set timeout [$child getAttribute timeout 0]
+
+                if {[file pathtype $cmd] ne {absolute}} {
+                    set cmd "$_config(testplan_dir)/$cmd"
+                }
 
                 set subdir [format "%03d_%s" [incr count] \
                     [regsub {[-.]} [file tail [lindex [split $cmd] 0]] {_}]\
