@@ -283,7 +283,10 @@ namespace eval Testing {
             OutputStream::pop stdout
             OutputStream::pop stdout
             OutputStream::pop stdout
-            set _log [$_capture get]
+
+            # Why does encoding happen before the transformations kick in!?
+            set _log [encoding convertfrom [chan configure stdout -encoding] \
+                [$_capture get]]
         }
 
         method log_error {msg} {

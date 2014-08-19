@@ -358,6 +358,7 @@ namespace eval OutputStream {
 
             if {$_handle eq {}} {
                 set _handle [open $_buffer_file a]
+                chan configure $_handle -encoding binary
             }
 
             return {initialize finalize write}
@@ -387,6 +388,7 @@ namespace eval OutputStream {
                 seek $_handle 0 end
             } elseif {$_buffer_file ne {}} {
                 set handle [open $_buffer_file r]
+                chan configure $handle -encoding binary
                 set buf [read $handle]
                 close $handle
             }
@@ -408,6 +410,7 @@ namespace eval OutputStream {
 
             close [file tempfile _buffer_file]
             set _handle [open $_buffer_file a]
+            chan configure $_handle -encoding binary
         }
     }
 
