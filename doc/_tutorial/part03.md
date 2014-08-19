@@ -43,21 +43,25 @@ available. Using the capabilities object, you initiate a session as shown in
 the following fragment:
 
 ~~~~{tcl}
-set caps [namespace which [WebDriver::Capabilities #auto -browser_name chrome]]
+set caps [itcl::code [WebDriver::Capabilities #auto -browser_name chrome]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 ~~~~
 
-The session constructor takes as arguments the URL on which Selenium Server
-is listening for requests and in addition two references to `Capabilities`
-objects. The first `Capabilities` object is mandatory and describes the
-*desired* capabilities. Desired means, that you would *like* these capabilities
-to be available, but that they are not critical. The second Capabilities object
-is optional and denotes the *required* capabilities. If the server cannot
-satisfy the requested required capabilities, an error will be thrown.
+The `Session` constructor takes as arguments
+
+* the URL on which Selenium Server is listening for requests,
+* a *mandatory* references to a `Capabilities` object and
+* an *optional* reference to a `RequiredCapabilities` object.
+
+The first `Capabilities` object describes the *desired* capabilities. Desired
+means, that you would *like* these capabilities to be available, but that they
+are not critical. The `RequiredCapabilities` object is optional and denotes 
+capabilities which *must* be available. If the server cannot satisfy the requested
+required capabilities, an error will be thrown.
 
 The table below shows the capabilities that can be specified and their default
 values upon creation of a `Capabilities` object. These default values *do not*
-represent the defaults offered by any given browser.
+represent the defaults offered by any given browser. Adjust them to your needs.
 
 <table>
     <thead>
@@ -176,7 +180,7 @@ You can control size and position of the browser window on the screen as shown
 in this example:
 
 ~~~~{tcl}
-set caps [namespace which [WebDriver::Capabilities #auto]]
+set caps [itcl::code [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 set window [$session active_window]
 
@@ -200,7 +204,7 @@ $window set_position 10 10
 Load a URL using the `Window` object's `set_url` method:
 
 ~~~~{tcl}
-set caps [namespace which [WebDriver::Capabilities #auto]]
+set caps [itcl::code [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 $window set_url http://www.example.com
 ~~~~
@@ -365,16 +369,16 @@ Clicking an element is as simple as
 $element click
 ~~~~
 
-Depending on your application and the size of layout, you may want to ensure
-that the element is actually on the visible canvas, for example by issuing a
-`move_to` or by checking the return value of `displayed`.
+Depending on your application and the dimensions of its layout, you may want
+to ensure that the element is actually on the visible canvas, for example by
+issuing a `move_to` or by checking the return value of `displayed`.
 
 ### Getting the Text of an Element
 
 The text of an element can be retrieved with a simple call:
 
 ~~~~{tcl}
-set element_text [$element text]
+puts [$element text]
 ~~~~
 
 ### Sending Text to an Input Field
@@ -414,6 +418,9 @@ if {[$element1 equals $element2]} {
     puts "different elements"
 }
 ~~~~
+
+Be aware that `$element2` must be a fully qualified object reference obtained
+by a call to `itcl::code` or `namespace which`.
 
 ## Taking Screenshots
 
