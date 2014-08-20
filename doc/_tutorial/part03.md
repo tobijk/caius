@@ -43,7 +43,7 @@ available. Using the capabilities object, you initiate a session as shown in
 the following fragment:
 
 ~~~~{tcl}
-set caps [itcl::code [WebDriver::Capabilities #auto -browser_name chrome]]
+set caps [itcl::code [WebDriver::Capabilities #auto -browser_name firefox]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 ~~~~
 
