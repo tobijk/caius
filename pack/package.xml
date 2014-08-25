@@ -8,23 +8,17 @@
 
     <source name="caius" architecture-independent="false">
         <description>
-            <summary>a functional testing framework in object-oriented Tcl</summary>
-            <p>
-            Caius is a functional testing framework for the 21st century.
-            It was born out of the need for a contemporary replacement for
-            DejaGnu.
-            </p>
-            <p>
+        <summary>a functional testing framework in object-oriented Tcl</summary>
+        <p>
+            Caius is a functional testing framework for the 21st century. It was
+            born out of the need for a contemporary replacement for DejaGnu.
+        </p>
+        <p>
             Caius is written in object-oriented Tcl and provides easy-to-use
-            programming interfaces to Selenium WebDriver and Expect. Through
-            its extensible reporting system, Caius integrates well with
-            modern CI systems and test management tools.
-            </p>
-            <p>
-            Among other things, Caius is ideal for testing headless devices that
-            are configurable from the command line or via a Web-based management
-            interface.
-            </p>
+            programming interfaces to proven testing technologies. Through its
+            versatile reporting system, Caius integrates well with modern CI
+            systems and test management tools.
+        </p>
         </description>
 
         <sources>
@@ -32,6 +26,8 @@
 
         <requires>
             <package name="debhelper" version="&gt;= 8.0.0"/>
+            <package name="ruby-ronn"/>
+            <package name="jekyll" version="&gt;= 2"/>
         </requires>
 
         <!-- build rules -->
