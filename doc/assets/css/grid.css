@@ -23,6 +23,6 @@
 .span08 { float: left; width:  610px; padding: 0 15px; }
 .span09 { float: left; width:  690px; padding: 0 15px; }
 .span10 { float: left; width:  770px; padding: 0 15px; }
-.span11 { float: left; width:  850px; padding: 0 15px; }
-.span12 { float: left; width:  930px; padding: 0 15px; }
+.span11 { float: left; width:  850px; padding: 0px 15px 0px 15px; }
+.span12 { float: left; width:  930px; padding: 0px 15px 0px 15px; }
 

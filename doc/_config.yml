@@ -15,4 +15,5 @@ redcarpet:
 collections:
   tutorial:
     output: true
-
+  api:
+    output: true

@@ -1,4 +1,10 @@
 *.swp
 doc/_includes/tutorial_toc.html
 doc/_site/**
+doc/_api/**
+doc/assets/img/cogwheels1.png
+doc/assets/img/cogwheels2.png
+doc/assets/img/spaceman.png
 test/spool/**
+pack/tmp-install/**
+

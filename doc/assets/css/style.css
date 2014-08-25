@@ -6,14 +6,6 @@ html, body {
   line-height: 150%;
 }
 
-.content {
-    margin: 10px 0 20px 0;
-}
-
-.text {
-  padding: 0 10px;
-}
-
 h1 {
   font-size: 26px;
 }
@@ -28,10 +20,11 @@ h3 {
 
 h1, h2, h3 {
   margin: 2ex 0em 1ex 0em;
+  color: #000000;
 }
 
-a {
-  color: #333333;
+.content a {
+  color: #aa3333;
 }
 
 p {
@@ -59,6 +52,10 @@ td {
   padding: 2px 5px;
   border: 1px solid white;
   background-color: #dfeeff;
+}
+
+.justify {
+  text-align: justify;
 }
 
 .tutorial-title {
