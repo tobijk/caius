@@ -52,32 +52,16 @@
     <div class="container justify content" style="margin-bottom: 2ex;">
       <div class="row">
         <div class="span12">
-          <h2>Learning Tcl</h2>
+          <h2>Mailing List and Bug Tracker</h2>
           <p>
-            If you are entirely new to Tcl, you may want to learn a bit about the language itself
-            before you dive into writing tests using Caius. Admittedly, Tcl is not among the most
-            popular languages nowadays (though
-            <a href="http://journal.dedasys.com/2010/03/30/where-tcl-and-tk-went-wrong/">it may have been</a>
-            in the past). But it has some intriguing features (such as the
-            <a href="http://www.tcl.tk/man/tcl8.6/TclCmd/uplevel.htm">uplevel</a>
-            command) that set it apart.
-          </p>
-          <p>
-            The canonical source of information about the language for Tcl newcomers is the
-            <a href="https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html">Tcl Tutorial</a>.
-            Once you have grasped the basics, you may want to familiarize yourself also with
-            <a href="http://www.tcl.tk/man/itcl3.1/index.html">incr Tcl</a>,
-            the object-oriented extension that Caius is built on.
-          </p>
-          <p>
-            In case you wonder if Tcl is worth learning, at all, you should read Salvatore
-            Sanfilippo's article
-            <a href="http://antirez.com/articoli/tclmisunderstood.html">Tcl the Misunderstood</a>.
-            It will introduce you to the core concepts that Tcl is built on and may give you a
-            fairly good idea of whether and why learning Tcl may be of interest to you.
+            If you run into trouble using Caius and require assistance, please
+            ask for help in the Google group <a href="https://groups.google.com/forum/#!forum/caius-users">caius-users</a>.
+            If you encounter a problem that you think is a bug in the framework itself, please
+            report it through the <a href="https://github.com/tobijk/caius/issues">issue tracker</a>
+            on Github.
           </p>
 
-          <h2>Contributing</h2>
+          <h2>Getting Involved</h2>
           <p>
             You can <a href="https://github.com/tobijk/caius">fork the source code</a> on
             Github or clone it to your comuputer by running the following command:
@@ -88,17 +72,47 @@
             You are welcome to submit patches for bugfixes, improvements and new features!
           </p>
 
-          <h2>Getting Help</h2>
+          <h2>About the WebDriver API</h2>
           <p>
-            If you run into trouble using Caius and require assistance, please
-            ask for help in the Google group <a href="https://groups.google.com/forum/#!forum/caius-users">caius-users</a>.
+            The WebDriver module that comes with Caius implements the
+            <a href="http://docs.seleniumhq.org/projects/webdriver/">Selenium WebDriver
+            API</a> for Tcl. The underlying protocol is documented
+            <a href="https://code.google.com/p/selenium/wiki/JsonWireProtocol">here</a>.
+            The Tcl module does not support loading drivers directly, but instead delegates
+            this task to <a href="http://docs.seleniumhq.org/download/">Selenium Server</a>.
           </p>
 
-          <h2>Reporting Bugs</h2>
+          <h2>Learning Tcl</h2>
           <p>
-            If you encounter a problem that you think is a bug in the framework itself, please
-            report it through the <a href="https://github.com/tobijk/caius/issues">issue tracker</a>
-            on Github.
+            If you are entirely new to Tcl, you may want to learn a bit about the language itself
+            before you dive into writing tests. Admittedly, Tcl is not among the most
+            popular languages nowadays, even though
+            <a href="http://journal.dedasys.com/2010/03/30/where-tcl-and-tk-went-wrong/">it may have been</a>
+            in the past. But it has some intriguing features (such as the
+            <a href="http://www.tcl.tk/man/tcl8.6/TclCmd/uplevel.htm">uplevel</a>
+            command) that make it extremely versatile and extensible.
+          </p>
+          <p>
+            In case you wonder if Tcl is worth learning, at all, you should read Salvatore
+            Sanfilippo's article
+            <a href="http://antirez.com/articoli/tclmisunderstood.html">Tcl the Misunderstood</a>.
+            It will introduce you to the core concepts that Tcl is built on and may give you a
+            fairly good idea of whether and why learning Tcl may be of interest to you.
+          </p>
+          <p>
+            The canonical source of information about the language for Tcl newcomers is the
+            <a href="https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html">Tcl Tutorial</a>.
+            Once you have grasped the basics, you may want to familiarize yourself also with
+            <a href="http://www.tcl.tk/man/itcl3.1/index.html">incr Tcl</a>,
+            the object-oriented extension that Caius is built on.
+          </p>
+
+          <h2>Licensing</h2>
+          <p>
+            Caius is both Free and Open Source software, published under a
+            <a href="https://github.com/tobijk/caius/blob/master/LICENSE">Simplified BSD
+            License</a>. That means you can modify it, re-distribute it and use it in your
+            consulting projects without restrictions.
           </p>
         </div>
       </div>

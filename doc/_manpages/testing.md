@@ -18,7 +18,7 @@ Testing(3caius) -- base class for all native test classes
         }
     }
 
-    exit [[MyTestModule #auto] run $::argv]
+    exit [[MyTests #auto] run $::argv]
 
 ## DESCRIPTION
 
@@ -31,14 +31,14 @@ execution and reporting functionality via its `run` method.
 
 ### itcl::class Testing::TestObject
 
-* `method run ?-f report_format? ?test test ...?`:
-  Execute the listed test methods and output test results in the given
-  `report_format`, which must be one of junit, text, xml or zero. If no tests
+* `method run` ?`-f` *report_format*? ?*test* *test* ...?:
+  Execute the listed *test* methods and output test results in the given
+  *report_format*, which must be one of *junit*, *text*, *xml* or *zero*. If no tests
   are explicitely listed, execute all methods in the class starting with the
   prefix *test*.
 
 * `method list_tests`:
-  Return a list of all available test methods on the given instance.
+  Return a list of all available test methods on the given `TestObject`.
 
 ## SEE ALSO
 

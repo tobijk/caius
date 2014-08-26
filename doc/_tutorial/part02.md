@@ -106,8 +106,8 @@ terminal device, as shown in the following example:
 ~~~~{tcl}
 package require CliDriver
 
-set serial [CliDriver::Stty #auto /dev/ttyS0 \
-    -baud 56000 -parity n -data_bits 8 -stop_bits 1]
+set serial [CliDriver::Stty #auto -baud 56000 \
+    -parity n -data_bits 8 -stop_bits 1 /dev/ttyS0]
 ~~~~
 
 The settings in the example above are actually the default settings. So in case
