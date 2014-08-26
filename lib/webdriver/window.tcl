@@ -335,7 +335,9 @@ namespace eval WebDriver {
 
             # read options
             while {[string index [lindex $args 0] 0] == "-"} {
-                switch [lindex $args 0] {
+                set opt [lindex $args 0]
+
+                switch $opt {
                     "-joinable" {
                         set joinable "-joinable"
                         set args [lreplace $args 0 0]

@@ -41,30 +41,88 @@ namespace eval CliDriver {
     ::itcl::class Stty {
         inherit CliDriver::Core
 
-        ##
-        # Connects an Expect session object to a serial line.
-        #
-        # @param port              the serial port to open
-        # @param -baud rate        the baud rate (default 56000)
-        # @param -parity <parity>  parity (y or n, default n)
-        # @param -bits <bits>      data bits (default 8)
-        # @param -stop_bits <bits> stop bits (default 1)
-        constructor {port args} {
-            set options {
-                {baud.arg  56000 "set the channel to which to redirect stdout"}
-                {parity.arg    n "set the channel to which to redirect stderr"}
-                {data_bits.arg 8 "set the channel to which to redirect stdin" }
-                {stop_bits.arg 1 "timeout in seconds"                         }
+        constructor {args} {
+            set params(baud)      56000
+            set params(parity)    n
+            set params(data_bits) 8
+            set params(stop_bits) 1
+
+            while {[string index [lindex $args 0] 0] == "-"} {
+                set opt [lindex $args 0]
+
+                switch $opt {
+                    "-baud" {
+                        set params(baud) [lindex $args 1]
+                        set args [lreplace $args 0 1]
+
+                        if {![string is integer -strict $params(baud)]} {
+                            raise ::CliDriver::Error \
+                                "CliDriver::Stty: expected an integer for -baud."
+                        }
+                    }
+                    "-parity" {
+                        set params(parity) [lindex $args 1]
+                        set args [lreplace $args 0 1]
+
+                        if {![string is boolean -strict $params(parity)]} {
+                            raise ::CliDriver::Error \
+                                "CliDriver::Stty: expected boolean for -parity."
+                        }
+
+                        if {$params(parity)} {
+                            set params(parity) y
+                        } else {
+                            set params(parity) n
+                        }
+                    }
+                    "-data_bits" {
+                        set params(data_bits) [lindex $args 1]
+                        set args [lreplace $args 0 1]
+
+                        if {![string is digit -strict $params(data_bits)]} {
+                            raise ::CliDriver::Error \
+                                "CliDriver:Stty: expected a single digit for -data_bits."
+                        }
+                    }
+                    "-stop_bits" {
+                        set params(stop_bits) [lindex $args 1]
+                        set args [lreplace $args 0 1]
+
+                        if {![string is digit -strict $params(stop_bits)]} {
+                            raise ::CliDriver::Error \
+                                "CliDriver:Stty: expected a single digit for -stop_bits."
+                        }
+                    }
+                    default {
+                        raise ::CliDriver::Error \
+                            "CliDriver::Stty: unknown option '$opt'."
+                    }
+                }
             }
 
-            array set params [::cmdline::getoptions args $options]
+            set port [lindex $args 0]
+
+            if {"$port" eq ""} {
+                raise ::CliDriver::Error \
+                    "CliDriver::Stty: missing the *port* argument."
+            }
 
             except {
                 set tty_mode [join [list $params(baud) $params(parity) \
                     $params(data_bits) $params(stop_bits)] ","]
-                set fp [open $port r+]
-                fconfigure $fp -buffering none -translation binary \
-                    -mode $tty_mode -eofchar {}
+
+                set fp [open $port rb+]
+                fconfigure $fp -buffering none -eofchar {}
+
+                except {
+                    fconfigure $fp -mode $tty_mode
+                } e {
+                    ::TclError {
+                        raise ::CliDriver::Error \
+                            "CliDriver::Stty: unable to set -mode $tty_mode on $port."
+                    }
+                }
+
                 spawn -open $fp
                 set _spawn_id $spawn_id
             } e {

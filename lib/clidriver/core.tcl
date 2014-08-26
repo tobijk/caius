@@ -42,6 +42,16 @@ catch {
 
 namespace eval CliDriver {
 
+    ::itcl::class Error {
+        inherit ::Exception
+
+        constructor {msg} {
+            ::Exception::constructor "$msg"
+        } {}
+
+        destructor {}
+    }
+
     ##
     # \brief An object-oriented wrapper around Expect (abstract base class).
     #
