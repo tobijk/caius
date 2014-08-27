@@ -1,7 +1,7 @@
 Testing(3caius) -- base class for all native test classes
 ==============================================================================
 
-## SYNOPSIS
+## EXAMPLE
 
     package require Itcl
     package require Testing

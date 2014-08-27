@@ -1,7 +1,7 @@
 CliDriver(3caius) -- execute and control subprocesses with Expect
 ==============================================================================
 
-## SYNOPSIS
+## EXAMPLE
 
     package require CliDriver
 
@@ -16,7 +16,7 @@ CliDriver(3caius) -- execute and control subprocesses with Expect
             exp_continue
         }
         "*ogin*:*" {
-            $p send "username\n"
+            $p send "user\n"
             exp_continue
         }
         "*user@host*" {
@@ -39,13 +39,17 @@ The `CliDriver` API is an object-oriented wrapper around `expect`(1). It allows
 you to automate shell sessions by launching and controlling interactive command
 line applications from a Tcl script.
 
+The main goal of the module is to alleviate the need for juggling with spawn
+ids and to encapsulate and simplify initialization sequences and subprocess
+management.
+
 ## API
 
 ### itcl::class CliDriver::Core
 
 * `method expect` ??*-opts*? *pat1* *body1*? ... ?*-opts*? *patn* *bodyn*:
   Works exactly like the traditional `expect` call described in `expect`(1) but
-  is bound to the subprocess associated with the object.
+  is bound implicitely to the subprocess associated with the object.
 
 * `method send` ?*-flags*? *string*:
   Works exactly like the traditional `send` call described in `expect`(1) but

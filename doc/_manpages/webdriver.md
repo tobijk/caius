@@ -1,7 +1,7 @@
 WebDriver(3caius) -- automate browser interaction with Selenium WebDriver
 ==============================================================================
 
-## SYNOPSIS
+## EXAMPLE
     package require WebDriver
 
     set caps [WebDriver::Capabilities #auto -browser_name firefox]
@@ -372,7 +372,7 @@ receives from a test script.
 
 ### itcl::class WebDriver::Cookie
 
-* `constructor` *name* *value*:
+* `constructor` ?`-domain` *name*? ?`-expiry` *timestamp*? ?`-http_only` *bool*? ?`-path` *name*? ?`-secure` *bool*? *name* *value*:
   Typically, it is not necessary to construct a `Cookie` manually. Most of the
   time, you will just retrieve cookies via a `WebDriver::Window` object, or you
   will set cookies using the `Window` class' `set_cookie` convenience method.
@@ -550,16 +550,42 @@ default values.
 ### itcl::class WebDriver::Proxy
 
 * `constructor` ?`-ftp_proxy` *url*? ?`-http_proxy` *url*? ?`-proxy_type` *type*? ?`-proxy_autoconfig_url` *url*? ?`-ssl_proxy` *url*?:
+  The `Proxy` object is passed to the session constructor as part of the desired
+  or required capabilities.
+
 * `method ftp_proxy`:
+  Return the configured FTP proxy URL.
+
 * `method http_proxy`:
+  Return the configured HTTP proxy URL.
+
 * `method proxy_type`:
+  Return the proxy type, which is one of *direct*, *manual*, *pac*, *autodetect*
+  or *system*.
+
 * `method proxy_autoconfig_url`:
+  If proxy method is set to *pac*, this should return the autoconfiguration URL.
+
 * `method ssl_proxy`:
-* `method set_ftp_proxy url`:
-* `method set_http_proxy url`:
+  Return the configured SSL proxy URL.
+
+* `method set_ftp_proxy` *url*:
+  Set the FTP proxy URL.
+
+* `method set_http_proxy` *url*:
+  Set the HTTP proxy URL.
+
 * `method set_proxy_type type`:
-* `method set_proxy_autoconfig_url url`:
-* `method set_ssl_proxy url`:
+  Set the proxy type being used. Possible values are: a) *direct* - a direct connection -
+  no proxy in use, b) *manual* - manual proxy settings configured, c) *pac* - proxy
+  autoconfiguration from a URL, d) *autodetect* - proxy autodetection, probably with WPAD,
+  e) *system* - Use system settings.
+
+* `method set_proxy_autoconfig_url` *url*:
+  Set the proxy autoconfiguration URL in case proxy type is set to *pac*.
+
+* `method set_ssl_proxy` *url*:
+  Set the SSL proxy URL.
 
 ## ADDITIONAL HINTS
 
