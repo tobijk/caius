@@ -26,5 +26,5 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-package provide markdown 0.9
+package provide Markdown 0.9
 

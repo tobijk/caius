@@ -26,7 +26,7 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-package ifneeded markdown 0.9 "
+package ifneeded Markdown 0.9 "
     source \[file join \[list $dir] markdown.tcl]
     source \[file join \[list $dir] version.tcl ]
 "
