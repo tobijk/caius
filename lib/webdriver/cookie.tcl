@@ -43,11 +43,29 @@ namespace eval WebDriver {
             { number expiry    null "rw" }
         }
 
-        constructor {{name ""} {value ""}} {
+        constructor {args} {
             OOSupport::init_attributes
 
-            set _name  $name
-            set _value $value
+            set options {
+                {path.arg      "/"  "the cookie path"}
+                {domain.arg    ""   "the domain"}
+                {secure.arg    null "whether the cookie is secure"}
+                {http_only.arg null "whether the cookie is for http only"}
+                {expiry.arg    null "timestamp marking the expiration date"}
+            }
+
+            array set params [::cmdline::getoptions args $options]
+
+            foreach {key val} [array get params] {
+                set _${key} $val
+            }
+
+            if {[llength $args] != 2} {
+                raise ::WebDriver::Error "WebDriver::Cookie: insufficient arguments."
+            }
+
+            set _name  [lindex $args 0]
+            set _value [lindex $args 1]
         }
 
         destructor {}
