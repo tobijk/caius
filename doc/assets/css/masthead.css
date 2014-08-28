@@ -27,3 +27,11 @@
   font-size: 28px;
   line-height: 45px;
 }
+
+.direct-links {
+  margin-top: 20px;
+}
+
+.direct-links a {
+  color: #ffffff;
+}

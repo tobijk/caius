@@ -49,19 +49,19 @@ management.
 
 * `method expect` ??*-opts*? *pat1* *body1*? ... ?*-opts*? *patn* *bodyn*:
   Works exactly like the traditional `expect` call described in `expect`(1) but
-  is bound implicitely to the subprocess associated with the object.
+  is always bound to the subprocess associated with this object.
 
 * `method send` ?*-flags*? *string*:
   Works exactly like the traditional `send` call described in `expect`(1) but
-  is bound to the subprocess associated with the object.
+  is always bound to the subprocess associated with this object.
 
 * `method close`:
   Closes the connection to and terminates the subprocess associated with this
-  spawn object.
+  object.
 
 * `method match_max` ?*size*?:
   Sets or gets the maximum match buffer size for the `spawn_id` associated with
-  the object.
+  this object.
 
 ### itcl::class CliDriver::Spawn
 

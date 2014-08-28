@@ -52,23 +52,24 @@ This module provides convenience functions that allow you to define attributes
 on your Itcl classes and automatically generate getters, setters and support
 for serialization to JSON.
 
-When defining a new type, you can specify its attributes in a class variable
-called `attributes`:
+When defining a new type, you can declare its accessible properties in a class
+variable called `attributes`:
 
     itcl::class Type {
         common attributes {
             {type name default access}
+            ...
         }
         ...
 
 The *type* specifier should be one of *bool*, *number*, *string* or a class
 name that is recognized by `itcl::is class`. Additionally you can declare arrays
-of either type by wrapping the *type* specifier in square brackets. It's not
+of either type by putting the *type* specifier in square brackets. It is *not*
 possible to keep mixed-type arrays.
 
 The type specifier is evaluated during serialization to or de-serialization
-from JSON. Since Tcl doesn't have types, it would otherwise not be possible
-to map to and from JSON without loss of information.
+from JSON. Since Tcl doesn't have explicit types, it would otherwise not be
+possible to map to and from JSON without loss of information.
 
 After having declared the `common attributes`, you have to bring them to life,
 by calling `OOSupport::init_attributes` in the constructor:
@@ -80,8 +81,8 @@ by calling `OOSupport::init_attributes` in the constructor:
         ...
 
 This way, when an object is instantiated, member variables will be created
-automatically from the attributes specification. For an attribute `name` the
-corresponding member variable will be `_name`. The member variable will be
+automatically according to the attributes declaration. For an attribute `name`
+the corresponding member variable will be `_name`. The member variable will be
 initiated to the *default* value supplied in the attribute declaration.
 
 Last but not least, you can *bless* your attributes with accessor functions
@@ -92,17 +93,14 @@ according to the *access* specification, which can be one of
 * rw (read-write)
 * -- (no access)
 
-The getters or setters are created by calling
-
-        OOSupport::bless_attributes
-
-In the body of your class definition. If read support is enabled on the
-attribute *name*, the attribute will hence forward be accessible by a call to
-a method `name`. If write support is enabled on the attribute, then
-the attribute can be set via the method `set_name`.
+The getters or setters are created by calling `OOSupport::bless_attributes`
+in the body of your class definition. If read support is enabled for an
+attribute *name*, the attribute value can be retrieved by calling a method
+`name`. If write support is enabled on the attribute, then the attribute
+can be set via a method `set_name`.
 
 If you pass the additional parameter `-json_support` to `bless_attributes`,
-your objects will also have methods `to_json` and `from_json` that can be
+your objects will also have methods `to_json` and `from_json` which can be
 used to serialize the object state to JSON or restore an object from its
 JSON representation.
 

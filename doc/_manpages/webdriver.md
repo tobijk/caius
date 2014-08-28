@@ -81,8 +81,8 @@ receives from a test script.
   is considered as having timed out.
 
 * `method set_implicit_wait_timeout` *ms*:
-  Set the time in milliseconds after which an ongoing operation is considered
-  as having timed out.
+  Set the time in milliseconds that the driver should wait on elements to appear.
+  The default is not to wait at all.
 
 * `method set_page_load_timeout` *ms*:
   Set the time in milliseconds after which a page load is considered as having
