@@ -2,6 +2,7 @@
 .masthead {
   position: relative;
   width: 100%;
+  min-width: 960px;
   color: #ffffff;
   background-color: #334466;
   height: 400px;

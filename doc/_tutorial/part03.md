@@ -255,7 +255,7 @@ You may set the following attributes on the `Cookie` object:
         <tr>
             <td> -secure </td>
             <td> not set </td>
-            <td> whether the <tt>Cookie</tt> is secure </td>
+            <td> whether the <code>Cookie</code> is secure </td>
         </tr>
         <tr>
             <td> -expiry </td>

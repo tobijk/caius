@@ -25,16 +25,19 @@ for fname in _tutorial/*.md; do
                 echo "<ul>"
             fi
         elif [ $level_diff -gt 0 ]; then
-            for i in `seq $level_diff`
+            for i in `seq $(($level_diff))`
             do
-                echo "</ul>"
+                echo "</li></ul>"
             done
-        fi
-
-        if [ "$previous_level" = "" ]; then
-            echo "<li><a href=\"$html_name\">$title</a></li>"
+            echo "</li>"
         else
-            echo "<li><a href=\"$html_name#$sanitized_title\">$title</a></li>"
+            echo "</li>"
+        fi
+        
+        if [ "$previous_level" = "" ]; then
+            echo "<li><a href=\"$html_name\">$title</a>"
+        else
+            echo "<li><a href=\"$html_name#$sanitized_title\">$title</a>"
         fi
 
         previous_level=$level
@@ -43,7 +46,7 @@ for fname in _tutorial/*.md; do
 
     if [ -f __previous_level ]; then
         for i in $(seq `cat __previous_level`); do
-            echo "</ul>"
+            echo "</li></ul>"
         done
     fi
 

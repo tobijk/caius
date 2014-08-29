@@ -20,7 +20,7 @@
     <div class="container">
       <div class="row" style="border-bottom: 1px dotted black;">
         <div class="span03">
-          <a href="index.html"><img src="../assets/img/logo-inverse.png" class="logo"/></a>
+          <a href="index.html"><img src="../assets/img/logo-inverse.png" alt="logo" class="logo"/></a>
         </div>
         <div class="span06 tutorial-title">
 
@@ -29,11 +29,11 @@
         </div>
         <div class="span03 tutorial-nav-elements">
           {% if page.previous %}
-          <a href="{{ page.previous }}.html" alt="previous"><img src="../assets/img/prev.gif"/></a>
+          <a href="{{ page.previous }}.html"><img src="../assets/img/prev.gif" alt="previous"/></a>
           {% endif %}
-          <a href="index.html" alt="table of contents"><img src="../assets/img/up.gif"/></a>
+          <a href="index.html"><img src="../assets/img/up.gif" alt="table of contents"/></a>
           {% if page.next %}
-          <a href="{{ page.next }}.html" alt="next"><img src="../assets/img/next.gif"/></a>
+          <a href="{{ page.next }}.html"><img src="../assets/img/next.gif" alt="next"/></a>
           {% endif %}
         </div>
       </div>
@@ -53,7 +53,7 @@
       <div class="row" style="border-top: 1px dotted black; line-height: 36px;">
         <div class="span04">
           {% if page.previous %}
-            Prev: <a href="{{ page.previous }}.html" alt="previous">{{ page.previous_title }}</a>
+            Prev: <a href="{{ page.previous }}.html">{{ page.previous_title }}</a>
           {% else %}
             &nbsp;
           {% endif %}
