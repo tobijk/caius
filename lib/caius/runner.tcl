@@ -29,7 +29,7 @@
 package require Itcl
 package require Subprocess
 package require Error
-package require markdown
+package require Markdown
 package require tdom
 
 namespace eval Caius {
