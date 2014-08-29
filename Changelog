@@ -1,0 +1,5 @@
+* 0.7.1
+    * runner.tcl: fix markdown include
+    * documentation HTML fixes
+* 0.7.0
+    * initial public release
