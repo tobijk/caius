@@ -28,7 +28,7 @@
 
 package require OutputStream
 package require OOSupport
-package require markdown
+package require Markdown
 
 namespace eval Testing {
 
