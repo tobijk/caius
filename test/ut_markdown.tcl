@@ -2,7 +2,7 @@
 
 package require Itcl
 package require Testing
-package require markdown
+package require Markdown
 
 set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
 
