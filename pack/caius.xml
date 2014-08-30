@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package name="caius" section="">
+<package name="caius" section="devel">
     <description>
         <summary>a functional testing framework in object-oriented Tcl</summary>
         <p>
@@ -34,6 +34,9 @@
     <contents>
         <dir  src="/usr/share/tcltk/tcl8.6/caius"/>
         <file src="/usr/share/tcltk/tcl8.6/caius"/>
+        <dir  src="/usr/share/doc/caius"/>
+        <file src="/usr/share/doc/caius/LICENSE"/>
+        <file src="/usr/share/doc/caius/Changelog.gz"/>
     </contents>
 
     <maintainer-scripts>
