@@ -5,6 +5,7 @@ doc/_api/**
 doc/assets/img/cogwheels1.png
 doc/assets/img/cogwheels2.png
 doc/assets/img/spaceman.png
+doc/_manpages/*.gz
 test/spool/**
 pack/tmp-install/**
 TODO.txt
