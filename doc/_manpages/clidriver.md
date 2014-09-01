@@ -86,7 +86,7 @@ Inherits all methods from `CliDriver::Core`.
   Launch the `ssh` command installed on the system and pass on any additional
   arguments unmodified.
 
-### itcl::class CliDriver::Serial
+### itcl::class CliDriver::Stty
 
 Inherits all methods from `CliDriver::Core`.
 

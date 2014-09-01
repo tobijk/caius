@@ -205,9 +205,9 @@ receives from a test script.
   error variable can be specified, which will hold information about any error
   that occurred during script execution.
 
-  This method is processed in a separate thread. If an error occurs during
-  script execution, the thread shared variable specified with the `-error`
-  will contain the exception object.
+  This method is processed in a separate thread. If an error occurrs during
+  script execution, the thread shared variable specified via the `-error`
+  parameter will contain a description of the error.
 
 * `method focus`:
   Activate the window and bring it to the foreground.
