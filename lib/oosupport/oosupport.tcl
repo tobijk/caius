@@ -89,7 +89,7 @@ namespace eval OOSupport {
             set __attr_name [lindex $__attr 1]
             set __attr_is_array 0
 
-            if {[string index $__attr_type 0] == "\["} {
+            if {[string index $__attr_type 0] eq "\["} {
                 set __attr_type [string trim $__attr_type "\[\]"]
                 set __attr_is_array 1
             }
@@ -117,8 +117,12 @@ namespace eval OOSupport {
                         }
                     }
                 } elseif {$__attr_is_object} {
-                    set __result [::itcl::code [$__attr_type #auto]]
-                    $__result from_tcl $__value
+                    if {$__value ne "null"} {
+                        set __result [::itcl::code [$__attr_type #auto]]
+                        $__result from_tcl $__value
+                    } else {
+                        set __result null
+                    }
                 } else {
                     set __result $__value
                 }
@@ -133,7 +137,7 @@ namespace eval OOSupport {
     proc __stub__json_dump {args} {
         set __result {}
 
-        while {[string index [lindex $args 0] 0] == "-"} {
+        while {[string index [lindex $args 0] 0] eq "-"} {
             switch [lindex $args 0] {
                 "-skip_undefined" {
                     set __skip_undefined 1
@@ -159,12 +163,12 @@ namespace eval OOSupport {
 
             foreach {__val} $__array_content {
                 if {$__array_of_objects} {
-                    if {$__val != "null"} {
+                    if {$__val ne "null"} {
                         lappend __result [$__val to_json -indent [expr $__indent + 1]]
                     } else {
                         lappend __result null
                     }
-                } elseif {$__array_type == "string"} {
+                } elseif {$__array_type eq "string"} {
                     lappend __result "\"[::OOSupport::json_escape_chars $__val]\""
                 } else {
                     lappend __result "$__val"
@@ -176,6 +180,7 @@ namespace eval OOSupport {
             } else {
                 set __result "\[\n\t[join $__result ", "]\n]"
             }
+
             regsub -all -lineanchor {^} $__result \
                 [string repeat "\t" $__indent] __result
             return $__result
@@ -186,7 +191,7 @@ namespace eval OOSupport {
             set __attr_name [lindex $__attr 1]
             set __attr_is_array false
 
-            if {[string index $__attr_type 0] == "\["} {
+            if {[string index $__attr_type 0] eq "\["} {
                 set __attr_type [string trim $__attr_type "\[\]"]
                 set __attr_is_array true
             }
@@ -200,8 +205,8 @@ namespace eval OOSupport {
             if 1 "set __attr_val \$_$__attr_name"
 
             if {$__skip_undefined} {
-                if {($__attr_val == "null" && $__attr_type != "string") ||
-                    ($__attr_val == "")} \
+                if {($__attr_val eq "null" && $__attr_type ne "string") ||
+                    ($__attr_val eq "")} \
                 {
                     continue
                 }
@@ -216,12 +221,16 @@ namespace eval OOSupport {
                 lappend __result "\t\"$__attr_name\":\n[
                     __print_array $__attr_type $__attr_val [expr $__indent + 1]]"
             } else {
-                if {$__attr_type == "string"} {
+                if {$__attr_type eq "string"} {
                     lappend __result "\t\"$__attr_name\": \"[\
                         ::OOSupport::json_escape_chars $__attr_val]\""
                 } elseif {$__attr_is_object} {
-                    lappend __result "\t\"$__attr_name\":\n[\
-                        $__attr_val to_json -indent [expr $__indent + 1]]"
+                    if {$__attr_val ne "null"} {
+                        lappend __result "\t\"$__attr_name\":\n[\
+                            $__attr_val to_json -indent [expr $__indent + 1]]"
+                    } else {
+                        lappend __result "\t\"$__attr_name\": null"
+                    }
                 } else {
                     lappend __result "\t\"$__attr_name\": $__attr_val"
                 }
@@ -272,8 +281,8 @@ namespace eval OOSupport {
             set attr_is_object [::itcl::is class $attr_type]
 
             if {$attr_is_object &&
-                $attr_default != "null" &&
-                $attr_default != ""} \
+                $attr_default ne "null" &&
+                $attr_default ne ""} \
             {
                 uplevel "set _$attr_name \"[::itcl::code [$attr_type #auto]]\""
             } else {
@@ -289,7 +298,7 @@ namespace eval OOSupport {
         set skip_undefined 0
         set collapse_underscore 0
 
-        while {[string index [lindex $args 0] 0] == "-"} {
+        while {[string index [lindex $args 0] 0] eq "-"} {
             switch [lindex $args 0] {
                 "-skip_undefined" {
                     set skip_undefined 1
@@ -315,10 +324,10 @@ namespace eval OOSupport {
 
             uplevel "private variable _$attr_name"
 
-            if {[string trim $attr_access ro-] == "w"} {
+            if {[string trim $attr_access ro-] eq "w"} {
                 uplevel "OOSupport::attr_writer $attr_name"
             }
-            if {[string trim $attr_access wo-] == "r"} {
+            if {[string trim $attr_access wo-] eq "r"} {
                 uplevel "OOSupport::attr_reader $attr_name"
             }
         }

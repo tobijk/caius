@@ -59,6 +59,20 @@ package require Testing
     OOSupport::bless_attributes -json_support
 }
 
+::itcl::class LinkedList {
+
+    common attributes {
+        {::LinkedList next null rw}
+        {number node_id 1 rw}
+    }
+
+    method constructor {} {
+        OOSupport::init_attributes
+    }
+
+    OOSupport::bless_attributes -json_support
+}
+
 set 3DMESH_JSON \
 {{
 	"triangles":
@@ -207,6 +221,49 @@ set OBJ_OF_ARRAYS_JSON \
             error "error in JSON"
         }
 
+        return
+    }
+
+    method test_json_serialization_of_nulls {} {
+        docstr "Test that things don't blow up when something is 'null'."
+
+set expected_result {{
+	"v1": null,
+	"v2": null,
+	"v3": null
+}}
+
+        # serialize nulls
+        set triangle1 [Triangle #auto null null null]
+        if {[$triangle1 to_json] ne $expected_result} {
+            error "expected something like this: $expected_result"
+        }
+
+set expected_result {{
+	"triangles":
+	[
+	
+	]
+}}
+
+        # load empty array
+        set mesh [3DMesh #auto]
+        $mesh from_json "{ \"triangles\": \[\] }"
+        if {[$mesh to_json] ne $expected_result} {
+            error "expected something like this: $expected_result"
+        }
+
+set expected_result {{
+	"next": null,
+	"node_id": 1
+}}
+
+        # load null reference
+        set llist [LinkedList #auto]
+        $llist from_json "{ \"next\": null }"
+        if {[$llist to_json] ne $expected_result} {
+            error "expected something like this: $expected_result"
+        }
         return
     }
 }
