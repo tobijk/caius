@@ -47,6 +47,10 @@ package require cmdline
 
         array set params [::cmdline::getoptions args $options]
 
+        # escape remainging args, because we insert them into a string below
+        set args [string map {"\$" "\\\$" "\[" "\\\[" "\]" "\\\]" "\{" "\\\{" \
+                    "\}" "\\\}" "\"" "\\\""} $args]
+
         set mutex [::thread::mutex create]
         set cond  [::thread::cond  create]
 

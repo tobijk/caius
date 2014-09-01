@@ -46,6 +46,14 @@ itcl::class TestSubprocess {
         }
     }
 
+    method test_variables_and_quotation_marks {} {
+        docstr "Run a complicated command with pipes, variables, quotes..."
+
+        set command [list bash -c {for i in `seq 1 3`; do echo "$i"; done | cat}]
+
+        set ps [Subprocess #auto {*}$command]
+        $ps wait
+    }
 }
 
 exit [[TestSubprocess #auto] run $::argv]
