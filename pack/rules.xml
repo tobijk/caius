@@ -4,7 +4,7 @@
     <build>
     <![CDATA[
 
-cd $XPACK_SOURCE_DIR/doc && ./build.sh
+cd $XPACK_BASE_DIR/doc && ./build.sh
 
     ]]>
     </build>
@@ -20,7 +20,7 @@ CAIUS_INSTALL_DIR="$XPACK_INSTALL_DIR/usr/share/tcltk/tcl8.6/caius"
 
 mkdir -p "$CAIUS_INSTALL_DIR/bin"
 
-cp -a $XPACK_BASE_DIR/lib/*       "$CAIUS_INSTALL_DIR/"
+cp -a  $XPACK_BASE_DIR/lib/*      "$CAIUS_INSTALL_DIR/"
 cp -a "$XPACK_BASE_DIR/xsl"       "$CAIUS_INSTALL_DIR/"
 cp -a "$XPACK_BASE_DIR/bin/caius" "$CAIUS_INSTALL_DIR/bin/"
 
@@ -52,8 +52,10 @@ rm -f $CAIUS_DOC_DIR/html/assets/img/spaceman*.png
 # 4. Changelog and LICENSE files
 #
 
-cat $XPACK_BASE_DIR/Changelog | gzip > $CAIUS_DOC_DIR/Changelog.gz
-cp $XPACK_BASE_DIR/LICENSE   $CAIUS_DOC_DIR
+xsltproc $XPACK_BASE_DIR/xsl/changelog.xsl pack/changelog.xml | gzip \
+    > $CAIUS_DOC_DIR/Changelog.gz
+
+cp $XPACK_BASE_DIR/LICENSE $CAIUS_DOC_DIR
 
     ]]>
     </install>
@@ -61,8 +63,8 @@ cp $XPACK_BASE_DIR/LICENSE   $CAIUS_DOC_DIR
     <clean>
     <![CDATA[
 
-rm -f  $XPACK_SOURCE_DIR/doc/_manpages/*.gz
-rm -fr $XPACK_SOURCE_DIR/doc/_site
+rm -f  $XPACK_BASE_DIR/doc/_manpages/*.gz
+rm -fr $XPACK_BASE_DIR/doc/_site
 rm -fr $XPACK_INSTALL_DIR
 
     ]]>

@@ -34,6 +34,7 @@
             <package name="debhelper" version="&gt;= 8.0.0"/>
             <package name="ruby-ronn"/>
             <package name="jekyll" version="&gt;= 2"/>
+            <package name="xsltproc"/>
         </requires>
 
         <!-- build rules -->
