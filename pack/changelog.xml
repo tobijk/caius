@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.7.4" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-09-01 22:36:17 +0300">
+        <changeset>
+            <li>oosupport: fix problem with serializing 'null' references</li>
+            <li>gen Changelog.gz from pack/changelog.xml and include in package</li>
+            <li>documentation fixes</li>
+            <li>subprocess: properly escape command strings</li>
+            <li>packaging: add caius-doc package</li>
+        </changeset>
+    </release>
     <release version="0.7.3" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-08-30 01:22:57 +0300">
         <changeset>
