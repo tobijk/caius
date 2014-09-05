@@ -40,6 +40,24 @@ execution and reporting functionality via its `run` method.
 * `method list_tests`:
   Return a list of all available test methods on the given `TestObject`.
 
+* `method setup_before` [interface]:
+  If implemented, this method is called once on entry to the test module.
+
+* `method teardown_after` [interface]:
+  If implemented, this method is called once after the last test in the module
+  has finished.
+
+* `method setup` [interface]:
+  If implemented, this method is invoked before each test.
+
+* `method teardown` [interface]:
+  If implemented, this method is invoked after each test.
+
+## ADDITIONAL NOTES
+
+All methods starting with the prefix *test* are considered test cases and
+automatically invoked by the `run` method.
+
 ## SEE ALSO
 
 `itcl`(3)
