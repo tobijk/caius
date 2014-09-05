@@ -124,7 +124,7 @@ namespace eval WebDriver {
                     "send keys to element $_ELEMENT: $text"
             }
 
-            set json "{\"value\": \[\"$text\"]}"
+            set json [encoding convertto "utf-8" "{\"value\": \[\"$text\"]}"]
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
                 [$_session session_url]/element/$_ELEMENT/value]

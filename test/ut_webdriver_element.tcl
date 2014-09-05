@@ -45,7 +45,7 @@ set INPUT_TEXT "Input Field"
         $input click
         $input clear
 
-        set ::INPUT_TEXT "Hello World! ÄÖÜß"
+        set ::INPUT_TEXT [encoding convertfrom "utf-8" "Hello World! ÄÖÜß"]
         $input send_keys $::INPUT_TEXT
 
         if {[$input attribute value] ne $::INPUT_TEXT} {
