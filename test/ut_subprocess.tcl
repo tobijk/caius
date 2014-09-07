@@ -54,6 +54,22 @@ itcl::class TestSubprocess {
         set ps [Subprocess #auto {*}$command]
         $ps wait
     }
+
+    method test_process_exists_and_pid_of {} {
+        docstr "Test that subprocess existence is determined correctly."
+
+        set command [list bash -c {echo "start"; sleep 2; echo "stop"}]
+        set ps [Subprocess #auto {*}$command]
+
+        if {![$ps process_exists]} {
+            error "Process must exist."
+        }
+        $ps wait
+
+        if {[$ps process_exists]} {
+            error "Process must not exist."
+        }
+    }
 }
 
 exit [[TestSubprocess #auto] run $::argv]

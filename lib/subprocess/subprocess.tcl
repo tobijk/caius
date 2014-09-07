@@ -104,15 +104,16 @@ package require cmdline
                     }
 
                     close \$pipe_stderr
+
+                    ::thread::mutex lock $mutex
+                    ::tsv::set _subprocess_$this started 1
+                    ::thread::cond notify $cond
+                    ::thread::mutex unlock $mutex
+
                     error \[\$e msg]
                 }
             } final {
                 close \$pipe_write_end
-
-                ::thread::mutex lock $mutex
-                ::tsv::set _subprocess_$this started 1
-                ::thread::cond notify $cond
-                ::thread::mutex unlock $mutex
             }
 
             set pid \[::pid \$pipe_stdio]
@@ -121,6 +122,11 @@ package require cmdline
             fconfigure \$pipe_stdio    -buffering none -translation binary -blocking 0
             fconfigure \$pipe_stderr   -buffering none -translation binary -blocking 0
             fconfigure \$params(stdin) -translation binary -blocking 0
+
+            ::thread::mutex lock $mutex
+            ::tsv::set _subprocess_$this started 1
+            ::thread::cond notify $cond
+            ::thread::mutex unlock $mutex
 
             fileevent \$pipe_stdio    readable \[list read_incoming \$pipe_stdio  \$params(stdout)]
             fileevent \$pipe_stderr   readable \[list read_incoming \$pipe_stderr \$params(stderr)]
@@ -236,6 +242,10 @@ package require cmdline
                 # pass
             }
         }
+    }
+
+    method pid {} {
+        return [::tsv::get _subprocess_$this pid]
     }
 
     method terminate {} {
