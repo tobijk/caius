@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.7.5" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-09-07 22:51:11 +0300">
+        <changeset>
+            <li>subprocess: fix race and allow retrieval of pid</li>
+            <li>fix race in (linux) OS::process_exists</li>
+            <li>fix encoding and validation errors in test reports</li>
+            <li>documenation updates</li>
+        </changeset>
+    </release>
     <release version="0.7.4" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-09-01 22:36:17 +0300">
         <changeset>

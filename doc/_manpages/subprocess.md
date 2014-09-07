@@ -20,19 +20,22 @@ Subprocess(3caius) -- launch and manage subprocesses
   streams to alternative Tcl channels. If a timeout is specified, the process will
   be forcefully terminated when it exceeds the timeout.
 
-* `kill`:
+* `method kill`:
   Kill the subprocess. On Unix this is equivalent to sending a SIGKILL.
 
-* `process_exists`:
+* `method pid`:
+  Return the process ID of the subprocess.
+
+* `method process_exists`:
   Check if the process is still alive.
 
-* `timeout_occurred`:
+* `method timeout_occurred`:
   Check if a timeout occurred.
 
-* `terminate`:
+* `method terminate`:
   Terminate the subprocess. On Unix this is equivalent to sending a SIGTERM.
 
-* `wait`:
+* `method wait`:
   Wait on the subprocess to end and return its exit code.
 
 ## SEE ALSO
