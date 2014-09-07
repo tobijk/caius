@@ -49,22 +49,20 @@ namespace eval OS {
     }
 
     proc process_exists {pid} {
-        if {[file exists "/proc/$pid"]} {
-
-            set fp [open "/proc/$pid/stat"]
-            set stats [read $fp]
-            close $fp
-
-            if {[regexp {\d+ \([^)]+\) (\S+)} $stats match state]} {
-                if {$state eq {Z}} {
-                    return 0
-                }
-            }
-
-            return 1
+        if {[catch { set fp [open "/proc/$pid/stat"]}] != 0} {
+            return 0
         }
 
-        return 0
+        set stats [read $fp]
+        close $fp
+
+        if {[regexp {\d+ \([^)]+\) (\S+)} $stats match state]} {
+            if {$state eq {Z}} {
+                return 0
+            }
+        }
+
+        return 1
     }
 
     proc find_executable {executable} {
