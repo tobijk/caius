@@ -29,18 +29,16 @@
  -
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:output method="xml" indent="yes" encoding="UTF-8"
-        doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-        omit-xml-declaration="yes"/>
+    <xsl:output method="xml" indent="yes" encoding="UTF-8" omit-xml-declaration="yes"/>
 
     <xsl:template match="/">
-        <!-- page start -->
-        <html xml:lang="en" lang="en" dir="ltr">
+        <html lang="en" dir="ltr">
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
                 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
                 <meta name="generator" content="Caius Test Report Generator"/>
+
+                <title>Test Report</title>
 
                 <style type="text/css">
 
@@ -143,7 +141,7 @@ span.action {
                     function toggle_visibility(target)
                     {
                         var visibility = "none";
-                        var el = document.getElementsByName(target)[0];
+                        var el = document.getElementById(target);
 
                         if(el.style.display == "none")
                         {
@@ -158,7 +156,7 @@ span.action {
                         for(var i = 0; i &lt; target_list.length; i++)
                         {
                             var visibility = "none";
-                            var el = document.getElementsByName(target_list[i])[0];
+                            var el = document.getElementById(target_list[i]);
 
                             if(el.style.display == "none")
                             {
@@ -228,7 +226,7 @@ span.action {
             <xsl:text>]</xsl:text>
         </xsl:variable>
 
-        <div name="testset::{generate-id(.)}" class="l1 {$testset.class} linkify"
+        <div id="testset::{generate-id(.)}" class="l1 {$testset.class} linkify"
                 onClick="toggle_expand({$testset.tests})">
             <b><u><xsl:value-of select="@name"/></u></b>
             <ul class="list">
@@ -263,7 +261,7 @@ span.action {
             </xsl:choose>
         </xsl:variable>
 
-        <div name="test::{generate-id(.)}" class="l2 {$test.class}" style="display: none;">
+        <div id="test::{generate-id(.)}" class="l2 {$test.class}" style="display: none;">
             <xsl:value-of select="@name"/>
             <ul class="list">
                 <li>
@@ -316,21 +314,21 @@ span.action {
         </div>
 
         <xsl:if test="description">
-            <div name="test::{generate-id(.)}::description" class="l2 info" style="display: none;">
+            <div id="test::{generate-id(.)}::description" class="l2 info" style="display: none;">
                 <xsl:comment>//</xsl:comment>
                 <xsl:copy-of select="description/*"/>
             </div>
         </xsl:if>
 
         <xsl:if test="log">
-            <div name="test::{generate-id(.)}::log" class="l2 info verbatim" style="display: none;">
+            <div id="test::{generate-id(.)}::log" class="l2 info verbatim" style="display: none;">
                 <xsl:comment>//</xsl:comment>
                 <xsl:value-of select="log"/>
             </div>
         </xsl:if>
 
         <xsl:if test="error">
-            <div name="test::{generate-id(.)}::error" class="l2 info verbatim" style="display: none;">
+            <div id="test::{generate-id(.)}::error" class="l2 info verbatim" style="display: none;">
                 <xsl:comment>//</xsl:comment>
                 <xsl:value-of select="error"/>
             </div>

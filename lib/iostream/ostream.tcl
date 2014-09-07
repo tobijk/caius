@@ -384,7 +384,7 @@ namespace eval OutputStream {
 
             if {$_handle ne {}} {
                 seek $_handle 0 start
-                set buf [read $handle]
+                set buf [read $_handle]
                 seek $_handle 0 end
             } elseif {$_buffer_file ne {}} {
                 set handle [open $_buffer_file r]

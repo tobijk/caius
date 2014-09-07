@@ -167,7 +167,7 @@ namespace eval Caius {
             $stylesheet transform $xml_testsuite result_doc
             set fp [open result.html w+]
             chan configure $fp -encoding utf-8
-            $result_doc asXML -channel $fp -indent none
+            $result_doc asXML -channel $fp -indent none -doctypeDeclaration 1
             close $fp
 
             $xml_testsuite delete

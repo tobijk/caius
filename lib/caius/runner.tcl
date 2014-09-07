@@ -228,6 +228,9 @@ namespace eval Caius {
             set out [file tempfile out_name]
             set err [file tempfile err_name]
 
+            chan configure $out -encoding binary
+            chan configure $err -encoding binary
+
             set start_time [clock milliseconds]  
             set p [Subprocess #auto -timeout $_config(timeout) -stdout $out \
                 -stderr $err {*}$_config(test_cmd)]
