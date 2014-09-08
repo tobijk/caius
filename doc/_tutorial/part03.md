@@ -43,7 +43,7 @@ available. Using the capabilities object, you initiate a session as shown in
 the following fragment:
 
 ~~~~{tcl}
-set caps [itcl::code [WebDriver::Capabilities #auto -browser_name firefox]]
+set caps [namespace which [WebDriver::Capabilities #auto -browser_name firefox]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 ~~~~
 
@@ -180,7 +180,7 @@ You can control size and position of the browser window on the screen as shown
 in this example:
 
 ~~~~{tcl}
-set caps [itcl::code [WebDriver::Capabilities #auto]]
+set caps [namespace which [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 set window [$session active_window]
 
@@ -204,7 +204,7 @@ $window set_position 10 10
 Load a URL using the `Window` object's `set_url` method:
 
 ~~~~{tcl}
-set caps [itcl::code [WebDriver::Capabilities #auto]]
+set caps [namespace which [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 $window set_url http://www.example.com
 ~~~~

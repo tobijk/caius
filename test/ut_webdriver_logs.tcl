@@ -22,7 +22,7 @@ proc new_puts {args} {
     method test_retrieve_driver_log {} {
         docstr "Fetch the driver log types and client log."
 
-        set cap [::itcl::code [WebDriver::Capabilities #auto]]
+        set cap [namespace which [WebDriver::Capabilities #auto]]
         $cap set_browser_name "chrome"
         $cap set_native_events 1
 

@@ -34,8 +34,8 @@ OOSupport(3caius) -- simplify object-oriented programming in [incr Tcl]
     set main_item [Item #auto]
     $main_item set_name   "main item"
     $main_item set_value  1
-    $main_item set_subitems [list [itcl::code $sub_item1] \
-        [itcl::code $sub_item2]]
+    $main_item set_subitems [list [namespace which $sub_item1] \
+        [namespace which $sub_item2]]
 
     # save main item as JSON
     set json_dump [$main_item to_json]

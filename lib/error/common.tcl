@@ -38,7 +38,7 @@ package require Itcl
 # @param msg             the error message associated with the exception
 #
 proc raise {exception_type msg} {
-    set exception_obj [::itcl::code [$exception_type #auto $msg]]
+    set exception_obj [namespace which [$exception_type #auto $msg]]
     error "$exception_obj" "[$exception_obj info class]: $msg"
 }
 
@@ -119,7 +119,7 @@ proc except {block exception_var clauses {final_kw ""} {final_block ""}} {
         $final_block
 
         if { !\[::itcl::is object \$$exception_var] } {
-            set $exception_var \[::itcl::code \[::TclError #auto \"\$$exception_var\"]]
+            set $exception_var \[namespace which \[::TclError #auto \"\$$exception_var\"]]
         }
 
         \$$exception_var set_stack_trace \[dict get \$__except_opts_$exception_var -errorinfo]

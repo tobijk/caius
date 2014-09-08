@@ -19,7 +19,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         docstr "Inject a piece of JavaScript, execute it synchronously retrieve
         the result."
 
-        set cap [::itcl::code [::WebDriver::Capabilities #auto]]
+        set cap [namespace which [::WebDriver::Capabilities #auto]]
         $cap set_browser_name "htmlunit"
         set result 0
 
@@ -49,7 +49,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         docstr "Inject and run a piece of JavaScript asynchronously, wait on it
         and retrieve the result."
 
-        set cap [::itcl::code [::WebDriver::Capabilities #auto]]
+        set cap [namespace which [::WebDriver::Capabilities #auto]]
         $cap set_browser_name "htmlunit"
         set result 0
 

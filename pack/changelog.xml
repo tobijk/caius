@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.8.0" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-09-09 00:39:33 +0300">
+        <changeset>
+            <li>work around incompatibilities with Itcl 4</li>
+        </changeset>
+    </release>
     <release version="0.7.5" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-09-07 22:51:11 +0300">
         <changeset>

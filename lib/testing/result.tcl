@@ -42,10 +42,10 @@ namespace eval Testing {
         private variable _errors
 
         constructor {} {
-            set _indent   [::itcl::code [OutputStream::Indent #auto "    "]]
-            set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
-            set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
+            set _indent   [namespace which [OutputStream::Indent #auto "    "]]
+            set _escape   [namespace which [OutputStream::AnsiEscapeFilter #auto]]
+            set _dos2unix [namespace which [OutputStream::NormalizeNewlines #auto unix]]
+            set _tostdout [namespace which [OutputStream::Redirect #auto stdout]]
             set _errors {}
         }
 
@@ -133,9 +133,9 @@ namespace eval Testing {
         private variable _errors
 
         constructor {} {
-            set _escape   [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
-            set _tostdout [::itcl::code [OutputStream::Redirect #auto stdout]]
+            set _escape   [namespace which [OutputStream::AnsiEscapeFilter #auto]]
+            set _dos2unix [namespace which [OutputStream::NormalizeNewlines #auto unix]]
+            set _tostdout [namespace which [OutputStream::Redirect #auto stdout]]
             set _errors {}
         }
 
@@ -207,11 +207,11 @@ namespace eval Testing {
         private variable _test_name
 
         constructor {} {
-            set _capture   [::itcl::code [OutputStream::Capture #auto]]
-            set _xmlescape [::itcl::code [OutputStream::XMLEscape #auto]]
-            set _escape    [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix  [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
-            set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
+            set _capture   [namespace which [OutputStream::Capture #auto]]
+            set _xmlescape [namespace which [OutputStream::XMLEscape #auto]]
+            set _escape    [namespace which [OutputStream::AnsiEscapeFilter #auto]]
+            set _dos2unix  [namespace which [OutputStream::NormalizeNewlines #auto unix]]
+            set _tostdout  [namespace which [OutputStream::Redirect #auto stdout]]
 
             set _errors   {}
             set _log      {}
@@ -328,11 +328,11 @@ namespace eval Testing {
         private variable _stop_time
 
         constructor {} {
-            set _capture   [::itcl::code [OutputStream::Capture #auto]]
-            set _xmlescape [::itcl::code [OutputStream::XMLEscape #auto]]
-            set _escape    [::itcl::code [OutputStream::AnsiEscapeFilter #auto]]
-            set _dos2unix  [::itcl::code [OutputStream::NormalizeNewlines #auto unix]]
-            set _tostdout  [::itcl::code [OutputStream::Redirect #auto stdout]]
+            set _capture   [namespace which [OutputStream::Capture #auto]]
+            set _xmlescape [namespace which [OutputStream::XMLEscape #auto]]
+            set _escape    [namespace which [OutputStream::AnsiEscapeFilter #auto]]
+            set _dos2unix  [namespace which [OutputStream::NormalizeNewlines #auto unix]]
+            set _tostdout  [namespace which [OutputStream::Redirect #auto stdout]]
 
             set _errors   {}
             set _log      {}

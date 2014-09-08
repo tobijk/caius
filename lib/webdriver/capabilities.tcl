@@ -94,7 +94,24 @@ namespace eval WebDriver {
 
     ::itcl::class RequiredCapabilities {
 
-        common attributes $WebDriver::Capabilities::attributes
+        common attributes {
+            { string browser_name                "htmlunit"  rw }
+            { string version                     ""          rw }
+            { bool   platform                    ""          rw }
+            { bool   javascript_enabled          true        rw }
+            { bool   takes_screenshot            true        rw }
+            { bool   handles_alerts              true        rw }
+            { bool   database_enabled            true        rw }
+            { bool   location_context_enabled    true        rw }
+            { bool   application_cache_enabled   true        rw }
+            { bool   browser_connection_enabled  true        rw }
+            { bool   css_selectors_enabled       true        rw }
+            { bool   web_storage_enabled         true        rw }
+            { bool   rotatable                   true        rw }
+            { bool   accept_ssl_certs            true        rw }
+            { bool   native_events               false       rw }
+            { ::WebDriver::Proxy  proxy          new         rw }
+        }
 
         constructor {} {}
 

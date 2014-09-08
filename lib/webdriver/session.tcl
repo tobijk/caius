@@ -114,7 +114,7 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch $_session_url]
 
             # parse capabilities
-            set caps [::itcl::code [WebDriver::Capabilities #auto]]
+            set caps [namespace which [WebDriver::Capabilities #auto]]
             $caps from_tcl [$res value]
 
             ::itcl::delete object $response
@@ -214,8 +214,8 @@ namespace eval WebDriver {
             if {[info exists windows($handle)]} {
                 set result $windows($handle)
             } else {
-                set result [::itcl::code [::WebDriver::Window #auto $handle \
-                    [::itcl::code $this]]]
+                set result [namespace which [::WebDriver::Window #auto $handle \
+                    [namespace which $this]]]
                 set windows($handle) $result
                 set _windows [array get windows]
             }
@@ -255,8 +255,8 @@ namespace eval WebDriver {
             foreach {h action} [array get h_idx] {
                 if {$action == 1} {
                     lappend result [set windows($h) \
-                        [ ::itcl::code [ \
-                            ::WebDriver::Window #auto $h [::itcl::code $this] ] \
+                        [ namespace which [ \
+                            ::WebDriver::Window #auto $h [namespace which $this] ] \
                         ] \
                     ]
                 } elseif {$action == 2} {
@@ -343,14 +343,14 @@ namespace eval WebDriver {
                 $url]
 
             if {$single} {
-                set result [::itcl::code \
+                set result [namespace which \
                     [[::WebDriver::WebElement #auto $this] from_tcl \
                         [$response value]]]
             } else {
                 set element_list [$response value]
 
                 foreach {elm} $element_list {
-                    lappend result [::itcl::code \
+                    lappend result [namespace which \
                         [[::WebDriver::WebElement #auto $this] from_tcl $elm]]
                 }
             }

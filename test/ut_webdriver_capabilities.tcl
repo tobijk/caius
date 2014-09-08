@@ -44,14 +44,14 @@ set CAPABILITIES_JSON \
     method test_webdriver_capabilities {} {
         docstr "Test that capabilities can be created and modified."
 
-        set cap [WebDriver::Capabilities new]
-        $cap set_browser_name firefox
+        WebDriver::Capabilities cap
+        cap set_browser_name firefox
 
-        if {[$cap to_json] == $::CAPABILITIES_JSON} {
+        if {[cap to_json] == $::CAPABILITIES_JSON} {
             return 0
         }
 
-        puts [$cap to_json]
+        puts [cap to_json]
 
         error "error in JSON"
     }

@@ -454,7 +454,7 @@ namespace eval WebDriver {
 
             # register or update all session cookies
             foreach {c_json} [$response value] {
-                set c_obj [::itcl::code [::WebDriver::Cookie #auto]]
+                set c_obj [namespace which [::WebDriver::Cookie #auto]]
                 $c_obj from_tcl $c_json
 
                 set c_name "[$c_obj domain]+[$c_obj name]"
@@ -621,7 +621,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/element/active]
-            set element [::itcl::code \
+            set element [namespace which \
                 [[::WebDriver::WebElement #auto $_session] from_tcl \
                     [$response value]]]
             ::itcl::delete object $response

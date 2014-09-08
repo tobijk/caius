@@ -4,9 +4,9 @@ WebDriver(3caius) -- automate browser interaction with Selenium WebDriver
 ## EXAMPLE
     package require WebDriver
 
-    set caps [WebDriver::Capabilities #auto -browser_name firefox]
-    set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub \
-        [itcl::code $caps]]
+    set caps [namespace which [WebDriver::Capabilities #auto \
+        -browser_name firefox]]
+    set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 
     $session set_logging_enabled true
 

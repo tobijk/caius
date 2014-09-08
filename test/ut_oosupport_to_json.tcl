@@ -190,13 +190,13 @@ set OBJ_OF_ARRAYS_JSON \
         docstr "Test the serialization of a compound object representing a 3D
         triangle mesh to JSON."
 
-        set v1 [::itcl::code [Vertex #auto 0.0 0.0 0.0]]
-        set v2 [::itcl::code [Vertex #auto 1.0 1.0 0.0]]
-        set v3 [::itcl::code [Vertex #auto 0.0 1.0 0.0]]
-        set v4 [::itcl::code [Vertex #auto 1.0 0.0 0.0]]
+        set v1 [namespace which [Vertex #auto 0.0 0.0 0.0]]
+        set v2 [namespace which [Vertex #auto 1.0 1.0 0.0]]
+        set v3 [namespace which [Vertex #auto 0.0 1.0 0.0]]
+        set v4 [namespace which [Vertex #auto 1.0 0.0 0.0]]
 
-        set t1 [::itcl::code [Triangle #auto $v1 $v2 $v3]]
-        set t2 [::itcl::code [Triangle #auto $v1 $v4 $v2]]
+        set t1 [namespace which [Triangle #auto $v1 $v2 $v3]]
+        set t2 [namespace which [Triangle #auto $v1 $v4 $v2]]
 
         set mesh [3DMesh #auto]
         $mesh set_triangles [list $t1 $t2]
@@ -211,8 +211,8 @@ set OBJ_OF_ARRAYS_JSON \
     method test_json_serialization_of_arrays {} {
         docstr "Test the serialization of nested arrays to JSON."
 
-        set obj1 [::itcl::code [SomeObject #auto "object 1"]]
-        set obj2 [::itcl::code [SomeObject #auto "object 2"]]
+        set obj1 [namespace which [SomeObject #auto "object 1"]]
+        set obj2 [namespace which [SomeObject #auto "object 2"]]
 
         set loas [LotsOfArrays #auto]
         $loas set_array_of_objs [list $obj1 $obj2]

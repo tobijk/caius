@@ -45,7 +45,7 @@ namespace eval WebDriver {
             }
 
             # create response object
-            set response_object [::itcl::code [::WebDriver::Response #auto]]
+            set response_object [namespace which [::WebDriver::Response #auto]]
             $response_object set_headers $headers
 
             # redirects (new session)

@@ -18,7 +18,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
     method test_webdriver_exception_on_invalid_javascript {} {
         docstr "Inject invalid JavaScript and expect a WebDriver exception to be thrown."
 
-        set cap [::itcl::code [WebDriver::Capabilities #auto]]
+        set cap [namespace which [WebDriver::Capabilities #auto]]
         $cap set_browser_name "htmlunit"
 
         except {

@@ -43,12 +43,12 @@ package require Testing
     method constructor {} {
         OOSupport::init_attributes
 
-        set obj_b [::itcl::code [::ObjectB #auto]]
+        set obj_b [namespace which [::ObjectB #auto]]
         $this set_obj_b $obj_b
 
         set result ""
         for {set i 0} {$i < 3} {incr i} {
-            lappend result [::itcl::code [::ObjectA #auto]]
+            lappend result [namespace which [::ObjectA #auto]]
         }
         $this set_obj_array $result
     }

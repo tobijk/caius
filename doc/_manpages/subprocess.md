@@ -11,6 +11,12 @@ Subprocess(3caius) -- launch and manage subprocesses
 
 ## DESCRIPTION
 
+The `Subprocess` class takes the pain out of executing subprocesses with Tcl's
+`open` command. You can launch a process, monitor its status and redirect its
+standard input and output streams to alternative Tcl channels. With the use of
+pipes, you may even communicate with the process directly, even though you might
+prefer to use the `CliDriver`(3caius) module in that case. 
+
 ## API
 
 ### ictl::class Subprocess
@@ -37,6 +43,10 @@ Subprocess(3caius) -- launch and manage subprocesses
 
 * `method wait`:
   Wait on the subprocess to end and return its exit code.
+
+## ADDITIONAL HINTS
+
+If an error occurred on invocation, `wait` will return -1.
 
 ## SEE ALSO
 

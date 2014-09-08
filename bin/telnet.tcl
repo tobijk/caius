@@ -53,8 +53,8 @@ package require Expect
         fconfigure stdin  -buffering none -translation binary -blocking 0
         fconfigure stdout -buffering line -translation binary -blocking 1
 
-        fileevent stdin  readable [list [::itcl::code $this] _do_send]
-        fileevent $_sock readable [list [::itcl::code $this] _do_receive]
+        fileevent stdin  readable [list {*}[::itcl::code $this] _do_send]
+        fileevent $_sock readable [list {*}[::itcl::code $this] _do_receive]
     }
 
     method _do_send {} {

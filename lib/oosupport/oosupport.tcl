@@ -109,7 +109,7 @@ namespace eval OOSupport {
                 if {$__attr_is_array} {
                     foreach {__item} $__value {
                         if {$__attr_is_object} {
-                            set __obj [::itcl::code [$__attr_type #auto]]
+                            set __obj [namespace which [$__attr_type #auto]]
                             $__obj from_tcl $__item
                             lappend __result $__obj
                         } else {
@@ -118,7 +118,7 @@ namespace eval OOSupport {
                     }
                 } elseif {$__attr_is_object} {
                     if {$__value ne "null"} {
-                        set __result [::itcl::code [$__attr_type #auto]]
+                        set __result [namespace which [$__attr_type #auto]]
                         $__result from_tcl $__value
                     } else {
                         set __result null
@@ -284,7 +284,7 @@ namespace eval OOSupport {
                 $attr_default ne "null" &&
                 $attr_default ne ""} \
             {
-                uplevel "set _$attr_name \"[::itcl::code [$attr_type #auto]]\""
+                uplevel "set _$attr_name \"[namespace which [$attr_type #auto]]\""
             } else {
                 uplevel "set _$attr_name \"$attr_default\""
             }
