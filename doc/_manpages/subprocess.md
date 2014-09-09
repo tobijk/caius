@@ -14,13 +14,13 @@ Subprocess(3caius) -- launch and manage subprocesses
 
 The `Popen` class takes the pain out of executing subprocesses with Tcl's
 `open` command. You can launch a process, monitor its status and redirect its
-standard input and output streams to alternative Tcl channels. With the use of
-pipes, you may even communicate with the process directly, even though you might
+standard input and output streams to alternative Tcl channels. By using pipes,
+you may even communicate with the process directly, even though you might
 prefer to use the `CliDriver`(3caius) module in that case. 
 
 ## API
 
-### ictl::class Subprocess::Popen
+### itcl::class Subprocess::Popen
 
 * `constructor` ?`-stdout` *chan*? ?`-stderr` *chan*? ?`-stdin` *chan*? ?`-timeout` *ms*?:
   Launch a subprocess and optionally redirect its standard input and output
@@ -53,7 +53,12 @@ Deleting a `Popen` object that is associated with an active process, using
 `itcl::delete object`, will implicitely terminate the process. If the process
 was terminated pre-maturely, wait will return -1.
 
+Channel descriptors passed as parameters to the `Popen` command are
+effectively moved to another thread and are hence-forth not accessible anymore
+in the calling thread. This does not apply to the standard channels *stdout*,
+*stderr* and *stdin*. They keep functioning as expected.
+
 ## SEE ALSO
 
-`signal`(7)
+`error`(3caius), `signal`(7)
 

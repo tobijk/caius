@@ -46,7 +46,7 @@
               Build great software and test it to the bones
               </div>
               <div class="direct-links">
-              Download version <a href="https://github.com/tobijk/caius/archive/0.8.0.tar.gz">0.8.0</a>
+              Download version <a href="https://github.com/tobijk/caius/archive/0.9.0.tar.gz">0.9.0</a>
               </div>
             </div>
           </div>
@@ -110,17 +110,59 @@
 
       <div class="row">
         <div class="span12">
+          <h2>Quickstart</h2>
+          <p>
+          Download the source tarball from <a href="https://github.com/tobijk/caius/archive/0.9.0.tar.gz">here</a>.
+          In order to run Caius, you need to install a number of additional packages.
+          </p>
+          <h3>Dependencies</h3>
+          <p>
+          On OpenSUSE, install the required packages with <tt>zypper</tt> by executing the following command:
+          </p>
+          <pre style="padding: 5px 10px; margin: 2ex 0;
+            background-color: #eeeeee;">sudo zypper install tcl tcllib expect tdom</pre>
+          <p>
+          On Debian or Ubuntu, install the dependencies by running <tt>apt-get</tt> instead:
+          </p>
+          <pre style="padding: 5px 10px; margin: 2ex 0;
+            background-color: #eeeeee;">sudo apt-get install tcl8.6 tcllib tcl-thread itcl3 expect tdom</pre>
+          <p>
+          On some versions of Debian, you may have to install the package <tt>tclthread</tt> instead of
+          <tt>tcl-thread</tt>.
+          </p>
+          <h3>Installation</h3>
+          <p>
+          Unpack the sources and execute the <tt>install.tcl</tt> script. You should see the following output:
+          </p>
+          <pre style="padding: 5px 10px; margin: 2ex 0;
+              background-color: #eeeeee;">tobias@neil-vm:~/caius-0.9.0$ sudo ./install.tcl
+* Checking Tcl shell /usr/bin/tclsh...              
+  - Check Tcl version >= 8.6:                          ok
+  - Check if interpreter is thread-enabled:            ok
+  - Check for the Thread package:                      ok
+  - Check for tcllib (require json):                   ok
+  - Check for [incr Tcl] extension:                    ok
+  - Check for Expect:                                  ok
+  - Check for tdom extension:                          ok
+* Installing to /usr/local/lib/tcltk/caius...       
+  - Copying files:                                     done</pre>
+          <p>
+          Next, you should have a look at the <a href="tutorial/part01.html#writing-tests">tutorial</a>
+          for a brief introduction to writing and executing tests.
+          </p>
+        </div>
+        <div class="span12">
           <h2>Usage Scenarios</h2>
           <p>
           The combination of Expect and WebDriver makes Caius particularly suitable for building
-          large integration test setups for headless embedded systems in industrial automation
-          environments. If the majority of your systems can be configured and controlled from the
-          command line or a Web-based management console, then Caius can be used to test component
-          functionality and interaction at network scale.
+          large integration test setups for headless embedded systems, for example in industrial
+          automation environments. If the majority of your systems can be configured and controlled
+          from the command line or a Web-based management console, then Caius can be used to test
+          component functionality and interaction at network scale.
           </p>
           <p>
           Even if you are dealing with much smaller test environments or if your test assets are
-          mainly written in other languages than Tcl, you can use Caius as a test harness for test
+          mainly written in languages other than Tcl, you can use Caius as a test harness for test
           execution and report generation.
           </p>
         </div>

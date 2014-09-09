@@ -18,11 +18,12 @@ WebDriver(3caius) -- automate browser interaction with Selenium WebDriver
     $window set_url http://www.example.com
 
     set element [$window element by_id username]
+
     $element click
     $element clear
     $element send_keys "jonathan"
-    itcl::delete object $element
 
+    itcl::delete object $element
     itcl::delete object $session
 
 ## DESCRIPTION
