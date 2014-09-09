@@ -20,7 +20,7 @@ Markdown(3caius) -- basic Markdown processor
     esse cillum dolore eu fugiat nulla pariatur...
     "
 
-    puts [::markdown::convert $markdown]
+    puts [::Markdown::convert $markdown]
 
 ### Result:
 
@@ -54,7 +54,7 @@ Common extensions are *not* supported at this time.
 
 ## API
 
-* `markdown::convert` *markdown*:
+* `Markdown::convert` *markdown*:
   Transform *markdown* to HTML. The result of the conversion is an XHTML 1.0
   fragment.
 

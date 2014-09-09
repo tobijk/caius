@@ -188,7 +188,7 @@ namespace eval Caius {
                 append xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" \
                            "<testset name=\"${_config(test_name)}\">\n" \
                            "  <test name=\"${_config(test_name)}\" time=\"$total_time\" verdict=\"${verdict}\">\n" \
-                           "    <description>[::markdown::convert ```${_config(test_cmd)}```]</description>\n" \
+                           "    <description>[::Markdown::convert ```${_config(test_cmd)}```]</description>\n" \
                            "    <log>" \
                            ${out_data} \
                            "</log>\n"
@@ -226,20 +226,32 @@ namespace eval Caius {
             cd $_config(work_dir)
 
             set out [file tempfile out_name]
-            set err [file tempfile err_name]
-
             chan configure $out -encoding binary
+            set err [file tempfile err_name]
             chan configure $err -encoding binary
 
-            set start_time [clock milliseconds]  
-            set p [Subprocess #auto -timeout $_config(timeout) -stdout $out \
-                -stderr $err {*}$_config(test_cmd)]
-            set exit_code [$p wait]
-            set stop_time [clock milliseconds]
+            set timeout_occurred 0
+            set start_time [clock milliseconds]
+            except {
+                set p [Subprocess::Popen #auto -timeout $_config(timeout) \
+                        -stdout $out \
+                        -stderr $err {*}$_config(test_cmd) \
+                    ]
 
+                set exit_code [$p wait]
+                set timeout_occurred [$p timeout_occurred]
+
+                itcl::delete object $p
+            } e {
+                ::Subprocess::Error {
+                    set err [open $err_name a]
+                    puts -nonewline $err "[$e info class]: [$e msg]"
+                    close $err
+                    set exit_code -3
+                }
+            }
+            set stop_time  [clock milliseconds]
             set total_time [expr $stop_time - $start_time]
-            set timeout_occurred [$p timeout_occurred]
-            itcl::delete object $p
 
             if {$timeout_occurred} {
                 set verdict "TIMEOUT"

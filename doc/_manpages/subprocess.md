@@ -5,13 +5,14 @@ Subprocess(3caius) -- launch and manage subprocesses
 
     package require Subprocess
 
-    set p [Subprocess #auto cmd]
-
+    set p [Subprocess::Popen #auto cmd]
     set rval [$p wait]
+
+    ::itcl::delete object $p
 
 ## DESCRIPTION
 
-The `Subprocess` class takes the pain out of executing subprocesses with Tcl's
+The `Popen` class takes the pain out of executing subprocesses with Tcl's
 `open` command. You can launch a process, monitor its status and redirect its
 standard input and output streams to alternative Tcl channels. With the use of
 pipes, you may even communicate with the process directly, even though you might
@@ -19,12 +20,14 @@ prefer to use the `CliDriver`(3caius) module in that case.
 
 ## API
 
-### ictl::class Subprocess
+### ictl::class Subprocess::Popen
 
 * `constructor` ?`-stdout` *chan*? ?`-stderr` *chan*? ?`-stdin` *chan*? ?`-timeout` *ms*?:
   Launch a subprocess and optionally redirect its standard input and output
   streams to alternative Tcl channels. If a timeout is specified, the process will
   be forcefully terminated when it exceeds the timeout.
+
+  Raises a `Subprocess::Error` if invocation fails for some reason.
 
 * `method kill`:
   Kill the subprocess. On Unix this is equivalent to sending a SIGKILL.
@@ -46,7 +49,9 @@ prefer to use the `CliDriver`(3caius) module in that case.
 
 ## ADDITIONAL HINTS
 
-If an error occurred on invocation, `wait` will return -1.
+Deleting a `Popen` object that is associated with an active process, using
+`itcl::delete object`, will implicitely terminate the process. If the process
+was terminated pre-maturely, wait will return -1.
 
 ## SEE ALSO
 

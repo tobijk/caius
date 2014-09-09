@@ -244,7 +244,7 @@ namespace eval Testing {
         }
 
         method test_desc {text} {
-            set _desc [::markdown::convert $text]
+            set _desc [::Markdown::convert $text]
         }
 
         method test_end {verdict milliseconds} {

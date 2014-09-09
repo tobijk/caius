@@ -123,7 +123,7 @@ itcl::class MyTest {
 
 Docstrings are a concept stolen from Python. They are a special feature
 of Caius and not generally available in Tcl. They only work in test methods.
-The `docstr` command *must* be the very first statement in the method body.
+The `docstr` command must be the *very first* statement in the method body.
 
 Docstrings are written in [markdown syntax](http://daringfireball.net/projects/markdown/syntax).
 They are included in the test results output and converted to HTML for 

@@ -32,7 +32,7 @@
 ##
 # \brief Functions for converting markdown to HTML.
 #
-namespace eval markdown {
+namespace eval Markdown {
 
     namespace export convert
 
@@ -54,7 +54,7 @@ namespace eval markdown {
         set markdown [string trim $markdown]
 
         # COLLECT REFERENCES
-        array set ::markdown::_references [collect_references markdown]
+        array set ::Markdown::_references [collect_references markdown]
 
         # PROCESS
         return [apply_templates markdown]
@@ -489,7 +489,7 @@ namespace eval markdown {
 
                         if {$lbl eq {}} { set lbl $txt }
 
-                        lassign $::markdown::_references([string tolower $lbl]) url title
+                        lassign $::Markdown::_references([string tolower $lbl]) url title
 
                         set url [html_escape [string trim $url {<> }]]
                         set txt [parse_inline $txt]

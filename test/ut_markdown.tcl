@@ -28,7 +28,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
             set html [read $fp]
             close $fp
 
-            set result [::markdown::convert $markdown]
+            set result [::Markdown::convert $markdown]
 
             if {$result ne $html} {
                 error "conversion of '$markdown_file' didn't \
