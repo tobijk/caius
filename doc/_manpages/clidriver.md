@@ -59,9 +59,21 @@ management.
   Closes the connection to and terminates the subprocess associated with this
   object.
 
+* `method kill`:
+  Kills the subprocess. On Unix this is equivalent to sending a SIGKILL.
+
 * `method match_max` ?*size*?:
   Sets or gets the maximum match buffer size for the `spawn_id` associated with
   this object.
+
+* `method pid`:
+  Returns the process ID of the subprocess.
+
+* `method process_exists`:
+  Returns true while the subprocess has not exited.
+
+* `method terminate`:
+  Terminates the subprocess. On Unix this is equivalent to sending a SIGTERM.
 
 ### itcl::class CliDriver::Spawn
 

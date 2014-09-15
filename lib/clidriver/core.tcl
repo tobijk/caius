@@ -81,7 +81,7 @@ namespace eval CliDriver {
 
             if {$_spawn_id ne ""} {
                 except {
-                    set pid [exp_pid -i $_spawn_id]
+                    set pid [$this pid]
                     ::close -i $_spawn_id
 
                     # hack to reap dead background processes
@@ -90,12 +90,12 @@ namespace eval CliDriver {
                     # if spawn_id was pointing to a process
                     if {$pid} {
 
-                        if {[OS process_exists $pid]} {
-                            OS terminate $pid
+                        if {[::OS::process_exists $pid]} {
+                            ::OS::terminate $pid
                             after 500
 
-                            if {[OS process_exists $pid]} {
-                                OS kill $pid
+                            if {[OS::process_exists $pid]} {
+                                ::OS::kill $pid
                             }
                         }
 
@@ -143,6 +143,40 @@ namespace eval CliDriver {
         # Returns the `spawn_id` associated with this object.
         method spawn_id {} {
             return $_spawn_id
+        }
+
+        ##
+        # Returns the process ID of the subprocess.
+        method pid {} {
+            set pid 0
+
+            if {[catch {
+                set pid [exp_pid -i $_spawn_id]
+            }] != 0} {}
+
+            return $pid
+        }
+
+        method terminate {} {
+            if {[$this process_exists]} {
+                ::OS::terminate [$this pid]
+            }
+        }
+
+        method kill {} {
+            if {[$this process_exists]} {
+                ::OS::kill [$this pid]
+            }
+        }
+
+        method process_exists {} {
+            set pid [$this pid]
+
+            if {$pid && [::OS::process_exists $pid]} {
+                return 1
+            }
+
+            return 0
         }
     }
 }
