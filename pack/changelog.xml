@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.9.1" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-09-15 23:23:39 +0300">
+        <changeset>
+            <li>clidirver: add methods pid, kill, terminate, process_exists<li>
+            <li>documentation updates and fixes</li>
+        </changeset>
+    </release>
     <release version="0.9.0" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-09-09 22:38:01 +0300">
         <changeset>

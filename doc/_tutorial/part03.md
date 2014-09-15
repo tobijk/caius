@@ -420,7 +420,7 @@ if {[$element1 equals $element2]} {
 ~~~~
 
 Be aware that `$element2` must be a fully qualified object reference obtained
-by a call to `itcl::code` or `namespace which`.
+by a call to `namespace which`.
 
 ## Taking Screenshots
 
