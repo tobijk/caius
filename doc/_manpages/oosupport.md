@@ -106,12 +106,12 @@ JSON representation.
 
 ## API
 
-* `init_attributes`:
+* `OOSupport::init_attributes`:
   In a constructor, bring to life member variables according to the
   `common attributes` declaration and initialize them with specified default
   values.
 
-* `bless_attributes` ?*-opts*?:
+* `OOSupport::bless_attributes` ?*-opts*?:
   In the body of a class definition, auto-generate getter and setter methods
   for members according to the *access* specification of each attribute.
 
