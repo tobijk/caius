@@ -49,11 +49,14 @@ namespace eval Caius {
             puts "Options:                                                              "
             puts "                                                                      "
             puts " -d, --work-dir <dir>  Change working directory before running tests. "
+            puts " -f, --format <fmt>    Output test results either in Caius' native    "
+            puts "                       'xml' result format or as 'junit' XML.         "
             puts "                                                                      "
         }
 
         method parse_command_line {{argv {}}} {
             set _config(work_dir) .
+            set _config(outformat) xml
 
             if {[llength $argv] == 0} {
                 lappend argv --help-me-please-i-have-no-clue
@@ -86,6 +89,24 @@ namespace eval Caius {
                         set _config(work_dir) $v
                         if {![file isdirectory $v]} {
                             raise ::Caius::Error "'$v' does not exist or isn't a directory"
+                        }
+                    }
+                    -f -
+                    --format {
+                        if {$v eq {}} {
+                            set v [lindex $argv [incr i]]
+                        }
+                        switch $v {
+                            "xml"   -
+                            "junit" {
+                                set _config(outformat) $v
+
+                                # make sure this propagates to children
+                                set ::env(CAIUS_OUTPUT_FORMAT) $v
+                            }
+                            default {
+                                raise RuntimeError "unknown output format '$v'."
+                            }
                         }
                     }
                     default {
@@ -151,7 +172,8 @@ namespace eval Caius {
 
                 except {
                     puts "Running '$cmd'"
-                    $runner execute "-d $cwd/$subdir -t $timeout $cmd"
+                    $runner execute "-f ${_config(outformat)} \
+                        -d $cwd/$subdir -t $timeout $cmd"
                 } e {
                     ::Exception {
                         puts stderr "Warning: [$e msg]"

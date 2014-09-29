@@ -42,6 +42,11 @@ namespace eval Testing {
             set tests_to_run {}
             set special_action none
 
+            # pre-initialize from environment
+            if {[info exists ::env(CAIUS_OUTPUT_FORMAT)]} {
+                set _outformat $::env(CAIUS_OUTPUT_FORMAT)
+            }
+
             for {set i 0} {$i < [llength $argv]} {incr i} {
                 set o [lindex $argv $i]
                 set v {}

@@ -56,6 +56,9 @@ namespace eval Caius {
             puts "Options:                                                              "
             puts "                                                                      "
             puts " -d, --work-dir=<dir>   Change working directory before running tests."
+            puts " -f, --format <fmt>     Output test results in native 'xml' or 'junit'"
+            puts "                        format. Note that the runner only converts the"
+            puts "                        input to XML if it is not already XML.        "
             puts " -n, --test-name=<name> Set test name for non-native tests that don't "
             puts "                        produce a result XML.                         "
             puts " -t, --timeout=<sec>    Timeout in seconds after which to abort.      "
@@ -65,10 +68,12 @@ namespace eval Caius {
 
         method parse_command_line {{argv {}}} {
             set test_cmd {}
+
             array unset _config
             set _config(timeout) 0
             set _config(out_file) result.xml
             set _config(work_dir) .
+            set _config(outformat) xml
 
             for {set i 0} {$i < [llength $argv]} {incr i} {
                 set o [lindex $argv $i]
@@ -91,6 +96,24 @@ namespace eval Caius {
                         set _config(work_dir) $v
                         if {![file isdirectory $v]} {
                             raise ::Caius::Error "'$v' does not exist or isn't a directory"
+                        }
+                    }
+                    -f -
+                    --format {
+                        if {$v eq {}} {
+                            set v [lindex $argv [incr i]]
+                        }
+                        switch $v {
+                            "xml"   -
+                            "junit" {
+                                set _config(outformat) $v
+
+                                # make sure this propagates to children
+                                set ::env(CAIUS_OUTPUT_FORMAT) $v
+                            }
+                            default {
+                                raise RuntimeError "unknown output format '$v'."
+                            }
                         }
                     }
                     -t -
@@ -125,7 +148,7 @@ namespace eval Caius {
                             set _config(test_binary) $test_cmd
                             set test_cmd [file normalize $test_cmd]
 
-                            append test_cmd { } [lrange $argv [incr i] end]
+                            append test_cmd " " [lrange $argv [incr i] end]
                             set _config(test_cmd) $test_cmd
                             break
                         }
@@ -181,24 +204,69 @@ namespace eval Caius {
             set ms [expr $milliseconds % 1000]
             set total_time [format "%02d:%02d.%03d" $m $s $ms]
 
+            proc xml_escape {text} {
+                return [string map {& &amp; < &lt; > &gt; \" &quot;} $text]
+            }
+
             if {$xml_dom eq {}} {
-                set out_data [string map {& &amp; < &lt; > &gt; \" &quot;} $out_data]
-                set err_data [string map {& &amp; < &lt; > &gt; \" &quot;} $err_data]
+                set out_data  [xml_escape $out_data]
+                set err_data  [xml_escape $err_data]
+                set test_cmd  [xml_escape [concat {*}$_config(test_cmd)]]
+                set test_name [xml_escape [concat {*}$_config(test_name)]]
 
-                append xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" \
-                           "<testset name=\"${_config(test_name)}\">\n" \
-                           "  <test name=\"${_config(test_name)}\" time=\"$total_time\" verdict=\"${verdict}\">\n" \
-                           "    <description>[::Markdown::convert ```${_config(test_cmd)}```]</description>\n" \
-                           "    <log>" \
-                           ${out_data} \
-                           "</log>\n"
+                if {$_config(outformat) eq "junit"} {
+                    set timestamp [clock format \
+                        [expr ([clock milliseconds] - $milliseconds) / 1000] \
+                            -format "%Y-%m-%dT%H:%M:%S"]
 
-                if {$err_data ne {}} {
-                    append xml "    <error>${err_data}</error>\n"
+                    if {$verdict eq "FAIL"} {
+                        set failures 1
+                    } else {
+                        set failures 0
+                    }
+
+                    append xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" \
+                               "<testsuite name=\"$test_cmd\" " \
+                               "  timestamp=\"$timestamp\" " \
+                               "  hostname=\"[info hostname]\" " \
+                               "  tests=\"1\" " \
+                               "  failures=\"$failures\" " \
+                               "  errors=\"0\" " \
+                               "  time=\"[expr $milliseconds / 1000.0]\">\n" \
+                               "  <testcase classname=\"$test_name\" " \
+                               "    name=\"$test_cmd\" "\
+                               "    time=\"[expr $milliseconds / 1000.0]\">\n"
+
+                    if {$verdict eq "FAIL"} {
+                        append xml "<failure type=\"failure\"></failure>"
+
+                    }
+
+                    if {$out_data ne {}} {
+                        append xml "    <system-out>$out_data</system-out>\n"
+                    }
+                    if {$err_data ne {}} {
+                        append xml "    <system-err>$err_data</system-err>\n"
+                    }
+
+                    append xml "  </testcase>\n" \
+                               "</testsuite>\n"
+                } else {
+                    append xml "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" \
+                               "<testset name=\"$test_name\">\n" \
+                               "  <test name=\"$test_name\" time=\"$total_time\" verdict=\"${verdict}\">\n" \
+                               "    <description>[::Markdown::convert ```$test_cmd```]</description>\n" \
+                               "    <log>" \
+                               ${out_data} \
+                               "</log>\n"
+
+                    if {$err_data ne {}} {
+                        append xml "    <error>${err_data}</error>\n"
+                    }
+
+                    append xml "  </test>\n" \
+                               "</testset>\n"
                 }
-
-                append xml "  </test>\n" \
-                           "</testset>\n"
 
                 except {
                     set xml_dom [dom parse $xml]
