@@ -360,7 +360,7 @@ namespace eval Testing {
             set timestamp [clock format \
                 [expr $_start_time / 1000] -format "%Y-%m-%dT%H:%M:%S"]
 
-            puts "<testsuite name=\"\"\
+            puts "<testsuite name=\"${_class_name}\"\
                 timestamp=\"$timestamp\"\
                 hostname=\"[info hostname]\"\
                 tests=\"$_num_total_tests\"\
