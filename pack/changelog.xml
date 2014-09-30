@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.10.0" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-09-30 23:56:12 +0300">
+        <changeset>
+            <li>document how to generate native test reports in Jenkins</li>
+            <li>JUnitFormatteR: give testsuite a name</li>
+            <li>caius run/runplan can (let) generate JUnit XML</li>
+        </changeset>
+    </release>
     <release version="0.9.1" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-09-15 23:23:39 +0300">
         <changeset>
