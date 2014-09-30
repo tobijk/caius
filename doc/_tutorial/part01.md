@@ -233,3 +233,23 @@ file named *result.xml* plus any number of artifacts.
 The test report will be created inside the given directory as one or more HTML
 files.
 
+## Integration with Jenkins
+
+In Jenkins, create a new project and configure your build as you normally would.
+Then open the project settings, go to the *Build* section and add an extra build
+step for running the tests. The following snippet might serve as an example:
+
+    cd test
+    rm -fr spool/*
+    caius runplan -d spool -f junit testplan.xml
+
+Note that we pass `-f junit`  to `caius runplan` indicating that test results
+should be emitted in JUnit XML result format. Next, go to section *Post-build
+Actions* and choose *Publish JUnit test result report*. As the fileset specify
+
+    test/spool/*/result.xml
+
+Finally double check that Jenkins has all the necessary permissions and access
+to relevant infrastructure required for executing your tests successfully.
+Trigger a build and enjoy your test results being reported natively in Jenkins.
+
