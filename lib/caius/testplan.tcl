@@ -155,6 +155,8 @@ namespace eval Caius {
 
             set count 0
             set cwd [pwd]
+            set exit_code 0
+
             foreach {child} [$root childNodes] {
                 if {[$child nodeName] ne {run}} { continue }
 
@@ -172,18 +174,24 @@ namespace eval Caius {
 
                 except {
                     puts "Running '$cmd'"
-                    $runner execute "-f ${_config(outformat)} \
-                        -d $cwd/$subdir -t $timeout $cmd"
+                    set rval [$runner execute "-f ${_config(outformat)} \
+                        -d $cwd/$subdir -t $timeout $cmd"]
+
+                    if {$rval != 0} {
+                        set exit_code 1
+                    }
                 } e {
                     ::Exception {
                         puts stderr "Warning: [$e msg]"
+                        set exit_code 1
                     }
                 }
             }
 
             ::itcl::delete object $runner
+            $testplan delete
 
-            return 0
+            return $exit_code
         }
     }
 }
