@@ -35,28 +35,36 @@ namespace eval Caius {
     ::itcl::class Testplan {
 
         private variable _config
+        private variable _count
+
+        constructor {} {
+            set _count 0
+        }
 
         method usage {} {
-            puts "                                                                      "
-            puts "Usage: caius runplan \[OPTIONS] <testplan>                            "
-            puts "                                                                      "
-            puts "Summary:                                                              "
-            puts "                                                                      "
-            puts " Executes all tests listed in the testplan. The testplan is written in"
-            puts " an XML-based format. An example testplan can be found in the source  "
-            puts " distribution.                                                        "
-            puts "                                                                      "
-            puts "Options:                                                              "
-            puts "                                                                      "
-            puts " -d, --work-dir <dir>  Change working directory before running tests. "
-            puts " -f, --format <fmt>    Output test results either in Caius' native    "
-            puts "                       'xml' result format or as 'junit' XML.         "
-            puts "                                                                      "
+            puts "                                                                       "
+            puts "Usage: caius runplan \[OPTIONS] <testplan>                             "
+            puts "                                                                       "
+            puts "Summary:                                                               "
+            puts "                                                                       "
+            puts " Executes all tests listed in the testplan. The testplan is written in "
+            puts " an XML-based format. An example testplan can be found in the source   "
+            puts " distribution.                                                         "
+            puts "                                                                       "
+            puts "Options:                                                               "
+            puts "                                                                       "
+            puts " -d, --work-dir <dir>  Change working directory before running tests.  "
+            puts " -f, --format <fmt>    Output test results either in Caius' native     "
+            puts "                       'xml' result format or as 'junit' XML.          "
+            puts " -j, --jobs <num>      Run this many tests in parallel, if the testplan"
+            puts "                       contains parallelizable sections.               "
+            puts "                                                                       "
         }
 
         method parse_command_line {{argv {}}} {
             set _config(work_dir) .
             set _config(outformat) xml
+            set _config(jobs) 1
 
             if {[llength $argv] == 0} {
                 lappend argv --help-me-please-i-have-no-clue
@@ -86,10 +94,10 @@ namespace eval Caius {
                     -d -
                     --work-dir {
                         if {$v eq {}} { set v [lindex $argv [incr i]] }
-                        set _config(work_dir) $v
                         if {![file isdirectory $v]} {
-                            raise ::Caius::Error "'$v' does not exist or isn't a directory"
+                            raise ::Caius::Error "'$v' does not exist or isn't a directory."
                         }
+                        set _config(work_dir) $v
                     }
                     -f -
                     --format {
@@ -108,6 +116,14 @@ namespace eval Caius {
                                 raise RuntimeError "unknown output format '$v'."
                             }
                         }
+                    }
+                    -j -
+                    --jobs {
+                        if {$v eq {}} { set v [lindex $argv [incr i]] }
+                        if {![string is integer $v] || ($v < 0)} {
+                            raise ::Caius::Error "'$v' is not an unsigned integer."
+                        }
+                        set _config(jobs) $v
                     }
                     default {
                         if {$i < [expr [llength $argv] - 1]} {
@@ -135,6 +151,7 @@ namespace eval Caius {
         method execute {argv} {
             parse_command_line $argv
 
+            # load testplan XML from disk
             set fp {}
             except {
                 set fp [open $_config(testplan) r]
@@ -147,50 +164,111 @@ namespace eval Caius {
                 if {$fp ne {}} { close $fp }
             }
 
-            set runner [::Caius::Runner #auto]
-            set root [$testplan documentElement]
+            # reset internal counter
+            set _count 0
 
-            # change work dir
+            # iterate over XML and execute tests
+            set old_work_dir [pwd]
             cd $_config(work_dir)
+            set exit_code [process_testplan [$testplan documentElement]]
+            cd $old_work_dir
 
-            set count 0
-            set cwd [pwd]
+            $testplan delete
+            return $exit_code
+        }
+
+        method process_testplan {root {wait 1} {work_dir {}}} {
             set exit_code 0
+            set threads {}
+
+            if {$work_dir eq {}} {
+                set work_dir [pwd]
+            }
 
             foreach {child} [$root childNodes] {
-                if {[$child nodeName] ne {run}} { continue }
 
-                set cmd [string trim [$child text]]
-                set timeout [$child getAttribute timeout 0]
-
-                if {[file pathtype $cmd] ne {absolute}} {
-                    set cmd "$_config(testplan_dir)/$cmd"
+                # determine what action to take
+                switch [$child nodeName] {
+                    parallel {
+                        incr exit_code [process_testplan $child 0 $work_dir]
+                        continue
+                    }
+                    run {
+                        # go on
+                    }
+                    default {
+                        continue
+                    }
                 }
 
-                set subdir [format "%03d_%s" [incr count] \
-                    [regsub {[-.]} [file tail [lindex [split $cmd] 0]] {_}]\
+                # fix parameters for runner
+                set command [string trim [$child text]]
+                set timeout [$child getAttribute timeout 0]
+                set outformat $_config(outformat)
+
+                if {[file pathtype $command] ne {absolute}} {
+                    set command "$_config(testplan_dir)/$command"
+                }
+
+                set subdir [format "%03d_%s" [incr _count] \
+                    [regsub {[-.]} [file tail [lindex [split $command] 0]] {_}]\
                 ]
-                file mkdir $cwd/$subdir
+                file mkdir $work_dir/$subdir
 
-                except {
-                    puts "Running '$cmd'"
-                    set rval [$runner execute "-f ${_config(outformat)} \
-                        -d $cwd/$subdir -t $timeout $cmd"]
+                # initiate test exeuction in thread
+                lappend threads [if "1" "::thread::create -joinable {
+                    package require Caius
 
-                    if {$rval != 0} {
-                        set exit_code 1
+                    set command   {$command}
+                    set work_dir  {$work_dir/$subdir}
+                    set timeout   {$timeout}
+                    set outformat {$outformat}
+
+                    return \[::Caius::Testplan::run_test \$command \$work_dir \\
+                        \$timeout \$outformat\]
+                }"]
+
+                # wait if queue is full, i.e. max jobs running
+                if {$wait || [llength $threads] >= $_config(jobs)} {
+                    if {[::thread::join [lindex $threads 0]] != 0} {
+                        incr exit_code
                     }
-                } e {
-                    ::Exception {
-                        puts stderr "Warning: [$e msg]"
-                        set exit_code 1
-                    }
+                    set threads [lreplace $threads 0 0]
+                }
+            }
+
+            # wait on last threads to finish up
+            while {[llength $threads] > 0} {
+                if {[::thread::join [lindex $threads 0]] != 0} {
+                    incr exit_code
+                }
+                set threads [lreplace $threads 0 0]
+            }
+
+            return $exit_code
+        }
+
+        proc run_test {command work_dir timeout outformat} {
+            set exit_code 0
+            set runner [::Caius::Runner #auto]
+
+            except {
+                puts "Running '$command'"
+
+                set rval [$runner execute "-f $outformat -d $work_dir \
+                    -t $timeout $command"]
+
+                if {$rval != 0} {
+                    set exit_code 1
+                }
+            } e {
+                ::Exception {
+                    puts stderr "Error: [$e msg]"
+                    set exit_code 1
                 }
             }
 
             ::itcl::delete object $runner
-            $testplan delete
-
             return $exit_code
         }
     }

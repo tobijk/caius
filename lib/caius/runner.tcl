@@ -161,8 +161,15 @@ namespace eval Caius {
                 exit 1
             }
 
+            # set test name to test binary if nothing else
             if {![info exists _config(test_name)]} {
                 set _config(test_name) [file tail $_config(test_binary)]
+            }
+
+            # make sure reports go to work dir
+            if {[file pathtype $_config(out_file)] ne "absolute"} {
+                set _config(out_file) [file normalize \
+                    $_config(work_dir)/$_config(out_file)]
             }
         }
 
@@ -290,9 +297,6 @@ namespace eval Caius {
         method execute {argv} {
             parse_command_line $argv
 
-            # set working directory
-            cd $_config(work_dir)
-
             set out [file tempfile out_name]
             chan configure $out -encoding binary
             set err [file tempfile err_name]
@@ -301,10 +305,14 @@ namespace eval Caius {
             set timeout_occurred 0
             set start_time [clock milliseconds]
             except {
-                set p [Subprocess::Popen #auto -timeout $_config(timeout) \
-                        -stdout $out \
-                        -stderr $err {*}$_config(test_cmd) \
-                    ]
+                ::tsv::lock __caius_runner_startup__ {
+                    cd $_config(work_dir)
+
+                    set p [Subprocess::Popen #auto -timeout $_config(timeout) \
+                            -stdout $out \
+                            -stderr $err {*}$_config(test_cmd) \
+                        ]
+                }
 
                 set exit_code [$p wait]
                 set timeout_occurred [$p timeout_occurred]
