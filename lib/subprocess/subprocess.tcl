@@ -69,8 +69,10 @@ namespace eval Subprocess {
                 }
             }
 
-            ::tsv::set _subprocess_$this started 0
-            ::tsv::set _subprocess_$this error   ""
+            set parent_thread_id [::thread::id]
+
+            ::tsv::set _subprocess_${parent_thread_id}_${this} started 0
+            ::tsv::set _subprocess_${parent_thread_id}_${this} error   ""
 
             set _thread_id [if 1 "::thread::create -joinable {
                 package require OS
@@ -102,7 +104,7 @@ namespace eval Subprocess {
                 array set params {[array get params]}
                 set stop($this) false
 
-                ::tsv::set _subprocess_$this status -1
+                ::tsv::set _subprocess_${parent_thread_id}_${this} status -1
                 lassign \[chan pipe] pipe_stderr pipe_write_end
 
                 except {
@@ -116,8 +118,8 @@ namespace eval Subprocess {
                         close \$pipe_stderr
 
                         ::thread::mutex lock $mutex
-                        ::tsv::set _subprocess_$this error \[\$e msg]
-                        ::tsv::set _subprocess_$this started 1
+                        ::tsv::set _subprocess_${parent_thread_id}_${this} error \[\$e msg]
+                        ::tsv::set _subprocess_${parent_thread_id}_${this} started 1
                         ::thread::cond notify $cond
                         ::thread::mutex unlock $mutex
 
@@ -128,14 +130,14 @@ namespace eval Subprocess {
                 }
 
                 set pid \[::pid \$pipe_stdio]
-                ::tsv::set _subprocess_$this pid \$pid
+                ::tsv::set _subprocess_${parent_thread_id}_${this} pid \$pid
 
                 fconfigure \$pipe_stdio    -buffering none -translation binary -blocking 0
                 fconfigure \$pipe_stderr   -buffering none -translation binary -blocking 0
                 fconfigure \$params(stdin) -translation binary -blocking 0
 
                 ::thread::mutex lock $mutex
-                ::tsv::set _subprocess_$this started 1
+                ::tsv::set _subprocess_${parent_thread_id}_${this} started 1
                 ::thread::cond notify $cond
                 ::thread::mutex unlock $mutex
 
@@ -190,7 +192,7 @@ namespace eval Subprocess {
                         }
                     }
 
-                    ::tsv::set _subprocess_$this timeout_occurred 1
+                    ::tsv::set _subprocess_${parent_thread_id}_${this} timeout_occurred 1
                 }
 
                 # close alternative channels
@@ -229,11 +231,11 @@ namespace eval Subprocess {
                 [OutputStream::transforms_destroy_code stdout]
                 [OutputStream::transforms_destroy_code stderr]
 
-                ::tsv::set _subprocess_$this status \$exitcode
+                ::tsv::set _subprocess_${parent_thread_id}_${this} status \$exitcode
             }"]
 
             ::thread::mutex lock $mutex
-            while {![::tsv::get _subprocess_$this started]} {
+            while {![::tsv::get _subprocess_${parent_thread_id}_${this} started]} {
                 ::thread::cond wait $cond $mutex
             }
             ::thread::mutex unlock $mutex
@@ -241,14 +243,18 @@ namespace eval Subprocess {
             ::thread::mutex destroy $mutex
             ::thread::cond destroy $cond
 
-            if {[set err [::tsv::get _subprocess_$this error]] ne ""} {
+            if {[set err [::tsv::get \
+                    _subprocess_${parent_thread_id}_${this} error]] ne ""} \
+            {
                 raise ::Subprocess::Error $err
             }
         }
 
         destructor {
+            set parent_thread_id [::thread::id]
+
             $this kill
-            ::tsv::unset _subprocess_$this
+            ::tsv::unset _subprocess_${parent_thread_id}_${this}
 
             except {
                 ::thread::join $_thread_id
@@ -260,24 +266,32 @@ namespace eval Subprocess {
         }
 
         method pid {} {
-            return [::tsv::get _subprocess_$this pid]
+            set parent_thread_id [::thread::id]
+            return [::tsv::get _subprocess_${parent_thread_id}_${this} pid]
         }
 
         method terminate {} {
+            set parent_thread_id [::thread::id]
             if {[$this process_exists]} {
-                ::OS::terminate [::tsv::get _subprocess_$this pid]
+                ::OS::terminate [::tsv::get \
+                    _subprocess_${parent_thread_id}_${this} pid]
             }
         }
 
         method kill {} {
+            set parent_thread_id [::thread::id]
             if {[$this process_exists]} {
-                ::OS::kill [::tsv::get _subprocess_$this pid]
+                ::OS::kill [::tsv::get \
+                    _subprocess_${parent_thread_id}_${this} pid]
             }
         }
 
         method process_exists {} {
-            if {[::tsv::exists _subprocess_$this pid] && \
-                    [::OS::process_exists [::tsv::get _subprocess_$this pid]]}\
+            set parent_thread_id [::thread::id]
+
+            if {[::tsv::exists _subprocess_${parent_thread_id}_${this} pid] && \
+                    [::OS::process_exists [::tsv::get \
+                        _subprocess_${parent_thread_id}_${this} pid]]}\
             {
                 return 1
             }
@@ -286,12 +300,17 @@ namespace eval Subprocess {
         }
 
         method wait {} {
+            set parent_thread_id [::thread::id]
             ::thread::join $_thread_id
-            return [::tsv::get _subprocess_$this status]
+            return [::tsv::get _subprocess_${parent_thread_id}_${this} status]
         }
 
         method timeout_occurred {} {
-            if {[::tsv::exists _subprocess_$this timeout_occurred]} {
+            set parent_thread_id [::thread::id]
+
+            if {[::tsv::exists _subprocess_${parent_thread_id}_${this} \
+                timeout_occurred]} \
+            {
                 return 1
             }
 
