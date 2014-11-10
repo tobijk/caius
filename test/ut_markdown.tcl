@@ -17,7 +17,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         docstr "Test the markdown converter on a variety of source files"
 
         foreach {doc} {bq code inline lists p_br_h_hr} {
-            set markdown_file $::DATA_DIR/markdown/$doc.text
+            set markdown_file $::DATA_DIR/markdown/$doc.md
             set html_file     $::DATA_DIR/markdown/$doc.html
 
             set fp [open $markdown_file]

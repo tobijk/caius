@@ -27,7 +27,7 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-package require markdown
+package require Markdown
 
 #### MAIN ####
 if {$::argc != 1} {
@@ -38,5 +38,5 @@ if {$::argc != 1} {
 set markdown [read [set fp [open [lindex $::argv 0]]]]
 close $fp
 
-puts [::markdown::convert $markdown]
+puts [::Markdown::convert $markdown]
 
