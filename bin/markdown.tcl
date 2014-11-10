@@ -38,5 +38,5 @@ if {$::argc != 1} {
 set markdown [read [set fp [open [lindex $::argv 0]]]]
 close $fp
 
-puts [::Markdown::convert $markdown]
+puts -nonewline [::Markdown::convert $markdown]
 

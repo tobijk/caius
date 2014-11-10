@@ -63,3 +63,6 @@ Here comes some text. Here comes some text. Here comes some text. Here
 comes some text. Here comes some text. Here comes some text. Here comes
 some text.
 
+Here is an inline email link with mailto: <mailto:max@example.com>. And
+here is an inline email link without mailto: <max@example.com>. This is
+not a valid email link <something@> neither is this <@example.com>.
