@@ -548,11 +548,18 @@ namespace eval Markdown {
                         append result $m
                         incr index [string length $m]
                         continue
-                    } elseif {[regexp -start $index $re_autolink $text m mailto link]} {
+                    } elseif {[regexp -start $index $re_autolink $text m email link]} {
                         if {$link ne {}} {
                             append result "<a href=\"$link\">$link</a>"
                         } else {
-                            append result "<a href=\"mailto:$mailto\">$mailto</a>"
+                            set mailto_prefix "mailto:"
+                            if {[regexp "^$mailto_prefix" $email]} {
+                                set mailto $email
+                                set email [string range $email [string length $mailto_prefix] end]
+                            } else {
+                                set mailto "mailto:$email"
+                            }
+                            append result "<a href=\"$mailto\">$email</a>"
                         }
                         incr index [string length $m]
                         continue
