@@ -50,7 +50,7 @@ This section explains how to write test modules and how to execute them.
 In Caius, test modules are classes which derive from `Testing::TestObject`. A
 minimal test module looks like this:
 
-~~~ tcl
+~~~{tcl}
 package require Itcl
 package require Testing
 

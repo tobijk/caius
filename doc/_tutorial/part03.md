@@ -347,7 +347,7 @@ element is actually displayed within the visibile canvas:
 ~~~~{tcl}
 set username_field [$window element by_id username]
 set is_displayed [$username_field displayed]
-::itcl::delete $username_field
+::itcl::delete object $username_field
 ~~~~
 
 Note how we explicitely delete the reference object, once we have obtained
@@ -391,7 +391,7 @@ set element [$window element by_id username]
 $element click
 $element clear
 $element send_keys "jonathan"
-itcl::delete $element
+itcl::delete object $element
 ~~~~
 
 ### Determining the State of a Choice Field
