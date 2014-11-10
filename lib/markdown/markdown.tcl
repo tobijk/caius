@@ -553,10 +553,8 @@ namespace eval Markdown {
                             append result "<a href=\"$link\">$link</a>"
                         } else {
                             set mailto_prefix "mailto:"
-                            if {[regexp "^$mailto_prefix" $email]} {
-                                set mailto $email
-                                set email [string range $email [string length $mailto_prefix] end]
-                            } else {
+                            if {![regexp "^${mailto_prefix}(.*)" $email mailto email]} {
+                                # $email does not contain the prefix "mailto:".
                                 set mailto "mailto:$email"
                             }
                             append result "<a href=\"$mailto\">$email</a>"
