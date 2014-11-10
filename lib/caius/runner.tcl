@@ -164,6 +164,12 @@ namespace eval Caius {
             if {![info exists _config(test_name)]} {
                 set _config(test_name) [file tail $_config(test_binary)]
             }
+
+            # make sure reports go to work dir
+            if {[file pathtype $_config(out_file)] ne "absolute"} {
+                set _config(out_file) [file normalize \
+                    $_config(work_dir)/$_config(out_file)]
+            }
         }
 
         method process_test_output {out_name err_name verdict milliseconds} {
