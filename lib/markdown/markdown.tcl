@@ -166,7 +166,7 @@ namespace eval Markdown {
                             regsub -all {^\s*#+\s*|\s*#+\s*$} [join $h_result \n] {} \
                         ]\
                     ]
- 
+
                     append result "<h$h_level>$h_result</h$h_level>"
                 }
                 {^[ ]{0,3}\>} {
@@ -251,7 +251,7 @@ namespace eval Markdown {
                         set item_result {}
 
                         if {![regexp $list_match [lindex $lines $index]]} {
-                            break 
+                            break
                         }
 
                         set in_p 1
@@ -349,7 +349,7 @@ namespace eval Markdown {
                         if {$stack_count == 0} { break }
                     }
 
-                    append result $buffer 
+                    append result $buffer
                 }
                 default {
                     # PARAGRAPHS AND SETTEXT STYLE HEADERS
@@ -399,7 +399,12 @@ namespace eval Markdown {
                         ]\
                     ]
 
-                    append result "<$p_type>$p_result</$p_type>"
+                    if {[is_empty_line [regsub -all {<!--.*?-->} $p_result {}]]} {
+                        # Do not make a new paragraph for just comments.
+                        append result $p_result
+                    } else {
+                        append result "<$p_type>$p_result</$p_type>"
+                    }
                 }
             }
         }
@@ -416,11 +421,12 @@ namespace eval Markdown {
 
         set re_backticks   {\A`+}
         set re_whitespace  {\s}
-        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\(((?:[^\)\\]|\\\))*)\)} 
+        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\(((?:[^\)\\]|\\\))*)\)}
         set re_reflink     {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\[((?:[^\]\\]|\\\])*?)\]}
         set re_urlandtitle {\A(\S+)(?:\s+([\"'])((?:[^\"\'\\]|\\\2)*)\2)?}
         set re_htmltag     {\A</?\w+\s*>|\A<\w+(?:\s+\w+=\"[^\"]+\")*\s*/?>}
         set re_autolink    {\A<(?:(\S+@\S+)|(\S+://\S+))>}
+        set re_comment     {\A<!--.*?-->}
         set re_entity      {\A\&\S+;}
 
         while {[set chr [string index $text $index]] ne {}} {
@@ -537,8 +543,12 @@ namespace eval Markdown {
                     }
                 }
                 {<} {
-                    # HTML TAGS AND AUTOLINKS
-                    if {[regexp -start $index $re_autolink $text m mailto link]} {
+                    # HTML TAGS, COMMENTS AND AUTOLINKS
+                    if {[regexp -start $index $re_comment $text m]} {
+                        append result $m
+                        incr index [string length $m]
+                        continue
+                    } elseif {[regexp -start $index $re_autolink $text m mailto link]} {
                         if {$link ne {}} {
                             append result "<a href=\"$link\">$link</a>"
                         } else {
@@ -583,7 +593,7 @@ namespace eval Markdown {
 
             append result $chr
             incr index
-        } 
+        }
 
         return $result
     }
@@ -595,7 +605,7 @@ namespace eval Markdown {
 
     ## \private
     proc html_escape {text} {
-        return [string map {& &amp; < &lt; > &gt; ' &apos; \" &quot;} $text]
+        return [string map {<!-- <!-- --> --> & &amp; < &lt; > &gt; ' &apos; \" &quot;} $text]
     }
 }
 
