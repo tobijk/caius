@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+ln -s -f /usr/share/tcltk/tcl8.6/caius/bin/caius /usr/bin/caius

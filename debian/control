@@ -1,0 +1,31 @@
+Source: caius
+Priority: optional
+Maintainer: Tobias Koch <tobias.koch@gmail.com>
+Build-depends: debhelper (>= 8.0.0), ruby-ronn, jekyll (>= 2), xsltproc
+
+Package: caius
+Architecture: all
+Section: devel
+Depends:  tcl (>= 8.6), tcllib, itcl | itcl3, tcl-thread | tclthread, tdom, openssh-client, telnet, procps, ${misc:Depends}
+Description: a functional testing framework in object-oriented Tcl
+ Caius is a functional testing framework for the 21st century. It was born out 
+ of the need for a contemporary replacement for DejaGnu. 
+ .
+ Caius is written in object-oriented Tcl and provides easy-to-use programming 
+ interfaces to proven testing technologies. Through its versatile reporting 
+ system, Caius integrates well with modern CI systems and test management tools.
+
+Package: caius-doc
+Architecture: all
+Section: doc
+Depends:  ${misc:Depends}
+Description: documentation for the testing framework Caius
+ Caius is a functional testing framework for the 21st century. It was born out 
+ of the need for a contemporary replacement for DejaGnu. 
+ .
+ Caius is written in object-oriented Tcl and provides easy-to-use programming 
+ interfaces to proven testing technologies. Through its versatile reporting 
+ system, Caius integrates well with modern CI systems and test management tools.
+ .
+ This package contains man pages and documentation in HTML format. 
+

@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.10.1" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-11-29 19:41:00 +0200">
+        <changeset>
+            <li>fixes to exception handling</li>
+            <li>runner.tcl: make sure reports always go to outdir</li>
+            <li>Markdown: simplified "mailto:" code (Danyil Bohdan).</li>
+            <li>Markdown: process email links w/ or w/o "mailto:" (Danyil Bohdan).</li>
+            <li>Markdown: respect HTML comments (Danyil Bohdan).</li>
+            <li>fix interference when launching subprocesses from different threads</li>
+            <li>caius testplan exits with non-zero exit status when tests fail</li>
+        </changeset>
+    </release>
     <release version="0.10.0" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-09-30 23:56:12 +0300">
         <changeset>
             <li>document how to generate native test reports in Jenkins</li>
-            <li>JUnitFormatteR: give testsuite a name</li>
+            <li>JUnitFormatter: give testsuite a name</li>
             <li>caius run/runplan can (let) generate JUnit XML</li>
         </changeset>
     </release>

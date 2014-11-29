@@ -1,0 +1,53 @@
+#!/usr/bin/make -f
+
+export XPACK_BASE_DIR := $(CURDIR)
+export XPACK_SOURCE_DIR := $(XPACK_BASE_DIR)/
+export XPACK_INSTALL_DIR := $(XPACK_BASE_DIR)/pack/tmp-install
+export XPACK_EXTRA_PREFIX := 
+export XPACK_BUILD_DIR := $(XPACK_BASE_DIR)/
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	mkdir -p $(XPACK_SOURCE_DIR)
+	mkdir -p $(XPACK_INSTALL_DIR)
+	mkdir -p $(XPACK_BUILD_DIR)
+	$(XPACK_BASE_DIR)/debian/rules.d/prepare.sh
+	touch configure-stamp
+
+build: build-stamp
+build-stamp: configure-stamp
+	dh_testdir
+	$(XPACK_BASE_DIR)/debian/rules.d/build.sh
+	touch build-stamp
+
+install: install-stamp
+install-stamp: build-stamp
+	dh_testdir
+	$(XPACK_BASE_DIR)/debian/rules.d/install.sh
+	dh_installdirs
+	dh_install --package=caius --sourcedir=$(XPACK_INSTALL_DIR) 
+	dh_install --package=caius-doc --sourcedir=$(XPACK_INSTALL_DIR) 
+	touch install-stamp
+
+binary: install-stamp
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+clean:
+	dh_testdir
+	$(XPACK_BASE_DIR)/debian/rules.d/clean.sh
+	dh_clean configure-stamp build-stamp install-stamp
+
+.PHONY: clean binary configure build install
