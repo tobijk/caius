@@ -1,7 +1,11 @@
 #
 # Caius Functional Testing Framework
 #
-# Copyright (c) 2013, Tobias Koch <tobias.koch@gmail.com>
+# Copyright (c) 2013-2014,
+#
+# * Tobias Koch <tobias.koch@gmail.com> with contributions from
+# * Danyil Bohdan
+#
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modifi-

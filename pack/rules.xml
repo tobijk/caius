@@ -56,6 +56,7 @@ xsltproc $XPACK_BASE_DIR/xsl/changelog.xsl pack/changelog.xml | gzip \
     > $CAIUS_DOC_DIR/Changelog.gz
 
 cp $XPACK_BASE_DIR/LICENSE $CAIUS_DOC_DIR
+cp $XPACK_BASE_DIR/THANKS  $CAIUS_DOC_DIR
 
     ]]>
     </install>
