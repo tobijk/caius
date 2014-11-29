@@ -283,6 +283,24 @@ package require Testing
 
         return
     }
+
+    method test_caught_exception_objects_are_deleted {} {
+        docstr "Test that exceptions that are caught are properly cleaned up."
+
+        except {
+            raise ::RuntimeError "something happened..."
+        } e {
+            ::RuntimeError {
+
+            }
+        }
+
+        if {[::itcl::is object $e]} {
+            error "exception object should have been recycled"
+        }
+
+        return
+    }
 }
 
 exit [[TestExceptions #auto] run $::argv]

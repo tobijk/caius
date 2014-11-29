@@ -116,22 +116,26 @@ proc except {block exception_var clauses {final_kw ""} {final_block ""}} {
         $block
     } $exception_var __except_opts_$exception_var] == 1 } {
 
-        $final_block
-
+        # convert Tcl error to TclError object
         if { !\[::itcl::is object \$$exception_var] } {
             set $exception_var \[namespace which \[::TclError #auto \"\$$exception_var\"]]
         }
 
+        # populate the exception object with info about the error
         \$$exception_var set_stack_trace \[dict get \$__except_opts_$exception_var -errorinfo]
         \$$exception_var set_code        \[dict get \$__except_opts_$exception_var -errorcode]
         \$$exception_var set_line        \[dict get \$__except_opts_$exception_var -errorline]
 
+        # evaluate handler clauses
         set __rcode \[ catch { if $__buf else {error \$$exception_var} } __rval ]
-    } else {
 
-        $final_block
-
+        # if exception is caught, the object needs to be deleted!
+        if {\$__rcode == 0} {
+            ::itcl::delete object \$$exception_var
+        }
     }
+
+    $final_block
 
     if {\$__rcode != 0} {
         return -code \$__rcode \$__rval
