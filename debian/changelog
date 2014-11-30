@@ -1,3 +1,9 @@
+caius (0.10.2-1) unstable; urgency=low
+
+  * make install.tcl more robust
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Sun, 30 Nov 2014 11:43:00 +0200
+
 caius (0.10.1-1) unstable; urgency=low
 
   * fixes to exception handling
