@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.10.2" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-11-30 11:43:00 +0200">
+        <changeset>
+            <li>make install.tcl more robust</li>
+        </changeset>
+    </release>
     <release version="0.10.1" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-11-29 19:41:00 +0200">
         <changeset>
