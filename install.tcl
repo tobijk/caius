@@ -4,7 +4,11 @@
 # Run command inside tcl_shell and return subprocess' stdout.
 #
 proc tcl_shell_eval {tcl_shell command} {
-    return [string trim [exec echo $command | $tcl_shell]]
+    catch {
+        set rval [exec -ignorestderr -- \
+            /bin/sh -c "echo '$command' | $tcl_shell" 2>/dev/null]
+    }
+    return $rval
 }
 
 #
