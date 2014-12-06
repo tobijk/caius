@@ -1,7 +1,7 @@
 #
 # Caius Functional Testing Framework
 #
-# Copyright (c) 2013, Tobias Koch <tobias.koch@gmail.com>
+# Copyright (c) 2014, Ashok P. Nadkarni <tobias.koch@gmail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modifi-
@@ -26,18 +26,42 @@
 # WARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-package ifneeded OS 1.0 "
-    switch \"\$::tcl_platform(os)\" {
-        Linux {
-            source \[file join \[list $dir] linux.tcl]
-        }
-        \"Windows NT\" {
-            source \[file join \[list $dir] windows.tcl]
-        }
-        default {
-            error \"\$::tcl_platform(os) is not supported.\"
+namespace eval OS {
+
+    namespace export \
+        terminate \
+        kill \
+        process_exists \
+        find_executable
+
+    namespace ensemble create
+
+    proc terminate {pid} {
+        catch {
+            exec {*}[auto_execok taskkill.exe] /PID $pid
         }
     }
-    source \[file join \[list $dir] version.tcl]
-"
+
+    proc kill {pid} {
+        catch {
+            exec {*}[auto_execok taskkill.exe] /F /PID $pid
+        }
+    }
+
+    proc process_exists {pid} {
+        set tasklist [exec {*}[auto_execok tasklist.exe] /fi "pid eq $pid" /nh]
+        return [regexp "^\\s*\\S+\\s+$pid\\s" $tasklist]
+    }
+
+    proc find_executable {executable} {
+        foreach path [split $::env(PATH) ";"] {
+            set exe [file join $path $executable]
+            if {[file isfile $exe] && [file executable $exe]} {
+                return $exe
+            }
+        }
+
+        return {}
+    }
+}
 

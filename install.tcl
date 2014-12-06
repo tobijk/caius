@@ -1,14 +1,32 @@
 #!/usr/bin/env tclsh
 
+proc windows {} {
+    return [expr {$::tcl_platform(platform) eq "windows"}]
+}
+
 #
 # Run command inside tcl_shell and return subprocess' stdout.
 #
-proc tcl_shell_eval {tcl_shell command} {
-    catch {
-        set rval [exec -ignorestderr -- \
-            /bin/sh -c "echo '$command' | $tcl_shell" 2>/dev/null]
+if {![windows]} {
+    proc tcl_shell_eval {tcl_shell command} {
+        catch {
+            set rval [exec -ignorestderr -- \
+                          /bin/sh -c "echo '$command' | $tcl_shell" 2>/dev/null]
+        }
+        return $rval
     }
-    return $rval
+} else {
+    # We don't use cmd.exe because quoting becomes a pain
+    proc tcl_shell_eval {tcl_shell command} {
+        # Need to convert \ to / for the open pipe. The [file join] does that
+        set fd [open "|[file join $tcl_shell]" w+]
+        fconfigure $fd -buffering none
+        puts $fd $command
+        set rval [gets $fd]
+        puts $fd exit
+        close $fd
+        return $rval
+    }
 }
 
 #
@@ -67,15 +85,16 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
-    puts -nonewline [format "  - %-50s " "Check for Expect:"]
-    set result [tcl_shell_eval $tcl_shell \
-        {puts [catch {package require Expect}]}]
-
-    if {$result ne "0"} {
-        puts "fail"
-        return 0
+    if {![windows]} {
+        puts -nonewline [format "  - %-50s " "Check for Expect:"]
+        set result [tcl_shell_eval $tcl_shell \
+                        {puts [catch {package require Expect}]}]
+        if {$result ne "0"} {
+            puts "fail"
+            return 0
+        }
+        puts "ok"
     }
-    puts "ok"
 
     puts -nonewline [format "  - %-50s " "Check for tdom extension:"]
     set result [tcl_shell_eval $tcl_shell \
@@ -94,12 +113,16 @@ proc test_tcl_shell {tcl_shell} {
 # Search system path for a compatible Tcl shell.
 #
 proc find_compatible_tclsh {} {
-    set tcl_shell_names {tclsh tclsh8.6}
+    if {[windows]} {
+        set tcl_shell_names {tclsh.exe tclsh86t.exe}
+    } else {
+        set tcl_shell_names {tclsh tclsh8.6}
+    }
 
     if {$::tcl_platform(platform) eq "unix"} {
-        set os_path_sep ':'
+        set os_path_sep ":"
     } else {
-        set os_path_sep ';'
+        set os_path_sep ";"
     }
 
     foreach {shell_name} $tcl_shell_names {
@@ -123,6 +146,7 @@ proc find_compatible_tclsh {} {
 proc install_caius {} {
 
     if {[set tcl_shell [find_compatible_tclsh]] eq ""} {
+        puts "Could not find a suitable Tcl shell"
         exit 1
     }
 
@@ -183,16 +207,18 @@ proc install_caius {} {
         puts -nonewline $dst_fp $caius_script
         close $dst_fp
 
-        # make caius executable
-        file attributes $install_dir/bin/caius -permissions 0755
+        if {![windows]} {
+            # make caius executable
+            file attributes $install_dir/bin/caius -permissions 0755
+            set caius_symlink /usr/local/bin/caius
 
-        set caius_symlink /usr/local/bin/caius
+            if {[file exists $caius_symlink]} {
+                file delete $caius_symlink
+            }
 
-        if {[file exists $caius_symlink]} {
-            file delete $caius_symlink
+            file link -symbolic $caius_symlink $install_dir/bin/caius
         }
 
-        file link -symbolic $caius_symlink $install_dir/bin/caius
     } err ] != 0} {
         puts "fail"
         puts [format "  - %-50s " "Error: $err"]

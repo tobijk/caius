@@ -339,6 +339,10 @@ namespace eval OutputStream {
         }
 
         destructor {
+            if {$_handle ne {}} {
+                close $_handle
+            }
+
             if {!$_shared && [file exists $_buffer_file]} {
                 file delete $_buffer_file
             }
