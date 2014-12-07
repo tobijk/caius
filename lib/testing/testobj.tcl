@@ -220,6 +220,7 @@ namespace eval Testing {
                     $this $test
                 } e {
                     ::Exception {
+                        set e_stack_trace [$e stack_trace]
                         set verdict "FAIL"
                     }
                 } final {
@@ -234,10 +235,9 @@ namespace eval Testing {
                     }
                 }
                 set total_time [expr $stop_time - $start_time]
-
                 if {$verdict eq "FAIL"} {
                     set _verdict FAIL
-                    $result log_error [$e stack_trace]
+                    $result log_error $e_stack_trace
                 }
 
                 if {$count == $num_tests} {
