@@ -1,5 +1,8 @@
 #!/usr/bin/env tclsh
 
+#
+# Test if we are on the Windows platform.
+#
 proc windows {} {
     return [expr {$::tcl_platform(platform) eq "windows"}]
 }
@@ -7,26 +10,18 @@ proc windows {} {
 #
 # Run command inside tcl_shell and return subprocess' stdout.
 #
-if {![windows]} {
-    proc tcl_shell_eval {tcl_shell command} {
-        catch {
-            set rval [exec -ignorestderr -- \
-                          /bin/sh -c "echo '$command' | $tcl_shell" 2>/dev/null]
-        }
-        return $rval
-    }
-} else {
-    # We don't use cmd.exe because quoting becomes a pain
-    proc tcl_shell_eval {tcl_shell command} {
-        # Need to convert \ to / for the open pipe. The [file join] does that
-        set fd [open "|[file join $tcl_shell]" w+]
-        fconfigure $fd -buffering none
-        puts $fd $command
-        set rval [gets $fd]
-        puts $fd exit
-        close $fd
-        return $rval
-    }
+proc tcl_shell_eval {tcl_shell command} {
+    # file join converts \ to / for the open pipe on Windows.
+    set fd [open "|[file join $tcl_shell]" r+]
+    fconfigure $fd -buffering line
+
+    # send command (make sure this is one line) and harvest result
+    puts $fd $command
+    set rval [gets $fd]
+
+    # for some reason this blows up on Debian/Ubuntu currently
+    catch {[close $fd]}
+    return $rval
 }
 
 #
@@ -85,6 +80,7 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
+    # Is Expect available for 32 bit Tcl?
     if {![windows]} {
         puts -nonewline [format "  - %-50s " "Check for Expect:"]
         set result [tcl_shell_eval $tcl_shell \
