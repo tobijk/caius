@@ -36,7 +36,7 @@
         <file src="/usr/share/tcltk/tcl8.6/caius"/>
         <dir  src="/usr/share/doc/caius"/>
         <file src="/usr/share/doc/caius/LICENSE"/>
-        <file src="/usr/share/doc/caius/THANKS"/>
+        <file src="/usr/share/doc/caius/AUTHORS"/>
         <file src="/usr/share/doc/caius/Changelog.gz"/>
     </contents>
 

@@ -1,3 +1,11 @@
+caius (0.10.3-1) unstable; urgency=low
+
+  * convert project to MIT License
+  * Fix - exception object $e was being accessed outside its scope (Ashok P. Nadkarni)
+  * Start of Windows port. Installs successfully but that's about it. (Ashok P. Nadkarni)
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Sun, 07 Dec 2014 23:08:00 +0200
+
 caius (0.10.2-1) unstable; urgency=low
 
   * make install.tcl more robust
