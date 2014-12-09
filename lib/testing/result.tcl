@@ -98,15 +98,20 @@ namespace eval Testing {
 
         method log_start {} {
             puts "\n- Log:"
+
             OutputStream::push stdout $_indent
             OutputStream::push stdout $_dos2unix
-            OutputStream::push stdout $_escape
+            if {$::tcl_platform(platform) ne "windows"} {
+                OutputStream::push stdout $_escape
+            }
             OutputStream::push stderr $_tostdout
         }
 
         method log_end {} {
             OutputStream::pop stderr
-            OutputStream::pop stdout
+            if {$::tcl_platform(platform) ne "windows"} {
+                OutputStream::pop stdout
+            }
             OutputStream::pop stdout
             OutputStream::pop stdout
         }

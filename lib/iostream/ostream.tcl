@@ -126,6 +126,7 @@ namespace eval OutputStream {
 
         ## \private
         private variable _state
+        private variable _encoding
 
         ##
         # Creates an Indent object.
@@ -152,6 +153,7 @@ namespace eval OutputStream {
         constructor {{indent "    "}} {
             set _indent $indent
             set _state  :start
+            set _encoding [fconfigure stdout -encoding]
         }
 
         OOSupport::bless_attributes -json_support
@@ -171,7 +173,9 @@ namespace eval OutputStream {
 
         ## \private
         method write {channel data} {
-            set lines [regexp -inline -all -line -- {^.*(?:\r?\n)?} $data]
+            set data [encoding convertfrom $_encoding $data]
+        
+            set lines [regexp -inline -all -line -- {^.*(?:\r*\n)?} $data]
 
             foreach {line} $lines {
                 if {$_state eq {:start}} {
@@ -179,13 +183,14 @@ namespace eval OutputStream {
                 }
                 append out $line
 
-                if {[regexp {\r?\n$} $line]} {
+                if {[regexp {\r*\n$} $line]} {
                     set _state :start
                 } else {
                     set _state :inline
                 }
             }
-            return $out
+
+            return [encoding convertto $_encoding $out]
         }
     }
 
@@ -279,12 +284,16 @@ namespace eval OutputStream {
             {string newline "\n" ro}
         }
 
+        private variable _encoding
+        
         ##
         # Creates a NormalizeNewlines object.
         #
         # @param style  one of 'unix' or 'windows'
         #
         constructor {{style unix}} {
+            set _encoding [fconfigure stdout -encoding]
+
             switch $style {
                 unix {
                     set _newline "\n"
@@ -313,7 +322,9 @@ namespace eval OutputStream {
 
         ## \private
         method write {channel data} {
-            return [regsub -all {\r*\n} $data $_newline]
+            set data [encoding convertfrom $_encoding $data]
+            set data [regsub -all {\r*\n} $data $_newline]
+            return [encoding convertto $_encoding $data]
         }
     }
 
@@ -421,7 +432,11 @@ namespace eval OutputStream {
         ## \private
         common attributes {}
 
-        constructor {} {}
+        private variable _encoding
+        
+        constructor {} {
+            set _encoding [fconfigure stdout -encoding]
+        }
 
         OOSupport::bless_attributes -json_support
 
@@ -438,8 +453,9 @@ namespace eval OutputStream {
 
         ## \private
         method write {channel data} {
-            return [string map {& &amp; < &lt; > &gt; \" &quot;} $data]
+            set data [encoding convertfrom $_encoding $data]
+            set data [string map {& &amp; < &lt; > &gt; \" &quot;} $data]
+            return [encoding convertto $_encoding $data]
         }
     }
 }
-
