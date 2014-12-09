@@ -278,7 +278,7 @@ namespace eval Testing {
         }
 
         private method setup {{method setup}} {
-            foreach {class} [lreverse [$this info heritage]] {
+            foreach {class} [lreverse [uplevel #0 [list $this] info heritage]] {
                 if {![catch { lassign [$this info function ${class}::${method} \
                         -protection -type] protection type }]} \
                 {
@@ -290,7 +290,7 @@ namespace eval Testing {
         }
 
         private method teardown {{method teardown}} {
-            foreach {class} [$this info heritage] {
+            foreach {class} [uplevel #0 [list $this] info heritage] {
                 if {![catch { lassign [$this info function ${class}::${method} \
                         -protection -type] protection type }]} \
                 {
