@@ -1,3 +1,10 @@
+caius (0.10.4-1) unstable; urgency=low
+
+  * ostream: do full encoding/decoding in channel transforms
+  * Workaround for Itcl4 bug in info heritage command (Ashok P. Nadkarni)
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Wed, 10 Dec 2014 09:00:00 +0200
+
 caius (0.10.3-1) unstable; urgency=low
 
   * convert project to MIT License
