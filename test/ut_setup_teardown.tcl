@@ -4,7 +4,7 @@ package require Itcl
 package require Error
 package require Testing
 
-::itcl::class MyTest {
+::itcl::class TestSetupAndTeardown {
     inherit ::Testing::TestObject
 
     variable _setup_before_run_count 0
@@ -66,5 +66,5 @@ package require Testing
     }
 }
 
-exit [[MyTest #auto] run $::argv]
+exit [[TestSetupAndTeardown #auto] run $::argv]
 
