@@ -1,12 +1,12 @@
 The following people have contributed to Caius:
 
 * Tobias Koch
-  - Original Author
+    - Original Author
 
 * Danyil Bohdan
-  - Various fixes to the Markdown module
+    - Various fixes to the Markdown module
 
 * Ashok P. Nadkarni
-  - Initiator and maintainer of the Windows port
-  - Bugfixes
+    - Initiator and maintainer of the Windows port
+    - Bugfixes and Itcl4 compatibility work
 
