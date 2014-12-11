@@ -9,12 +9,19 @@ proc windows {} {
 
 #
 # Ask the user for a Y/N answer. Returns 1 if Y, 0 if N
+#
 proc user_consents {prompt {default_response {}}} {
     switch -exact -nocase -- $default_response {
-        Y { append prompt { [Y/n] } }
-        N { append prompt { [y/N] } }
+        Y {
+            append prompt { [Y/n] }
+        }
+        N {
+            append prompt { [y/N] }
+        }
         "" {}
-        default {error "Parameter default_response must be \"\", \"Y\" or \"N\""}
+        default {
+            error "Parameter default_response must be \"\", \"Y\" or \"N\""
+        }
     }
 
     while {1} {
@@ -54,7 +61,7 @@ proc tcl_shell_eval {tcl_shell command} {
 proc test_tcl_shell {tcl_shell} {
     puts [format "* %-50s" "Checking Tcl shell $tcl_shell..."]
 
-    puts -nonewline [format "  - %-50s " "Check Tcl version >= 8.6:"]
+    puts -nonewline [format "- %-50s " "Check Tcl version >= 8.6:"]
     set result [tcl_shell_eval $tcl_shell {puts $::tcl_version}]
 
     lassign [split $result .] major minor
@@ -64,7 +71,7 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
-    puts -nonewline [format "  - %-50s " "Check if interpreter is thread-enabled:"]
+    puts -nonewline [format "- %-50s " "Check if interpreter is thread-enabled:"]
     set result [tcl_shell_eval $tcl_shell \
         {puts [info exists ::tcl_platform(threaded)]}]
 
@@ -74,7 +81,7 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
-    puts -nonewline [format "  - %-50s " "Check for the Thread package:"]
+    puts -nonewline [format "- %-50s " "Check for the Thread package:"]
     set result [tcl_shell_eval $tcl_shell \
         {puts [catch {package require Thread}]}]
 
@@ -84,7 +91,7 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
-    puts -nonewline [format "  - %-50s " "Check for tcllib (require json):"]
+    puts -nonewline [format "- %-50s " "Check for tcllib (require json):"]
     set result [tcl_shell_eval $tcl_shell \
         {puts [catch {package require json}]}]
 
@@ -94,7 +101,7 @@ proc test_tcl_shell {tcl_shell} {
     }
     puts "ok"
 
-    puts -nonewline [format "  - %-50s " "Check for \[incr Tcl] extension:"]
+    puts -nonewline [format "- %-50s " "Check for \[incr Tcl] extension:"]
     set result [tcl_shell_eval $tcl_shell \
         {puts [catch {package require Itcl}]}]
 
@@ -106,7 +113,7 @@ proc test_tcl_shell {tcl_shell} {
 
     # Is Expect available for 32 bit Tcl?
     if {![windows]} {
-        puts -nonewline [format "  - %-50s " "Check for Expect:"]
+        puts -nonewline [format "- %-50s " "Check for Expect:"]
         set result [tcl_shell_eval $tcl_shell \
                         {puts [catch {package require Expect}]}]
         if {$result ne "0"} {
@@ -116,7 +123,7 @@ proc test_tcl_shell {tcl_shell} {
         puts "ok"
     }
 
-    puts -nonewline [format "  - %-50s " "Check for tdom extension:"]
+    puts -nonewline [format "- %-50s " "Check for tdom extension:"]
     set result [tcl_shell_eval $tcl_shell \
         {puts [catch {package require tdom}]}]
 
@@ -140,18 +147,19 @@ proc find_compatible_tclsh {} {
     # First check if the invoking shell meets conditions
     set tcl_shell [file nativename [info nameofexecutable]]
     if {[test_tcl_shell $tcl_shell]} {
-        if {[user_consents "Install for shell $tcl_shell?" Y]} {
+        if {[user_consents [format "- %-50s" \
+            "Install for shell $tcl_shell?"] Y]} \
+        {
             return $tcl_shell
         }
         # Remember we already tried this
         if {![catch {file stat $tcl_shell stat}]} {
             if {$stat(ino) != 0} {
-                set inodes($stat(ino)) 1; # Remember the inode number
+                # Remember the inode number
+                set inodes($stat(ino)) 1;
             }
         }
     }
-
-    puts "Searching for a compatible tclsh..."
 
     if {[windows]} {
         set tcl_shell_names {tclsh.exe tclsh86t.exe}
@@ -174,12 +182,15 @@ proc find_compatible_tclsh {} {
                     continue
                 }
                 if {$stat(ino) != 0} {
-                    set inodes($stat(ino)) 1; # Remember the inode number
+                    # Remember the inode number
+                    set inodes($stat(ino)) 1;
                 }
             }
             if {[file executable $tcl_shell]} {
                 if {[test_tcl_shell $tcl_shell]} {
-                    if {[user_consents "Install for shell $tcl_shell?" Y]} {
+                    if {[user_consents [format "- %-50s" \
+                        "Install for shell $tcl_shell?"] Y]} \
+                    {
                         return $tcl_shell
                     }
                 }
@@ -196,7 +207,8 @@ proc find_compatible_tclsh {} {
 proc install_caius {} {
 
     if {[set tcl_shell [find_compatible_tclsh]] eq ""} {
-        puts "Could not find a suitable Tcl shell"
+        puts "* Could not find a suitable Tcl shell!"
+
         exit 1
     }
 
@@ -217,14 +229,17 @@ proc install_caius {} {
     puts [format "* %-50s" "Installing to $install_dir..."]
 
     if {[file exists $install_dir]} {
-        if {![user_consents [format "  + %-50s " \
-                                 "Found a previous installation, replace it?"] N]} {
+        if {![user_consents \
+            [format "- %-50s" \
+                "Found a previous installation, replace it?"] N]}\
+        {
+            puts "* Installation aborted!"
             exit 0
         }
         file delete -force $install_dir
     }
 
-    puts -nonewline [format "  - %-50s " "Copying files:"]
+    puts -nonewline [format "- %-50s " "Copying files:"]
     if {[catch {
         file mkdir $install_dir/bin
 
@@ -257,7 +272,7 @@ proc install_caius {} {
 
     } err ] != 0} {
         puts "fail"
-        puts [format "  - %-50s " "Error: $err"]
+        puts [format "- %-50s " "Error: $err"]
         exit 1
     }
     puts "done"
