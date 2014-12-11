@@ -8,6 +8,30 @@ proc windows {} {
 }
 
 #
+# Ask the user for a Y/N answer. Returns 1 if Y, 0 if N
+proc user_consents {prompt {default_response {}}} {
+    switch -exact -nocase -- $default_response {
+        Y { append prompt { [Y/n] } }
+        N { append prompt { [y/N] } }
+        "" {}
+        default {error "Parameter default_response must be \"\", \"Y\" or \"N\""}
+    }
+
+    while {1} {
+        puts -nonewline $prompt
+        flush stdout
+        set user_input [string trim [gets stdin]]
+        if {$user_input eq ""} {
+            set user_input $default_response
+        }
+        switch -exact -nocase -- $user_input {
+            Y { return 1 }
+            N { return 0 }
+        }
+    }
+}
+
+#
 # Run command inside tcl_shell and return subprocess' stdout.
 #
 proc tcl_shell_eval {tcl_shell command} {
@@ -109,6 +133,26 @@ proc test_tcl_shell {tcl_shell} {
 # Search system path for a compatible Tcl shell.
 #
 proc find_compatible_tclsh {} {
+    # We will keep track of inodes so as to not check same file multiple
+    # times in case of links, duplicate paths etc.
+    array set inodes {}
+
+    # First check if the invoking shell meets conditions
+    set tcl_shell [file nativename [info nameofexecutable]]
+    if {[test_tcl_shell $tcl_shell]} {
+        if {[user_consents "Install for shell $tcl_shell?" Y]} {
+            return $tcl_shell
+        }
+        # Remember we already tried this
+        if {![catch {file stat $tcl_shell stat}]} {
+            if {$stat(ino) != 0} {
+                set inodes($stat(ino)) 1; # Remember the inode number
+            }
+        }
+    }
+
+    puts "Searching for a compatible tclsh..."
+
     if {[windows]} {
         set tcl_shell_names {tclsh.exe tclsh86t.exe}
     } else {
@@ -121,13 +165,23 @@ proc find_compatible_tclsh {} {
         set os_path_sep ";"
     }
 
-    foreach {shell_name} $tcl_shell_names {
-        foreach {dir_name} [split $::env(PATH) $os_path_sep] {
-            set tcl_shell "$dir_name[file separator]$shell_name"
-
+    foreach shell_name $tcl_shell_names {
+        foreach dir_name [split $::env(PATH) $os_path_sep] {
+            set tcl_shell [file nativename [file join $dir_name $shell_name]]
+            if {![catch {file stat $tcl_shell stat}]} {
+                if {[info exists inodes($stat(ino))]} {
+                    # Already checked this shell
+                    continue
+                }
+                if {$stat(ino) != 0} {
+                    set inodes($stat(ino)) 1; # Remember the inode number
+                }
+            }
             if {[file executable $tcl_shell]} {
                 if {[test_tcl_shell $tcl_shell]} {
-                    return $tcl_shell
+                    if {[user_consents "Install for shell $tcl_shell?" Y]} {
+                        return $tcl_shell
+                    }
                 }
             }
         }
@@ -163,25 +217,11 @@ proc install_caius {} {
     puts [format "* %-50s" "Installing to $install_dir..."]
 
     if {[file exists $install_dir]} {
-        while {1} {
-            puts -nonewline [format "  + %-50s " \
-                "Found a previous installation, replace it? \[y/N] "]
-            flush stdout
-            gets stdin user_input
-
-            switch [string trim $user_input] {
-                y -
-                Y {
-                    file delete -force $install_dir
-                    break
-                }
-                {} -
-                n -
-                N {
-                    exit 0
-                }
-            }
+        if {![user_consents [format "  + %-50s " \
+                                 "Found a previous installation, replace it?"] N]} {
+            exit 0
         }
+        file delete -force $install_dir
     }
 
     puts -nonewline [format "  - %-50s " "Copying files:"]
