@@ -31,6 +31,17 @@ namespace eval Caius {
     ::itcl::class Testplan {
 
         private variable _config
+        private variable _counter
+        private variable _runner
+
+        constructor {} {
+            set _counter 0
+            set _runner [::Caius::Runner #auto]
+        }
+
+        destructor {
+            ::itcl::delete object $_runner
+        }
 
         method usage {} {
             puts "                                                                      "
@@ -131,6 +142,7 @@ namespace eval Caius {
         method execute {argv} {
             parse_command_line $argv
 
+            # read the testplan XML into DOM tree
             set fp {}
             except {
                 set fp [open $_config(testplan) r]
@@ -143,49 +155,69 @@ namespace eval Caius {
                 if {$fp ne {}} { close $fp }
             }
 
-            set runner [::Caius::Runner #auto]
             set root [$testplan documentElement]
 
-            # change work dir
             cd $_config(work_dir)
+            set _config(work_dir) [pwd]
 
-            set count 0
-            set cwd [pwd]
+            set _counter 0
             set exit_code 0
 
+            # execute testplan test by test
             foreach {child} [$root childNodes] {
-                if {[$child nodeName] ne {run}} { continue }
+                switch [$child nodeName] {
+                    run {
+                        set command [string trim [$child text]]
+                        set timeout [$child getAttribute timeout 0]
 
-                set cmd [string trim [$child text]]
-                set timeout [$child getAttribute timeout 0]
-
-                if {[file pathtype $cmd] ne {absolute}} {
-                    set cmd "$_config(testplan_dir)/$cmd"
-                }
-
-                set subdir [format "%03d_%s" [incr count] \
-                    [regsub {[-.]} [file tail [lindex [split $cmd] 0]] {_}]\
-                ]
-                file mkdir $cwd/$subdir
-
-                except {
-                    puts "Running '$cmd'"
-                    set rval [$runner execute "-f ${_config(outformat)} \
-                        -d $cwd/$subdir -t $timeout $cmd"]
-
-                    if {$rval != 0} {
-                        set exit_code 1
+                        if {[execute_command $command $timeout] != 0} {
+                            set exit_code 1
+                        }
                     }
-                } e {
-                    ::Exception {
-                        puts stderr "Warning: [$e msg]"
-                        set exit_code 1
-                    }
+                    default {}
                 }
             }
 
-            ::itcl::delete object $runner
             $testplan delete
+            return $exit_code
+        }
+
+        method execute_command {command {timeout 0}} {
+            set exit_code 0
+            set cmd [lindex $command 0]
+
+            # interpret commands relative to testplan
+            if {[file pathtype $cmd] ne {absolute}} {
+                set command [lreplace $command 0 0 \
+                    [file join $_config(testplan_dir) $cmd] \
+                ]
+            }
+
+            # create directory for artifacts
+            set subdir [format "%04d_%s" [incr _counter] \
+                [regsub {[-.]} [file tail [lindex [split $cmd] 0]] {_}]\
+            ]
+            file mkdir [set workdir [file join $_config(work_dir) $subdir]]
+
+            except {
+                puts -nonewline "[format "%04d" $_counter]: $cmd ... "
+                flush stdout
+
+                set rval [$_runner execute "-f ${_config(outformat)} \
+                    -d $workdir -t $timeout $command"]
+
+                if {$rval != 0} {
+                    puts "fail"
+                    set exit_code 1
+                } else {
+                    puts "pass"
+                }
+            } e {
+                ::Exception {
+                    puts stderr "Warning: [$e msg]"
+                    set exit_code 1
+                }
+            }
 
             return $exit_code
         }
