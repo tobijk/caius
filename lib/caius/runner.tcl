@@ -341,8 +341,6 @@ namespace eval Caius {
                 set command "$tcl_shell -encoding ${_config(encoding)} \
                     $command"
             }
-
-            puts $command
             
             cd $_config(work_dir)
 
