@@ -113,6 +113,9 @@ namespace eval Subprocess {
 
                         close \$pipe_stderr
 
+                        [OutputStream::transforms_destroy_code stdout]
+                        [OutputStream::transforms_destroy_code stderr]
+
                         ::thread::mutex lock $mutex
                         ::tsv::set _subprocess_${parent_thread_id}_${this} error \[\$e msg]
                         ::tsv::set _subprocess_${parent_thread_id}_${this} started 1
