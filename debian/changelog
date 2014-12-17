@@ -1,3 +1,12 @@
+caius (0.11.0-1) unstable; urgency=low
+
+  * subprocess: undo channel transforms on invocation error
+  * testplan/runner: on Windows, automatically invoke tclsh for Tcl scripts
+  * installer: Try [info nameofexecutable] as a compatible shell before searching PATH. (Ashok P. Nadkarni)
+  * installer: Check inodes so as to not test the same shell multiple times. (Ashok P. Nadkarni)
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Wed, 17 Dec 2014 08:44:30 +0200
+
 caius (0.10.4-1) unstable; urgency=low
 
   * ostream: do full encoding/decoding in channel transforms

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.11.0" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-12-17 08:44:30 +0200">
+        <changeset>
+            <li>subprocess: undo channel transforms on invocation error</li>
+            <li>testplan/runner: on Windows, automatically invoke tclsh for Tcl scripts</li>
+            <li>installer: Try [info nameofexecutable] as a compatible shell before searching PATH. (Ashok P. Nadkarni)</li>
+            <li>installer: Check inodes so as to not test the same shell multiple times. (Ashok P. Nadkarni)</li>
+        </changeset>
+    </release>
     <release version="0.10.4" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-12-10 09:00:00 +0200">
         <changeset>
