@@ -158,8 +158,14 @@ namespace eval Caius {
                         } else {
                             set test_cmd $o
 
-                            if {!([file isfile $test_cmd] && [file executable $test_cmd]) && \
-                                    [set test_cmd [OS::find_executable $o]] eq {}} {
+                            if {!([file isfile $test_cmd] && \
+                                    ( \
+                                     [file executable  $test_cmd] || \
+                                     [regexp {\.tcl\Z} $test_cmd] \
+                                    )
+                                ) && \
+                                [set test_cmd [OS::find_executable $o]] eq {}} \
+                            {
                                 raise ::Caius::Error "could not find executable '$o'"
                             }
 
@@ -336,6 +342,8 @@ namespace eval Caius {
                     $command"
             }
 
+            puts $command
+            
             cd $_config(work_dir)
 
             set out [file tempfile out_name]
