@@ -35,31 +35,41 @@ namespace eval Caius {
         private variable _config
 
         method usage {} {
-            puts "                                                                      "
-            puts "Usage: caius run \[OPTIONS] <executable>                              "
-            puts "                                                                      "
-            puts "Summary:                                                              "
-            puts "                                                                      "
-            puts " Runs the <executable> and records its output and exit status. This   "
-            puts " command is meant for running tests written with the Caius framework  "
-            puts " but is not limited to that.                                          "
-            puts "                                                                      "
-            puts " If the executable being run produces a conforming result XML on      "
-            puts " standard output, Caius will save it as such. If the output is        "
-            puts " something different, Caius will coerce it into a result XML readable "
-            puts " by `caius report`.                                                   "
-            puts "                                                                      "
-            puts "Options:                                                              "
-            puts "                                                                      "
-            puts " -d, --work-dir=<dir>   Change working directory before running tests."
-            puts " -f, --format <fmt>     Output test results in native 'xml' or 'junit'"
-            puts "                        format. Note that the runner only converts the"
-            puts "                        input to XML if it is not already XML.        "
-            puts " -n, --test-name=<name> Set test name for non-native tests that don't "
-            puts "                        produce a result XML.                         "
-            puts " -t, --timeout=<sec>    Timeout in seconds after which to abort.      "
-            puts " -o, --output=<file>    Name of the file to which to print the test   "
-            puts "                        report, the default is 'result.xml'.          "
+            puts "                                                                        "
+            puts "Usage: caius run \[OPTIONS] <executable>                                "
+            puts "                                                                        "
+            puts "Summary:                                                                "
+            puts "                                                                        "
+            puts " Runs the <executable> and records its output and exit status. This     "
+            puts " command is meant for running tests written with the Caius framework    "
+            puts " but is not limited to that.                                            "
+            puts "                                                                        "
+            puts " If the executable being run produces a conforming result XML on        "
+            puts " standard output, Caius will save it as such. If the output is          "
+            puts " something different, Caius will coerce it into a result XML readable   "
+            puts " by `caius report`.                                                     "
+            puts "                                                                        "
+            puts "Options:                                                                "
+            puts "                                                                        "
+            puts " -d, --work-dir=<dir>    Change working directory before running tests. "
+            puts " -f, --format <fmt>      Output test results in native 'xml' or 'junit' "
+            puts "                         format. Note that the runner only converts the "
+            puts "                         input to XML if it is not already XML.         "
+            puts " -n, --test-name=<name>  Set test name for non-native tests that don't  "
+            puts "                         produce a result XML.                          "
+            puts " -t, --timeout=<sec>     Timeout in seconds after which to abort.       "
+            puts " -o, --output=<file>     Name of the file to which to print the test    "
+            puts "                         report, the default is 'result.xml'.           "
+            puts "Windows only:                                                           "
+            puts "                                                                        "
+            puts " --script-encoding <enc> Assume that Tcl scripts have encoding <enc>.   "
+            puts "                                                                        "
+            puts "                         If a file with extension .tcl is passed to the "
+            puts "                         test runner it is executed as                  "
+            puts "                                                                        "
+            puts "                         tclsh.exe -encoding <enc> <script>             "
+            puts "                                                                        "
+
         }
 
         method parse_command_line {{argv {}}} {
@@ -70,6 +80,7 @@ namespace eval Caius {
             set _config(out_file) result.xml
             set _config(work_dir) .
             set _config(outformat) xml
+            set _config(encoding) [encoding system]
 
             for {set i 0} {$i < [llength $argv]} {incr i} {
                 set o [lindex $argv $i]
@@ -129,6 +140,17 @@ namespace eval Caius {
                     --output {
                         if {$v eq {}} { set v [lindex $argv [incr i]] }
                         set _config(out_file) $v
+                    }
+                    --script-encoding {
+                        if {$v eq {}} {
+                            set v [lindex $argv [incr i]]
+                        }
+                        set v [string tolower $v]
+
+                        if {[lsearch -exact [encoding names] $v] == -1} {
+                            raise ::Caius::Error "unsupported encoding '$v'."
+                        }
+                        set _config(encoding) $v
                     }
                     default {
                         if {[string index $o 0] eq "-"} {
@@ -292,7 +314,28 @@ namespace eval Caius {
         method execute {argv} {
             parse_command_line $argv
 
-            # set working directory
+            set command $_config(test_cmd)
+            set cmd [lindex $command 0]
+
+            # special acrobatics on Windows
+            if {[regexp {\.tcl\Z} $cmd] && \
+                    $::tcl_platform(platform) eq {windows}} \
+            {
+                set tcl_shell [info nameofexecutable]
+
+                if {$tcl_shell eq {}} {
+                    set tcl_shell [auto_execok tclsh.exe]
+                }
+
+                # shut your eyes and hope for the best
+                if {$tcl_shell eq {}} {
+                    set tcl_shell tclsh.exe
+                }
+
+                set command "$tcl_shell -encoding ${_config(encoding)} \
+                    $command"
+            }
+
             cd $_config(work_dir)
 
             set out [file tempfile out_name]
@@ -305,7 +348,7 @@ namespace eval Caius {
             except {
                 set p [Subprocess::Popen #auto -timeout $_config(timeout) \
                         -stdout $out \
-                        -stderr $err {*}$_config(test_cmd) \
+                        -stderr $err {*}$command \
                     ]
 
                 set exit_code [$p wait]

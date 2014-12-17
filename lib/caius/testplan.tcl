@@ -56,15 +56,15 @@ namespace eval Caius {
             puts "Options:                                                                "
             puts "                                                                        "
             puts " -d, --work-dir <dir>    Change working directory before running tests. "
-            puts "                                                                        "
             puts " -f, --format <fmt>      Output test results either in Caius' native    "
             puts "                         'xml' result format or as 'junit' XML.         "
-            puts "                                                                        "
             puts "Windows only:                                                           "
             puts "                                                                        "
             puts " --script-encoding <enc> Encoding of Tcl scripts in the test suite.     "
+            puts "                                                                        "
             puts "                         If a file with extension .tcl is encountered   "
             puts "                         in the testplan, it is executed as             "
+            puts "                                                                        "
             puts "                         tclsh.exe -encoding <enc> <script>             "
             puts "                                                                        "
         }
@@ -72,7 +72,7 @@ namespace eval Caius {
         method parse_command_line {{argv {}}} {
             set _config(work_dir) .
             set _config(outformat) xml
-            set _config(encoding) utf-8
+            set _config(encoding) [encoding system]
 
             if {[llength $argv] == 0} {
                 lappend argv --help-me-please-i-have-no-clue
@@ -213,29 +213,6 @@ namespace eval Caius {
                 ]
             }
 
-            # special acrobatics on Windows
-            if {[regexp {\.tcl\Z} $cmd] && \
-                    $::tcl_platform(platform) eq {windows}} \
-            {
-                set tcl_shell [info nameofexecutable]
-
-                if {$tcl_shell eq {}} {
-                    set tcl_shell [auto_execok tclsh.exe]
-                }
-
-                # shut your eyes and hope for the best
-                if {$tcl_shell eq {}} {
-                    set tcl_shell tclsh.exe
-                }
-
-                if {$_config(encoding) ne {}} {
-                    set tcl_shell \
-                        [lappend tcl_shell -encoding $_config(encoding)]
-                }
-
-                set command "$tcl_shell $command"
-            }
-
             # create directory for artifacts
             set subdir [format "%04d_%s" [incr _counter] \
                 [regsub {[-.]} [file tail [lindex [split $cmd] 0]] {_}]\
@@ -247,7 +224,9 @@ namespace eval Caius {
                 flush stdout
 
                 set rval [$_runner execute "-f ${_config(outformat)} \
-                    -d $workdir -t $timeout $command"]
+                    -d $workdir -t $timeout \
+                    --script-encoding ${_config(encoding)} \
+                    $command"]
 
                 if {$rval != 0} {
                     puts "fail"
