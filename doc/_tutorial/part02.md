@@ -10,7 +10,7 @@ layout: tutorial
 # Driving the Command Line with Expect
 
 Expect has been copied many times, and bindings to libexpect exist for many
-other programming language. But none of them achieves the same deep integration
+other programming languages. But none of them achieves the same deep integration
 with the language, the ease of use and the versatility of Expect for Tcl.
 
 Caius simplifies working with Expect by wrapping the most commonly used

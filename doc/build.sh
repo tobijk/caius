@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 rm -fr _site
 rm -fr _api && mkdir _api
@@ -29,5 +29,4 @@ layout: api
 done
 
 jekyll build
-
 

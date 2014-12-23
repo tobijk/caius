@@ -118,7 +118,7 @@ Available attribute types are
 * number
 * string
 * bool
-* or a class name (must be recognized by `itcl:is class`)
+* or a class name (must be recognized by `itcl::is class`)
 
 Additionally you can declare arrays of either type by wrapping the type
 specifier in square brackets. You cannot have mixed-type arrays.
