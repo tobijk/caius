@@ -36,6 +36,23 @@ namespace eval WebDriver {
         puts "WebDriver\[$session_id]: $log_string"
     }
 
+    proc sessions {url} {
+        set sessions {}
+        set response [::WebDriver::Protocol::dispatch $url/sessions]
+
+        foreach {entry} [$response value] {
+            array set properties $entry
+
+            set session [::WebDriver::Session #auto]
+            $session set_session_id $properties(id)
+            $session set_session_url $url/session/$properties(id)
+
+            lappend sessions [namespace which $session]
+        }
+
+        return $sessions
+    }
+
     ::itcl::class Session {
 
         common attributes {
@@ -111,7 +128,7 @@ namespace eval WebDriver {
 
             # parse capabilities
             set caps [namespace which [WebDriver::Capabilities #auto]]
-            $caps from_tcl [$res value]
+            $caps from_tcl [$response value]
 
             ::itcl::delete object $response
             return $caps

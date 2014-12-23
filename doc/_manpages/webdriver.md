@@ -39,6 +39,12 @@ receives from a test script.
 
 ## API
 
+### namespace WebDriver
+
+* `proc sessions` *url*:
+  Connects to Selenium Server at the given URL and returns a list of
+  `WebDriver::Session` objects, one for each active session.
+
 ### itcl::class WebDriver::Session
 
 * `constructor` *url* *desired_capabilities* ?*required_capabilities*?:
