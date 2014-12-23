@@ -64,7 +64,7 @@ namespace eval Testing {
         method test_start {name count num_tests} {
             set name [string trimleft $name ::]
 
-            append title [format "* Test %d/%d: %s" $count $num_tests $name ]
+            append title [format "* Test %d/%d: %s " $count $num_tests $name ]
             append title [string repeat - [expr 70 - [string length $title]]]
 
             puts "$title START"
