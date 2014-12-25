@@ -10,3 +10,5 @@ The following people have contributed to Caius:
     - Initiator and maintainer of the Windows port
     - Bugfixes and Itcl4 compatibility work
 
+* Will Duquette
+    - Fixes to the Markdown module
