@@ -46,6 +46,7 @@ Automatic Links
 ---
 
 Write to <me@example.com> and visit <http://www.example.com>.
+This is an auto-link with ampersand: <http://example.com/?foo=1&bar=2>.
 
 Inline HTML
 ---

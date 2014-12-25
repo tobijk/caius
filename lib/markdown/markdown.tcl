@@ -546,6 +546,7 @@ namespace eval Markdown {
                         continue
                     } elseif {[regexp -start $index $re_autolink $text m email link]} {
                         if {$link ne {}} {
+                            set link [html_escape $link]
                             append result "<a href=\"$link\">$link</a>"
                         } else {
                             set mailto_prefix "mailto:"
@@ -606,7 +607,8 @@ namespace eval Markdown {
 
     ## \private
     proc html_escape {text} {
-        return [string map {<!-- <!-- --> --> & &amp; < &lt; > &gt; ' &apos; \" &quot;} $text]
+        return [string map {<!-- <!-- --> --> & &amp; < &lt; > &gt; ' &apos; \
+            \" &quot;} $text]
     }
 }
 
