@@ -22,6 +22,8 @@ Use [Google][] and [Yahoo] [] for search and read [News for Nerds][Slashdot] and
 [Slashdot]: <http://slashdot.org>       (News for Nerds)
 [HN]:       http://news.ycombinator.com 'Hacker News'
 
+Unknown ref: [bla][foo]
+
 Code
 ---
 

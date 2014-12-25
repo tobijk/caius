@@ -489,15 +489,24 @@ namespace eval Markdown {
                         # REFERENCED
                         incr index [string length $m]
 
-                        if {$lbl eq {}} { set lbl $txt }
+                        if {$lbl eq {}} {
+                            set lbl $txt
+                        }
 
-                        lassign $::Markdown::_references([string tolower $lbl]) url title
+                        set lbl [string tolower $lbl]
 
-                        set url [html_escape [string trim $url {<> }]]
-                        set txt [parse_inline $txt]
-                        set title [parse_inline $title]
+                        if {[info exists ::Markdown::_references($lbl)]} {
+                            lassign $::Markdown::_references($lbl) url title
 
-                        set match_found 1
+                            set url [html_escape [string trim $url {<> }]]
+                            set txt [parse_inline $txt]
+                            set title [parse_inline $title]
+
+                            set match_found 1
+                        } else {
+                            append result $m
+                            continue
+                        }
                     } elseif {[regexp -start $index $re_inlinelink $text m txt url_and_title]} {
                         # INLINE
                         incr index [string length $m]
