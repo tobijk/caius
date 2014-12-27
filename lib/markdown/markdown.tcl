@@ -121,6 +121,7 @@ namespace eval Markdown {
                     incr index
                 }
                 {^[ ]{0,3}\[(.*?[^\\])\]:\s+(\S+)(?:\s+(([\"\']).*[^\\]\4|\(.*[^\\]\))\s*$)?} {
+                    # SKIP REFERENCES
                     set next_line [lindex $lines [expr $index + 1]]
 
                     if {[regexp \
@@ -236,6 +237,7 @@ namespace eval Markdown {
                     set list_match $ul_match
                     set list_result {}
 
+                    # we don't know which one matched, this is a bit awkward...
                     if {[regexp $ol_match $line]} {
                         set list_type ol
                         set list_match $ol_match
@@ -276,7 +278,9 @@ namespace eval Markdown {
                                 if {!$in_p} {
                                     incr p_count
                                 }
-                                break
+                                if {$peek != $index} {
+                                    break
+                                }
                             }\
                             elseif {!$in_p} {
                                 break
