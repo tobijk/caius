@@ -1,3 +1,14 @@
+caius (0.12.0-1) unstable; urgency=low
+
+  * Markdown: prevent list recursion on same line
+  * Markdown: fix hanger when list active character is repeated immediately
+  * Markdown: handle undefined refs (Will Duquette)
+  * Markdown: ampersand in autolinks (Will Duquette)
+  * WebDriver: add function to list active sessions
+  * Move Keyboard namespace to WebDriver::Keys
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Mon, 29 Dec 2014 23:15:30 +0200
+
 caius (0.11.0-1) unstable; urgency=low
 
   * subprocess: undo channel transforms on invocation error

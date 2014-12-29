@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.12.0" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2014-12-29 23:15:30 +0200">
+        <changeset>
+            <li>Markdown: prevent list recursion on same line</li>
+            <li>Markdown: fix hanger when list active character is repeated immediately</li>
+            <li>Markdown: handle undefined refs (Will Duquette)</li>
+            <li>Markdown: ampersand in autolinks (Will Duquette)</li>
+            <li>WebDriver: add function to list active sessions</li>
+            <li>Move Keyboard namespace to WebDriver::Keys</li>
+        </changeset>
+    </release>
     <release version="0.11.0" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-12-17 08:44:30 +0200">
         <changeset>
