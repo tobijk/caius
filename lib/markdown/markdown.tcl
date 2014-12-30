@@ -44,10 +44,9 @@ namespace eval Markdown {
     proc convert {markdown} {
         append markdown \n
 
-        regsub -all {\r\n}  $markdown \n     markdown
-        regsub -all {\r}    $markdown \n     markdown
-        regsub -all {\t}    $markdown {    } markdown
-        set markdown [string trim $markdown]
+        set markdown [string trim \
+            [string map {\r\n \n \r \n \t {    }} $markdown] \
+        ]
 
         # COLLECT REFERENCES
         array set ::Markdown::_references [collect_references markdown]
