@@ -233,25 +233,26 @@ namespace eval Markdown {
                 }
                 {^[ ]{0,3}(?:\*|-|\+) |^[ ]{0,3}\d+\. } {
                     # LISTS
-                    set list_type ul
-                    set list_match $ul_match
                     set list_result {}
 
-                    # we don't know which one matched, this is a bit awkward...
+                    # continue matching same list type
                     if {[regexp $ol_match $line]} {
                         set list_type ol
                         set list_match $ol_match
+                    } else {
+                        set list_type ul
+                        set list_match $ul_match
                     }
 
                     set last_line AAA
 
-                    while {$index < $no_lines} {
-                        set item_result {}
-
+                    while {$index < $no_lines} \
+                    {
                         if {![regexp $list_match [lindex $lines $index]]} {
                             break
                         }
 
+                        set item_result {}
                         set in_p 1
                         set p_count 1
 
@@ -259,21 +260,17 @@ namespace eval Markdown {
                             incr p_count
                         }
 
-                        for {set peek $index} {$peek < $no_lines} {incr peek} {
+                        set last_line $line
+                        set line [regsub "$list_match\\s*" $line {}]
+
+                        # prevent recursion on same line
+                        set line [regsub {\A(\d+)\.(\s+)}   $line {\1\\.\2}]
+                        set line [regsub {\A(\*|\+|-)(\s+)} $line {\\\1\2}]
+
+                        lappend item_result $line
+
+                        for {set peek [expr $index + 1]} {$peek < $no_lines} {incr peek} {
                             set line [lindex $lines $peek]
-
-                            if {$peek == $index} {
-                                set last_line $line
-                                set line [regsub "$list_match\\s*" $line {}]
-
-                                # prevent recursion on same line
-                                set line [regsub {\A(\d+)\.(\s+)}   $line {\1\.\2}]
-                                set line [regsub {\A(\*|\+|-)(\s+)} $line {\\\1\2}]
-
-                                lappend item_result $line
-                                set in_p 1
-                                continue
-                            }
 
                             if {[is_empty_line $line]} {
                                 set in_p 0
