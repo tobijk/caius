@@ -49,6 +49,7 @@ namespace eval Markdown {
         ]
 
         # COLLECT REFERENCES
+        array unset ::Markdown::_references
         array set ::Markdown::_references [collect_references markdown]
 
         # PROCESS
