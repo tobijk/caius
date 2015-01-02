@@ -18,6 +18,7 @@ test
 
 * C
 * D
+* * *
 
 1. test
     * a
@@ -69,6 +70,7 @@ sit amet, consectetuer adipiscing elit.
 
 *   Another item in the same list.
 
+* * * 
 
 1. 1. 1. Test that this does not recurse
 

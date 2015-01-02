@@ -105,7 +105,7 @@ namespace eval Markdown {
         set index    0
         set result   {}
 
-        set ul_match {^[ ]{0,3}(?:\*|-|\+) }
+        set ul_match {^[ ]{0,3}(?:\*(?!\s*\*\s*\*\s*$)|-(?!\s*-\s*-\s*$)|\+) }
         set ol_match {^[ ]{0,3}\d+\. }
 
         # PROCESS MARKDOWN
