@@ -625,8 +625,7 @@ namespace eval Markdown {
 
     ## \private
     proc html_escape {text} {
-        return [string map {<!-- <!-- --> --> & &amp; < &lt; > &gt; ' &apos; \
-            \" &quot;} $text]
+        return [string map {<!-- <!-- --> --> & &amp; < &lt; > &gt; \" &quot;} $text]
     }
 }
 
