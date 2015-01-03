@@ -22,6 +22,8 @@
 # THE SOFTWARE.
 #
 
+package require textutil
+
 ## \file
 # \brief Functions for converting markdown to HTML.
 
@@ -42,11 +44,9 @@ namespace eval Markdown {
     # document. The format of the output is generic XHTML.
     #
     proc convert {markdown} {
-        append markdown \n
-
-        set markdown [string trim \
-            [string map {\r\n \n \r \n \t {    }} $markdown] \
-        ]
+        set markdown [regsub {\r\n?} $markdown {\n}]
+        set markdown [::textutil::untabify2 $markdown 4]
+        set markdown [string trimright $markdown]
 
         # COLLECT REFERENCES
         array unset ::Markdown::_references
@@ -227,9 +227,9 @@ namespace eval Markdown {
 
                         set line [lindex $lines $index]
                     }
-                    set code_result [string trim [join $code_result \n]]
+                    set code_result [join $code_result \n]
 
-                    append result <pre><code> $code_result </code></pre>
+                    append result <pre><code> $code_result \n </code></pre>
                 }
                 {^[ ]{0,3}(?:\*|-|\+) |^[ ]{0,3}\d+\. } {
                     # LISTS
@@ -426,10 +426,10 @@ namespace eval Markdown {
 
         set re_backticks   {\A`+}
         set re_whitespace  {\s}
-        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\(((?:[^\)\\]|\\\))*)\)}
+        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\(((?:[^\)\\]|\\\)|\)(?=\s*\S+))*)\)}
         set re_reflink     {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\[((?:[^\]\\]|\\\])*?)\]}
         set re_urlandtitle {\A(\S+)(?:\s+([\"'])((?:[^\"\'\\]|\\\2)*)\2)?}
-        set re_htmltag     {\A</?\w+\s*>|\A<\w+(?:\s+\w+=\"[^\"]+\")*\s*/?>}
+        set re_htmltag     {\A</?\w+\s*>|\A<\w+(?:\s+\w+=(?:\"[^\"]+\"|\'[^\']+\'))*\s*/?>}
         set re_autolink    {\A<(?:(\S+@\S+)|(\S+://\S+))>}
         set re_comment     {\A<!--.*?-->}
         set re_entity      {\A\&\S+;}
@@ -440,7 +440,7 @@ namespace eval Markdown {
                     # ESCAPES
                     set next_chr [string index $text [expr $index + 1]]
 
-                    if {[string first $next_chr {\`*_\{\}[]()#+-.!}] != -1} {
+                    if {[string first $next_chr {\`*_\{\}[]()#+-.!>}] != -1} {
                         set chr $next_chr
                         incr index
                     }
@@ -486,10 +486,10 @@ namespace eval Markdown {
                 {!} -
                 {[} {
                     # LINKS AND IMAGES
-                    set ref_type link
-
                     if {$chr eq {!}} {
                         set ref_type img
+                    } else {
+                        set ref_type link
                     }
 
                     set match_found 0
