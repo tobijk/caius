@@ -426,7 +426,7 @@ namespace eval Markdown {
 
         set re_backticks   {\A`+}
         set re_whitespace  {\s}
-        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\(((?:[^\)\\]|\\\)|\)(?=\s*\S+))*)\)}
+        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])+)\]\s*\(\s*((?:[^\s\)]+|\([^\s\)]+\))+)?(\s+([\"'])(.*)?\4)?\s*\)}
         set re_reflink     {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\[((?:[^\]\\]|\\\])*?)\]}
         set re_urlandtitle {\A(\S+)(?:\s+([\"'])((?:[^\"\'\\]|\\\2)*)\2)?}
         set re_htmltag     {\A</?\w+\s*>|\A<\w+(?:\s+\w+=(?:\"[^\"]+\"|\'[^\']+\'))*\s*/?>}
@@ -454,16 +454,21 @@ namespace eval Markdown {
                         #do nothing
                     } \
                     elseif {[regexp -start $index \
-                        "\\A(\\$chr{1,2})((?:\[^\\$chr\\\\]|\\\\\\$chr)*)\\1" \
+                        "\\A(\\$chr{1,3})((?:\[^\\$chr\\\\]|\\\\\\$chr)*)\\1" \
                         $text m del sub]} \
                     {
-                        if {[string length $del] > 1} {
-                            set tag strong
-                        } else {
-                            set tag em
+                        switch [string length $del] {
+                            1 {
+                                append result "<em>[parse_inline $sub]</em>"
+                            }
+                            2 {
+                                append result "<strong>[parse_inline $sub]</strong>"
+                            }
+                            3 {
+                                append result "<strong><em>[parse_inline $sub]</em></strong>"
+                            }
                         }
 
-                        append result "<$tag>[parse_inline $sub]</$tag>"
                         incr index [string length $m]
                         continue
                     }
@@ -516,19 +521,9 @@ namespace eval Markdown {
                             append result $m
                             continue
                         }
-                    } elseif {[regexp -start $index $re_inlinelink $text m txt url_and_title]} {
+                    } elseif {[regexp -start $index $re_inlinelink $text m txt url ign del title]} {
                         # INLINE
                         incr index [string length $m]
-
-                        set url_and_title [string trim $url_and_title]
-                        set del [string index $url_and_title end]
-
-                        if {[string first $del "\"'"] >= 0} {
-                            regexp $re_urlandtitle $url_and_title m url del title
-                        } else {
-                            set url $url_and_title
-                            set title {}
-                        }
 
                         set url [html_escape [string trim $url {<> }]]
                         set txt [parse_inline $txt]
@@ -625,7 +620,7 @@ namespace eval Markdown {
 
     ## \private
     proc html_escape {text} {
-        return [string map {<!-- <!-- --> --> & &amp; < &lt; > &gt; \" &quot;} $text]
+        return [string map {& &amp; < &lt; > &gt; \" &quot;} $text]
     }
 }
 
