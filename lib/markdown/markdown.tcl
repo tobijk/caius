@@ -70,7 +70,7 @@ namespace eval Markdown {
             set line [lindex $lines $index]
 
             if {[regexp \
-                {^[ ]{0,3}\[(.*?[^\\])\]:\s+(\S+)(?:\s+(([\"\']).*[^\\]\4|\(.*[^\\]\))\s*$)?} \
+                {^[ ]{0,3}\[((?:[^\]]|\[[^\]]*?\])+)\]:\s*(\S+)(?:\s+(([\"\']).*\4|\(.*\))\s*$)?} \
                 $line match ref link title]} \
             {
                 set title [string trim [string range $title 1 end-1]]
@@ -78,7 +78,7 @@ namespace eval Markdown {
                     set next_line [lindex $lines [expr $index + 1]]
 
                     if {[regexp \
-                        {^(?:\s+(?:([\"\']).*[^\\]\1|\(?:.*[^\\]\))\s*$)} \
+                        {^(?:\s+(?:([\"\']).*\1|\(.*\))\s*$)} \
                         $next_line]} \
                     {
                         set title [string range [string trim $next_line] 1 end-1]
@@ -120,12 +120,12 @@ namespace eval Markdown {
                     }
                     incr index
                 }
-                {^[ ]{0,3}\[(.*?[^\\])\]:\s+(\S+)(?:\s+(([\"\']).*[^\\]\4|\(.*[^\\]\))\s*$)?} {
+                {^[ ]{0,3}\[(?:[^\]]|\[[^\]]*?\])+\]:\s*\S+(?:\s+(?:([\"\']).*\1|\(.*\))\s*$)?} {
                     # SKIP REFERENCES
                     set next_line [lindex $lines [expr $index + 1]]
 
                     if {[regexp \
-                        {^(?:\s+(?:([\"\']).*[^\\]\1|\(?:.*[^\\]\))\s*$)} \
+                        {^(?:\s+(?:([\"\']).*\1|\(.*\))\s*$)} \
                         $next_line]} \
                     {
                         incr index
@@ -426,9 +426,8 @@ namespace eval Markdown {
 
         set re_backticks   {\A`+}
         set re_whitespace  {\s}
-        set re_inlinelink  {\A\!?\[((?:[^\]\\]|\\\])+)\]\s*\(\s*((?:[^\s\)]+|\([^\s\)]+\))+)?(\s+([\"'])(.*)?\4)?\s*\)}
-        set re_reflink     {\A\!?\[((?:[^\]\\]|\\\])*)\]\s*\[((?:[^\]\\]|\\\])*?)\]}
-        set re_urlandtitle {\A(\S+)(?:\s+([\"'])((?:[^\"\'\\]|\\\2)*)\2)?}
+        set re_inlinelink  {\A\!?\[((?:[^\]]|\[[^\]]*?\])+)\]\s*\(\s*((?:[^\s\)]+|\([^\s\)]+\))+)?(\s+([\"'])(.*)?\4)?\s*\)}
+        set re_reflink     {\A\!?\[((?:[^\]]|\[[^\]]*?\])+)\](?:\s*\[((?:[^\]]|\[[^\]]*?\])*)\])?}
         set re_htmltag     {\A</?\w+\s*>|\A<\w+(?:\s+\w+=(?:\"[^\"]+\"|\'[^\']+\'))*\s*/?>}
         set re_autolink    {\A<(?:(\S+@\S+)|(\S+://\S+))>}
         set re_comment     {\A<!--.*?-->}
@@ -499,12 +498,18 @@ namespace eval Markdown {
 
                     set match_found 0
 
-                    if {[regexp -start $index $re_reflink $text m txt lbl]} {
-                        # REFERENCED
+                    if {[regexp -start $index $re_inlinelink $text m txt url ign del title]} {
+                        # INLINE
                         incr index [string length $m]
 
+                        set url [html_escape [string trim $url {<> }]]
+                        set txt [parse_inline $txt]
+                        set title [parse_inline $title]
+
+                        set match_found 1
+                    } elseif {[regexp -start $index $re_reflink $text m txt lbl]} {
                         if {$lbl eq {}} {
-                            set lbl $txt
+                            set lbl [regsub -all {\s+} $txt { }]
                         }
 
                         set lbl [string tolower $lbl]
@@ -516,20 +521,10 @@ namespace eval Markdown {
                             set txt [parse_inline $txt]
                             set title [parse_inline $title]
 
+                            # REFERENCED
+                            incr index [string length $m]
                             set match_found 1
-                        } else {
-                            append result $m
-                            continue
                         }
-                    } elseif {[regexp -start $index $re_inlinelink $text m txt url ign del title]} {
-                        # INLINE
-                        incr index [string length $m]
-
-                        set url [html_escape [string trim $url {<> }]]
-                        set txt [parse_inline $txt]
-                        set title [parse_inline $title]
-
-                        set match_found 1
                     }
 
                     # PRINT IMG, A TAG
@@ -588,14 +583,6 @@ namespace eval Markdown {
                     }
 
                     set chr [html_escape $chr]
-                }
-                {-} {
-                    # EMDASH
-                    if {[string index $text [expr $index + 1]] eq {-}} {
-                        append result {&#8212;}
-                        incr index 2
-                        continue
-                    }
                 }
                 {>} -
                 {'} -
