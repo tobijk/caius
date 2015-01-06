@@ -79,21 +79,20 @@ namespace eval WebDriver {
             set interval 5
 
             for {set i 0} {$i < 10} {incr i} {
-                if {[[$_session active_window] handle]  ne [$this handle]} {
-
-                    if {[$_session logging_enabled]} {
-                        ::WebDriver::log [$_session session_id] "focus window $_handle"
-                    }
-
-                    set response [::WebDriver::Protocol::dispatch -query $json \
-                        [$_session session_url]/window]
-                    ::itcl::delete object $response
-
-                    after $interval
-                    set interval [expr $interval * 2]
-                } else {
+                if {[[$_session active_window] handle]  eq [$this handle]} {
                     break
                 }
+
+                if {[$_session logging_enabled]} {
+                    ::WebDriver::log [$_session session_id] "focus window $_handle"
+                }
+
+                set response [::WebDriver::Protocol::dispatch -query $json \
+                    [$_session session_url]/window]
+                ::itcl::delete object $response
+
+                after $interval
+                set interval [expr $interval * 2]
             }
 
             if {$i == 10} {
@@ -392,7 +391,6 @@ namespace eval WebDriver {
                         if {(\"$error_array\" ne \"\") && (\"$error_var\" ne \"\")} {
                             ::tsv::set $error_array $error_var \[\$e msg]
                         }
-                        ::itcl::delete object \$e
                     }
                 } final {
                     if {\[info exists session]} {
