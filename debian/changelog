@@ -1,3 +1,11 @@
+caius (0.12.1-1) unstable; urgency=low
+
+  * Countless fixes to the Markdown module
+  * Markdown module tested against John Gruber's original test suite
+  * Webdriver::Window: fix surplus delete and tidy up focus command
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Tue, 06 Jan 2015 22:08:00 +0200
+
 caius (0.12.0-1) unstable; urgency=low
 
   * Markdown: prevent list recursion on same line

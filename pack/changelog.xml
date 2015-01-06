@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.12.1" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2015-01-06 22:08:00 +0200">
+        <changeset>
+            <li>Countless fixes to the Markdown module</li>
+            <li>Markdown module tested against John Gruber's original test suite</li>
+            <li>Webdriver::Window: fix surplus delete and tidy up focus command</li>
+        </changeset>
+    </release>
     <release version="0.12.0" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2014-12-29 23:15:30 +0200">
         <changeset>
