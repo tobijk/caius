@@ -13,12 +13,24 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
 ::itcl::class TestMarkdown {
     inherit Testing::TestObject
 
-    method test_markdown_converter {} {
-        docstr "Test the markdown converter on a variety of source files"
+    method test_markdown_converter_mdtest {} {
+        docstr "Test the markdown converter on a variety of source files."
 
-        foreach {doc} {bq code comments inline lists p_br_h_hr indent} {
-            set markdown_file $::DATA_DIR/markdown/$doc.md
-            set html_file     $::DATA_DIR/markdown/$doc.html
+        run_suite mdtest
+    }
+
+    method test_markdown_converter_extra {} {
+        docstr "Test the markdown converter on a variety of source files."
+
+        run_suite caius
+    }
+
+    method run_suite {suite_name} {
+        foreach {doc} [glob $::DATA_DIR/markdown/$suite_name/*.md] {
+            puts "checking $doc"
+
+            set markdown_file [file rootname $doc].md
+            set html_file     [file rootname $doc].html
 
             set fp [open $markdown_file]
             set markdown [read $fp]
