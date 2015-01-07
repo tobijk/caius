@@ -32,23 +32,31 @@ namespace eval Caius {
         private variable _config
 
         method usage {} {
-            puts "                                                                      "
-            puts "Usage: caius report <directory>                                       "
-            puts "                                                                      "
-            puts "Summary:                                                              "
-            puts "                                                                      "
-            puts " Scans the <directory> for test results. The directory should contain "
-            puts " subdirectories created by a previous call to `caius testplan`. Each  "
-            puts " of these in turn should contain exactly one results XML file plus any"
-            puts " number of artifcats, which will be linked into the test report.      "
-            puts "                                                                      "
-            puts " The test report will be created inside <directory> as one or more    "
-            puts " HTML files.                                                          "
-            puts "                                                                      "
+            puts "                                                                       "
+            puts "Usage: caius report \[OPTIONS\] <directory>                            "
+            puts "                                                                       "
+            puts "Summary:                                                               "
+            puts "                                                                       "
+            puts " Scans the <directory> for test results. The directory should contain  "
+            puts " subdirectories created by a previous call to `caius testplan`. Each of"
+            puts " these in turn should contain exactly one results XML file plus any    "
+            puts " number of artifcats, which will be linked into the test report.       "
+            puts "                                                                       "
+            puts " The test report will be created inside <directory> as one or more     "
+            puts " HTML files.                                                           "
+            puts "                                                                       "
+            puts "Options:                                                               "
+            puts "                                                                       "
+            puts " --with-xml   Spit out the test report in aggregated XML in addition   "
+            puts "              to the HTML report. This is for users who wish to run    "
+            puts "              their on XSL transforms on it to generate custom reports."
+            puts "              The XML file will be saved under the name \"result.xml\"."
+            puts "                                                                       "
         }
 
         method parse_command_line {{argv {}}} {
             set _config(work_dir) .
+            set _config(with_xml) 0
 
             if {[llength $argv] == 0} {
                 lappend argv --help-me-please-i-have-no-clue
@@ -74,6 +82,9 @@ namespace eval Caius {
                         }
 
                         exit 0
+                    }
+                    --with-xml {
+                        set _config(with_xml) 1
                     }
                     default {
                         if {[string index $o 0] eq "-"} {
@@ -161,6 +172,14 @@ namespace eval Caius {
             }
 
             $stylesheet transform $xml_testsuite result_doc
+
+            if {$_config(with_xml)} {
+                set fp [open result.xml w+]
+                chan configure $fp -encoding utf-8
+                $xml_testsuite asXML -channel $fp -indent 4 -doctypeDeclaration 1
+                close $fp
+            }
+
             set fp [open result.html w+]
             chan configure $fp -encoding utf-8
             $result_doc asXML -channel $fp -indent none -doctypeDeclaration 1
