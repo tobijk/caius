@@ -22,5 +22,5 @@
 # THE SOFTWARE.
 #
 
-package provide Markdown 0.9
+package provide Markdown 1.0
 
