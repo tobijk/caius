@@ -38,7 +38,7 @@ namespace eval Testing {
     }
 
     proc assert {args} {
-        if 1 "if {$args} {
+        uplevel "if $args {
             return 0 
         }"
         raise Testing::AssertionFailed "asserting '$args' failed"

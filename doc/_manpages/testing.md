@@ -16,6 +16,14 @@ Testing(3caius) -- base class for all native test classes
         method test_failing {} {
             error "Hello, I'm about to fail!"
         }
+
+        method test_with_assertion {} {
+            set a 0
+            set b 1
+
+            # will raise ::Testing::AssertionFailed
+            ::Testing::assert {$a == $b}
+        }
     }
 
     exit [[MyTests #auto] run $::argv]
@@ -28,6 +36,12 @@ the Caius framework. While it is *not* mandatory to derive tests from the
 execution and reporting functionality via its `run` method.
 
 ## API
+
+### namespace Testing
+
+* `assert` `{` *expression* `}`:
+  Assert that *expression* is true. If not, raise a `::Testing::AssertionFailed`
+  exception. The given *expression* is evaluated as by `if`.
 
 ### itcl::class Testing::TestObject
 
