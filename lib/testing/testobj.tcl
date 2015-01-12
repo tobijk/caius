@@ -33,6 +33,7 @@ namespace eval Testing {
 
         private variable _outformat "xml"
         private variable _verdict PASS
+        private variable _pattern_list {}
 
         public method run {{argv {}}} {
             set tests_to_run {}
@@ -88,6 +89,9 @@ namespace eval Testing {
                         puts "                                                                      "
                         puts " -i, --info           Print test descriptions, don't run the tests.   "
                         puts " -l, --list           Print list of tests in given modules.           "
+                        puts "                                                                      "
+                        puts " -m, --match <glob>   Run only tests matching glob. This option can be"
+                        puts "                      used multiple times.                            "
 
                         return 0
                     }
@@ -115,6 +119,16 @@ namespace eval Testing {
                     -i -
                     --info {
                         set special_action "info"
+                    }
+                    -m -
+                    --match {
+                        if {$v eq {}} {
+                            if {[set v [lindex $argv [incr i]]] eq {}} {
+                                raise RuntimeError "--match option requires an argument."
+                            }
+                        }
+
+                        lappend _pattern_list $v
                     }
                     default {
                         if {[string index $o 0] eq "-"} {
@@ -168,12 +182,26 @@ namespace eval Testing {
         }
 
         public method execute {{tests_to_run {}}} {
-            if {[llength $tests_to_run] > 0} {
-                set num_tests [llength [set all_tests $tests_to_run]]
-            } else {
-                set num_tests [llength [set all_tests \
-                    [$this ::Testing::TestObject::list_tests]]]
+            if {[llength $tests_to_run] == 0} {
+                set tests_to_run [$this ::Testing::TestObject::list_tests]
             }
+
+            if {[llength $_pattern_list] > 0} {
+                set all_tests {}
+
+                foreach {test} $tests_to_run {
+                    foreach {pattern} $_pattern_list {
+                        if {[string match $pattern $test]} {
+                            lappend all_tests $test
+                            break
+                        }
+                    }
+                }
+            } else {
+                set all_tests $tests_to_run
+            }
+
+            set num_tests [llength [set all_tests]]
 
             set count 1
             switch $_outformat {
