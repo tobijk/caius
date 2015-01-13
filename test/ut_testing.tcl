@@ -84,6 +84,40 @@ itcl::class  MyTest {
         }
     }
 
+    method test_constraints_basic {} {
+        docstr "Test that constraints are generally working."
+
+        if {$::tcl_platform(platform) ne {unix}} {
+            raise ::Testing::TestSkipped "test works on Unix only"
+        }
+
+        except {
+            constraints unix nonRoot !root unixExecs
+        } e {
+            ::Testing::TestSkipped {
+                error "constraints should have been satisfied but: [$e msg]"
+            }
+        }
+
+        set_constraint testConstraint true
+
+        except {
+            constraints testConstraint
+        } e {
+            ::Testing::TestSkipped {
+                error "constraint 'testConstraint' not satisfied."
+            }
+        }
+
+        except {
+            constraints !testConstraint
+            error "constraint 'testConstraint' wrongly determined satisfied."
+        } e {
+            ::Testing::TestSkipped {
+                # pass
+            }
+        }
+    }
 }
 
 exit [[TestTesting #auto] run $::argv]

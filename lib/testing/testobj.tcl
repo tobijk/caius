@@ -34,8 +34,57 @@ namespace eval Testing {
         private variable _outformat "xml"
         private variable _verdict PASS
         private variable _pattern_list {}
+        private variable _constraints
+
+        public method set_constraint {constraint value} {
+            set _constraints($constraint) $value
+        }
+
+        public method constraints {args} {
+            if {[lindex $args 0] eq {-test}} {
+                set args [lreplace $args 0 0]
+                set test_only 1
+            } else {
+                set test_only 0
+            }
+
+            foreach {constraint} $args {
+                if {[string index $constraint 0] eq {!}} {
+                    set wanted 0
+                    set constraint [string replace $constraint 0 0]
+                } else {
+                    set wanted 1
+                }
+
+                if {[info exists _constraints($constraint)] && \
+                    $_constraints($constraint)} \
+                {
+                    if {!$wanted} {
+                        if {$test_only} {
+                            return 0
+                        } else {
+                            raise ::Testing::TestSkipped \
+                                "constraint !${constraint} not satisfied"
+                        }
+                    }
+                } else {
+                    if {$wanted} {
+                        if {$test_only} {
+                            return 0
+                        } else {
+                            raise ::Testing::TestSkipped \
+                                "constraint ${constraint} not satisfied"
+                        }
+                    }
+                }
+            }
+
+            return 1
+        }
 
         public method run {{argv {}}} {
+            $this init_default_constraints
+
             set tests_to_run {}
             set special_action none
 
@@ -146,7 +195,6 @@ namespace eval Testing {
 
             switch $special_action {
                 "info" {
-
                     if {[llength $tests_to_run] > 0} {
                         set all_tests $tests_to_run
                     } else {
@@ -164,11 +212,9 @@ namespace eval Testing {
                         }
                     }
                 }
-
                 "list" {
                     puts [join [$this ::Testing::TestObject::list_tests] "\n"]
                 }
-
                 default {
                     $this ::Testing::TestObject::execute $tests_to_run
                 }
@@ -243,6 +289,10 @@ namespace eval Testing {
                     $this ::Testing::TestObject::setup
                     $this $test
                 } e {
+                    ::Testing::TestSkipped {
+                        set e_stack_trace [$e msg]
+                        set verdict "SKIP"
+                    }
                     ::Exception {
                         set e_stack_trace [$e stack_trace]
                         set verdict "FAIL"
@@ -259,9 +309,15 @@ namespace eval Testing {
                     }
                 }
                 set total_time [expr $stop_time - $start_time]
-                if {$verdict eq "FAIL"} {
-                    set _verdict FAIL
-                    $result log_error $e_stack_trace
+
+                switch $verdict {
+                    "FAIL" {
+                        set _verdict FAIL
+                        $result log_error $e_stack_trace
+                    }
+                    "SKIP" {
+                        $result log_error $e_stack_trace
+                    }
                 }
 
                 if {$count == $num_tests} {
@@ -282,7 +338,6 @@ namespace eval Testing {
             }
 
             $result module_end
-
             ::itcl::delete object $result
         }
 
@@ -303,6 +358,82 @@ namespace eval Testing {
             }
 
             return $all_tests
+        }
+
+        private method init_default_constraints {} {
+            set _constraints(unix) false
+            set _constraints(win)  false
+            set _constraints(mac)  false
+
+            set _constraints(unixOrWin) false
+            set _constraints(macOrWin)  false
+            set _constraints(macOrUnix) false
+
+            set _constraints(tempNotUnix) true
+            set _constraints(tempNotWin)  true
+            set _constraints(tempNotMax)  true
+
+            set _constraints(unixCrash) true
+            set _constraints(winCrash)  true
+            set _constraints(macCrash)  true
+
+            set _constraints(emptyTest) false
+            set _constraints(knownBug)  false
+            set _constraints(nonPortable) false
+            set _constraints(userInteraction) false
+
+            set _constraints(pointer64) false
+            set _constraints(unixExecs) true
+            set _constraints(root) false
+            set _constraints(nonRoot) true
+
+            if {$::tcl_platform(platform) eq {unix}} {
+                set _constraints(unix) true
+                set _constraints(tempNotUnix) false
+                set _constraints(unixCrash) false
+            }
+
+            if {$::tcl_platform(platform) eq {windows}} {
+                set _constraints(win) true
+                set _constraints(tempNotWin) false
+                set _constraints(winCrash) false
+            }
+
+            if {$::tcl_platform(platform) eq {macintosh}} {
+                set _constraints(mac) true
+                set _constraints(tempNotMac) false
+                set _constraints(macCrash) false
+            }
+
+            if {$_constraints(unix) || $_constraints(win)} {
+                set _constraints(unixOrWin) true
+            }
+            if {$_constraints(mac) || $_constraints(win)} {
+                set _constraints(macOrWin) true
+            }
+            if {$_constraints(mac) || $_constraints(unix)} {
+                set _constraints(macOrUnix) true
+            }
+
+            if {$::tcl_platform(pointerSize) == 4} {
+                set _constraints(pointer64) true
+            }
+
+            foreach {cmd} {cat echo sh wc rm sleep fgrep ps chmod mkdir} {
+                if {[::OS::find_executable $cmd] eq {}} {
+                    set _constraints(unixExecs) false
+                    break
+                }
+            }
+
+            if {$_constraints(unix)} {
+                set whoami [::OS::find_executable whoami]
+
+                if {($whoami ne {}) && ([exec $whoami] eq {root})} {
+                    set _constraints(root) true
+                    set _constraints(nonRoot) false
+                }
+            }
         }
 
         private method setup {{method setup}} {
