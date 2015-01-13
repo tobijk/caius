@@ -7,7 +7,7 @@
     <run timeout="60">ut_oosupport_json_strings.tcl</run>
     <run timeout="60">ut_oosupport_to_json.tcl</run>
     <run timeout="60">ut_subprocess.tcl</run>
-    <run timeout="60">ut_testing_docstr.tcl</run>
+    <run timeout="60">ut_testing.tcl</run>
     <run timeout="60">ut_setup_teardown.tcl</run>
     <run timeout="60">ut_webdriver_alerts.tcl</run>
     <run timeout="60">ut_webdriver_capabilities.tcl</run>
