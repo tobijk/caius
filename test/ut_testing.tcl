@@ -14,13 +14,14 @@ itcl::class  MyTest {
     }
 }
 
-
 #
 # TEST CASES
 #
 
 ::itcl::class TestTesting {
     inherit Testing::TestObject
+
+    private variable _constrained_test_run 0
 
     method test_extracting_docstring_from_test_method {} {
         docstr "Test extracting a docstring from a test method."
@@ -84,38 +85,84 @@ itcl::class  MyTest {
         }
     }
 
-    method test_constraints_basic {} {
-        docstr "Test that constraints are generally working."
+    ::Testing::constraints {win mac unix} {
+        method test_constraints_01_should_never_run {} {
+            set _constrained_test_run 1
+        }
+    }
 
-        if {$::tcl_platform(platform) ne {unix}} {
-            raise ::Testing::TestSkipped "test works on Unix only"
+    method test_constraints_02_check_test_not_run {} {
+        docstr "Test that `test_constraints_01_should_never_run` was not run."
+
+        if {$_constrained_test_run} {
+            error "the constrained test case was executed."
+        }
+    }
+
+    method test_constraints_03_constrain_code_blocks {} {
+        docstr "Test that using constraints inline works."
+
+        set block_1_run 0
+
+        ::Testing::constraints {win mac unix} {
+            set block_1_run 1
         }
 
-        except {
-            constraints unix nonRoot !root unixExecs
-        } e {
-            ::Testing::TestSkipped {
-                error "constraints should have been satisfied but: [$e msg]"
-            }
+        if {$block_1_run} {
+            error "block 1 should not have been executed."
         }
 
-        set_constraint testConstraint true
+        set block_2_run 0
 
-        except {
-            constraints testConstraint
-        } e {
-            ::Testing::TestSkipped {
-                error "constraint 'testConstraint' not satisfied."
-            }
+        ::Testing::constraints {} {
+            set block_2_run 1
         }
 
-        except {
-            constraints !testConstraint
-            error "constraint 'testConstraint' wrongly determined satisfied."
-        } e {
-            ::Testing::TestSkipped {
-                # pass
-            }
+        if {!$block_2_run} {
+            error "block 2 should have been executed."
+        }
+    }
+
+    method test_custom_set_test_constraints {} {
+        docstr "Test that setting constraints manually works."
+
+        set block_1_run 0
+
+        ::Testing::constraints {testConstraint} {
+            set block_1_run 1
+        }
+
+        if {$block_1_run} {
+            error "block 1 should not have been executed."
+        }
+
+        if {[::Testing::test_constraints testConstraint1]} {
+            error "testConstraint1 has not been set."
+        }
+
+        if {[::Testing::test_constraints testConstraint1 testConstraint2]} {
+            error "testConstraint1 and testConstraint2 have not been set."
+        }
+
+        ::Testing::set_constraint testConstraint1 1
+        ::Testing::set_constraint testConstraint2 1
+
+        set block_2_run 0
+
+        ::Testing::constraints {testConstraint1 testConstraint2} {
+            set block_2_run 1
+        }
+
+        if {!$block_2_run} {
+            error "block 2 should have been executed."
+        }
+
+        if {![::Testing::test_constraints testConstraint1]} {
+            error "testConstraint1 has been set."
+        }
+
+        if {![::Testing::test_constraints testConstraint1 testConstraint2]} {
+            error "testConstraint1 and testConstraint2 have been set"
         }
     }
 }

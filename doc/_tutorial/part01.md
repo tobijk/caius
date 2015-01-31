@@ -220,6 +220,46 @@ itself.
 You can explicitly set the initial working directory of the `runplan` command
 using the `--work-dir` command line switch.
 
+## Working with Constraints
+
+Let's say you are testing a range of network devices offering connectivity
+through an arbitrary combination of Ethernet, Wifi, DSL and UMTS. You have
+tests for each feature and want to enable them selectively according to the
+capabilities of the device under test.
+
+To this end, you may attach constraints to arbitrary blocks of code or entire
+test methods:
+
+~~~{tcl}
+# test works only for devices that have a wifi chip and a DSL modem
+::Testing::constraints {wifi dsl} {
+    method test_share_dsl_connection_over_wifi {} {
+        # test code here ...
+    }
+}
+~~~
+
+When executing your test module, you can use the `--constraint` command line
+parameter (also multiple times) to declare constraints to be true for the
+duration of the test run:
+
+    ./mytest.tcl -c wifi -c dsl
+
+Alternatively, you can export a list of constraints to the environment
+variable `CAIUS_TEST_CONSTRAINTS`.
+
+## Executing Tests Matching a Pattern
+
+You may choose to execute only certain tests from a test module by matching
+test names against a wildcard pattern with the `--match` command line parameter.
+For example, in order to run all tests that have the string *connectivity* in
+their name you could say:
+
+    ./mytest.tcl -m "*connectivity*"
+
+Be careful to quote patterns to prevent your shell from interpreting them. The
+`--match` option or its `-m` short-hand may be used multiple times.
+
 # Generating Reports
 
 In order to generate a report from the results of a testrun, use the
