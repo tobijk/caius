@@ -23,3 +23,31 @@ some code coming up.
             Body text...
         </body>
     </html>
+
+Now we are going to test fenced code Blocks:
+
+~~~{.tcl}
+package require Itcl
+package require Testing
+
+::itcl::class MyTest {
+    inherit ::Testing::TestObject
+
+    method test1 {} {}
+}
+~~~
+
+And now using backticks:
+
+`````tcl
+
+package require Itcl
+package require Testing
+
+::itcl::class MyTest {
+    inherit ::Testing::TestObject
+
+    method test1 {} {}
+}
+
+`````
