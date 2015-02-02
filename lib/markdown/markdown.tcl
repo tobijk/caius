@@ -342,7 +342,7 @@ namespace eval Markdown {
                 }
                 {^<(?:p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)} {
                     # HTML BLOCKS
-                    set re_htmltag {<(/?)(\w+)(?:\s+\w+=\"[^\"]+\")*\s*>}
+                    set re_htmltag {<(/?)(\w+)(?:\s+\w+=(?:\"[^\"]+\"|'[^']+'))*\s*>}
                     set buffer {}
 
                     while {$index < $no_lines} \
