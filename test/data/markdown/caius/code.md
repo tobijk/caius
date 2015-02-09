@@ -51,3 +51,17 @@ package require Testing
 }
 
 `````
+
+~~~
+```
+
+a fenced code block documenting itself.
+
+```
+~~~
+
+```
+~~~
+a fenced code block documenting itself.
+~~~
+```

@@ -231,16 +231,22 @@ namespace eval Markdown {
 
                     append result <pre><code> $code_result \n </code></pre>
                 }
-                {^(?:(?:`{3,})|(?:~{3,}))\{?\S+\}?\s*$} {
+                {^(?:(?:`{3,})|(?:~{3,}))(?:\{?\S+\}?)?\s*$} {
                     # FENCED CODE BLOCKS
                     set code_result {}
+
+                    if {[string index $line 0] eq {`}} {
+                        set end_match {^`{3,}\s*$}
+                    } else {
+                        set end_match {^~{3,}\s*$}
+                    }
 
                     while {$index < $no_lines} {
                         incr index
 
                         set line [lindex $lines $index]
 
-                        if {[regexp {^(?:(?:`{3,})|(?:~{3,}))\s*$} $line]} {
+                        if {[regexp $end_match $line]} {
                             incr index
                             break
                         }
