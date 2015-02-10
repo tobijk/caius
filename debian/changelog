@@ -1,3 +1,11 @@
+caius (0.15.0-1) unstable; urgency=low
+
+  * Markdown: support simple table syntax
+  * Markdown: fix HTML tag matching (Andreas Kupries)
+  * Markdown: add support for fenced code blocks
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Tue, 10 Feb 2015 22:06:00 +0200
+
 caius (0.14.0-1) unstable; urgency=low
 
   * Implement constraints in #ifdef manner
