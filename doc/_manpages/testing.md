@@ -102,15 +102,15 @@ execution and reporting functionality via its `run` method.
   * `root`:
     Test requires superuser privileges on Unix.
 
-  * `nonRoot`:
-    Test must be run in an unprivileged account.
+  * `nonRoot` :
+     Test must be run in an unprivileged account.
 
 * `set_constraint` *constraint* *boolean*:
    Enable or disable *constraint*.
 
 * `test_constraints` *constraints*:
    Test given list of constraints and return 1 if all constraints are satisfied
-   or false otherwise.
+   or 0 otherwise.
 
 ### itcl::class Testing::TestObject
 
