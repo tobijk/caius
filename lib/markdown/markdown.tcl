@@ -140,31 +140,17 @@ namespace eval Markdown {
                     append result "<hr/>"
                     incr index
                 }
-                {^[ ]{0,3}#{1,6}} {
+                {^[ ]{0,3}#{1,6}(?:\s+|$)} {
                     # ATX STYLE HEADINGS
-                    set h_level 0
-                    set h_result {}
+                    regexp {^\s*(#+)} $line m hash_marks
+                    set h_level [string length $hash_marks]
 
-                    while {$index < $no_lines && ![is_empty_line $line]} {
-                        incr index
-
-                        if {!$h_level} {
-                            regexp {^\s*#+} $line m
-                            set h_level [string length [string trim $m]]
-                        }
-
-                        lappend h_result $line
-
-                        set line [lindex $lines $index]
-                    }
-
-                    set h_result [\
-                        parse_inline [\
-                            regsub -all {^\s*#+\s*|\s*#+\s*$} [join $h_result \n] {} \
-                        ]\
+                    set h_result [parse_inline \
+                        [string trim [regsub -all {^\s*#+|\s+#+\s*$} $line {}]] \
                     ]
 
                     append result "<h$h_level>$h_result</h$h_level>"
+                    incr index
                 }
                 {^[ ]{0,3}\>} {
                     # BLOCK QUOTES
@@ -509,8 +495,11 @@ namespace eval Markdown {
 
                         switch -regexp $line {
                             {^[ ]{0,3}=+$} {
-                                set p_type h1
-                                break
+                                if {$p_result ne {}} {
+                                    set p_type h1
+                                    break
+                                }
+                                lappend p_result $line
                             }
                             {^[ ]{0,3}-+$} {
                                 set p_type h2
@@ -527,7 +516,7 @@ namespace eval Markdown {
                             {^[ ]{0,3}-[ ]*-[ ]*-[- ]*$} -
                             {^[ ]{0,3}_[ ]*_[ ]*_[_ ]*$} -
                             {^[ ]{0,3}\*[ ]*\*[ ]*\*[\* ]*$} -
-                            {^[ ]{0,3}#{1,6}} -
+                            {^[ ]{0,3}#{1,6}(?:\s+|$)} -
                             {^[ ]{0,3}(`{3,}|~{3,})\s*(?:[^`~\s]+)?(?:\s+[^`~\s]+)*\s*$} \
                             {
                                 incr index -1
