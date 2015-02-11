@@ -231,31 +231,33 @@ namespace eval Markdown {
 
                     append result <pre><code> $code_result \n </code></pre>
                 }
-                {^(?:(?:`{3,})|(?:~{3,}))(?:\{?\S+\}?)?\s*$} {
+                {^[ ]{0,3}(`{3,}|~{3,})\s*(?:[^`~\s]+)?(?:\s+[^`~\s]+)*\s*$} {
                     # FENCED CODE BLOCKS
                     set code_result {}
 
-                    if {[string index $line 0] eq {`}} {
-                        set end_match {^`{3,}\s*$}
-                    } else {
-                        set end_match {^~{3,}\s*$}
-                    }
+                    # end marker: same char at least as long as start marker
+                    regexp "^(\\s*)([string index [string trim $line] 0]+)\\s*(\\S+)?" \
+                        $line match indent end_match language
 
-                    while {$index < $no_lines} {
-                        incr index
+                    while {[incr index] < $no_lines} \
+                    {
+                        set line [regsub "^$indent" [lindex $lines $index] {}]
 
-                        set line [lindex $lines $index]
-
-                        if {[regexp $end_match $line]} {
+                        if {[regexp "^\[ \]{0,3}$end_match+\\s*$" $line]} {
                             incr index
                             break
                         }
 
-                        lappend code_result [html_escape $line]
+                        append code_result [html_escape $line] "\n"
                     }
-                    set code_result [join $code_result \n]
 
-                    append result <pre><code> $code_result </code></pre>
+                    if {$language ne {}} {
+                        append result "<pre><code class=\"language-$language\">"
+                    } else {
+                        append result <pre><code>
+                    }
+                    
+                    append result $code_result </code></pre>
                 }
                 {^[ ]{0,3}(?:\*|-|\+) |^[ ]{0,3}\d+\. } {
                     # LISTS
@@ -382,7 +384,7 @@ namespace eval Markdown {
 
                     append result $buffer
                 }
-                {(?:^\s{0,3}|[^\\]+)\|} {
+                {(?:^[ ]{0,3}|[^\\]+)\|} {
                     # SIMPLE TABLES
                     set cell_align {}
                     set row_count 0
@@ -399,7 +401,7 @@ namespace eval Markdown {
                             set sep_cols [lindex $lines [expr $index + 1]]
 
                             # check if we have a separator row
-                            if {[regexp {^\s{0,3}\|?(?:\s*:?-+:?(?:\s*$|\s*\|))+} $sep_cols]} \
+                            if {[regexp {^[ ]{0,3}\|?(?:\s*:?-+:?(?:\s*$|\s*\|))+} $sep_cols]} \
                             {
                                 set sep_cols [regexp -inline -all {(?:[^|]|\\\|)+} \
                                     [string trim $sep_cols]]
@@ -481,7 +483,7 @@ namespace eval Markdown {
 
                         set line [lindex $lines [incr index]]
 
-                        if {![regexp {(?:^\s{0,3}|[^\\]+)\|} $line]} {
+                        if {![regexp {(?:^[ ]{0,3}|[^\\]+)\|} $line]} {
                             switch $row_count {
                                 1 {
                                     append result "</table>\n"
@@ -525,7 +527,8 @@ namespace eval Markdown {
                             {^[ ]{0,3}-[ ]*-[ ]*-[- ]*$} -
                             {^[ ]{0,3}_[ ]*_[ ]*_[_ ]*$} -
                             {^[ ]{0,3}\*[ ]*\*[ ]*\*[\* ]*$} -
-                            {^[ ]{0,3}#{1,6}} \
+                            {^[ ]{0,3}#{1,6}} -
+                            {^[ ]{0,3}(`{3,}|~{3,})\s*(?:[^`~\s]+)?(?:\s+[^`~\s]+)*\s*$} \
                             {
                                 incr index -1
                                 break

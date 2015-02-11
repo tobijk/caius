@@ -27,19 +27,7 @@ some code coming up.</p>
 
 <p>Now we are going to test fenced code Blocks:</p>
 
-<pre><code>package require Itcl
-package require Testing
-
-::itcl::class MyTest {
-    inherit ::Testing::TestObject
-
-    method test1 {} {}
-}</code></pre>
-
-<p>And now using backticks:</p>
-
-<pre><code>
-package require Itcl
+<pre><code class="language-{.tcl}">package require Itcl
 package require Testing
 
 ::itcl::class MyTest {
@@ -49,12 +37,32 @@ package require Testing
 }
 </code></pre>
 
+<p>And now using backticks:</p>
+
+<pre><code class="language-tcl">
+package require Itcl
+package require Testing
+
+::itcl::class MyTest {
+    inherit ::Testing::TestObject
+
+    method test1 {} {}
+}
+
+</code></pre>
+
+<p>A fenced code block documenting itself:</p>
+
 <pre><code>```
 
 a fenced code block documenting itself.
 
-```</code></pre>
+```
+</code></pre>
+
+<p>A fenced code block documenting itself:</p>
 
 <pre><code>~~~
 a fenced code block documenting itself.
-~~~</code></pre>
+~~~
+</code></pre>

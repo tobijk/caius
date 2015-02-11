@@ -52,6 +52,8 @@ package require Testing
 
 `````
 
+A fenced code block documenting itself:
+
 ~~~
 ```
 
@@ -59,6 +61,8 @@ a fenced code block documenting itself.
 
 ```
 ~~~
+
+A fenced code block documenting itself:
 
 ```
 ~~~
