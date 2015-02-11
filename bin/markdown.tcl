@@ -26,12 +26,20 @@
 package require Markdown
 
 #### MAIN ####
-if {$::argc != 1} {
-    puts stderr "Usage: markdown.tcl <input_file>"
-    exit 1
+switch $::argc {
+    0 {
+        set fp stdin
+    }
+    1 {
+        set fp [open [lindex $::argv 0]]
+    }
+    default {
+        puts stderr "Usage: markdown.tcl <input_file>"
+        exit 1
+    }
 }
 
-set markdown [read [set fp [open [lindex $::argv 0]]]]
+set markdown [read $fp]
 close $fp
 
 puts -nonewline [::Markdown::convert $markdown]
