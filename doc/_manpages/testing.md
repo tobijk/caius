@@ -1,4 +1,4 @@
-Testing(3caius) -- base class for all native test classes
+Testing(3caius) -- commands and classes for writing tests
 ==============================================================================
 
 ## EXAMPLE
