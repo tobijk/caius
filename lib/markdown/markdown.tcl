@@ -252,7 +252,7 @@ namespace eval Markdown {
                     }
 
                     if {$language ne {}} {
-                        append result "<pre><code class=\"language-$language\">"
+                        append result "<pre><code class=\"language-[html_escape $language]\">"
                     } else {
                         append result <pre><code>
                     }
