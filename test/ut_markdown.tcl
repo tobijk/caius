@@ -19,10 +19,12 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         run_suite mdtest
     }
 
-    method test_markdown_converter_extra {} {
-        docstr "Test the markdown converter on a variety of source files."
+    ::Testing::constraints {unixCrash} {
+        method test_markdown_converter_extra {} {
+            docstr "Test the markdown converter on a variety of source files."
 
-        run_suite caius
+            run_suite caius
+        }
     }
 
     method run_suite {suite_name} {
