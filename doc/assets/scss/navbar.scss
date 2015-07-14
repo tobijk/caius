@@ -1,0 +1,59 @@
+/******************************************************************************
+ *
+ * TOP NAVIGATION BAR
+ *
+ * This section contains the styles for the top navigation bar and menu system.
+ *
+ *****************************************************************************/ 
+
+@import 'variables';
+@import 'mixins/clearfix';
+
+.navbar {
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    background-color: $navbar-bg-color;
+    height: $navbar-height;
+    line-height: $navbar-height;
+    padding: 0px $grid-gutter-width/2;
+    clear: both;
+
+    .logo {
+        margin: 0px 3em 0px 0px;
+        display: inline;
+        float: left;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: inline;
+            float: left;
+            color: $navbar-text-color;
+            margin: 0;
+            padding: 0;
+
+            a {
+                display: inline-block;
+                margin: 0;
+                padding: 0 2em;
+                color: $navbar-text-color-inactive;
+                text-decoration: none;
+                line-height: $navbar-height;
+            }
+
+            a.active {
+                color: $navbar-text-color;
+                background-color: $navbar-text-color-active;
+            }
+
+            a:hover {
+                color: $navbar-text-color;
+            }
+        }
+    }
+}
+

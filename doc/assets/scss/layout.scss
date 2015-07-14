@@ -1,0 +1,265 @@
+/******************************************************************************
+ *
+ * GENERAL LAYOUT
+ *
+ * This section contains the grid and some provisioning for a fixed-size
+ * static footer.
+ *
+ *****************************************************************************/ 
+
+@import 'variables';
+@import 'mixins/clearfix';
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin: 0 0 $footer-height;
+}
+
+.footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.container {
+    box-sizing: border-box;
+    margin: 0px auto;
+    padding: 0px $grid-gutter-width/2;
+    width: $grid-container-width;
+    overflow: auto;
+    @include clearfix();
+}
+
+.row {
+    margin: 0px $grid-gutter-width/-2;
+    @include clearfix();
+}
+
+@mixin grid-cell($colspan, $container-width) {
+    width: $colspan * $container-width/12.0;
+}
+
+.footer .container {
+    padding-top: $navbar-height/3;
+    padding-bottom: $navbar-height/3;
+}
+
+.span01, .span02, .span03, .span04, .span05, .span06,
+.span07, .span08, .span09, .span10, .span11, .span12,
+.s-span01, .s-span02, .s-span03, .s-span04, .s-span05, .s-span06,
+.s-span07, .s-span08, .s-span09, .s-span10, .s-span11, .s-span12,
+.m-span01, .m-span02, .m-span03, .m-span04, .m-span05, .m-span06,
+.m-span07, .m-span08, .m-span09, .m-span10, .m-span11, .m-span12,
+.l-span01, .l-span02, .l-span03, .l-span04, .l-span05, .l-span06,
+.l-span07, .l-span08, .l-span09, .l-span10, .l-span11, .l-span12 {
+    box-sizing: border-box;
+    float: left;
+    padding: 0px $grid-gutter-width/2;
+}
+
+.span01 { @include grid-cell( 1, 100%); }
+.span02 { @include grid-cell( 2, 100%); }
+.span03 { @include grid-cell( 3, 100%); }
+.span04 { @include grid-cell( 4, 100%); }
+.span05 { @include grid-cell( 5, 100%); }
+.span06 { @include grid-cell( 6, 100%); }
+.span07 { @include grid-cell( 7, 100%); }
+.span08 { @include grid-cell( 8, 100%); }
+.span09 { @include grid-cell( 9, 100%); }
+.span10 { @include grid-cell(10, 100%); }
+.span11 { @include grid-cell(11, 100%); }
+.span12 { @include grid-cell(12, 100%); }
+
+@media (min-width: $grid-container-width * 0.8) {
+
+    .container {
+        max-width: 100%;
+    }
+
+    .s-span01 { }
+    .s-span02 { }
+    .s-span03 { }
+    .s-span04 { }
+    .s-span05 { }
+    .s-span06 { }
+    .s-span07 { }
+    .s-span08 { }
+    .s-span09 { }
+    .s-span10 { }
+    .s-span11 { }
+    .s-span12 { }
+
+    .m-span01 { }
+    .m-span02 { }
+    .m-span03 { }
+    .m-span04 { }
+    .m-span05 { }
+    .m-span06 { }
+    .m-span07 { }
+    .m-span08 { }
+    .m-span09 { }
+    .m-span10 { }
+    .m-span11 { }
+    .m-span12 { }
+
+    .l-span01 { @include grid-cell( 1, 100%); }
+    .l-span02 { @include grid-cell( 2, 100%); }
+    .l-span03 { @include grid-cell( 3, 100%); }
+    .l-span04 { @include grid-cell( 4, 100%); }
+    .l-span05 { @include grid-cell( 5, 100%); }
+    .l-span06 { @include grid-cell( 6, 100%); }
+    .l-span07 { @include grid-cell( 7, 100%); }
+    .l-span08 { @include grid-cell( 8, 100%); }
+    .l-span09 { @include grid-cell( 9, 100%); }
+    .l-span10 { @include grid-cell(10, 100%); }
+    .l-span11 { @include grid-cell(11, 100%); }
+    .l-span12 { @include grid-cell(12, 100%); }
+
+    .l-justify {
+        text-align: justify;
+    }
+
+    .l-left-align {
+        text-align: left;
+    }
+
+    .l-right-align {
+        text-align: right;
+    }
+
+    .l-center {
+        text-align: center;
+    }
+}
+
+@media (min-width: $grid-container-width * 0.6) and (max-width: $grid-container-width * 0.8 - 1) {
+
+    .container {
+        width: 100%;
+    }
+
+    .s-span01 { }
+    .s-span02 { }
+    .s-span03 { }
+    .s-span04 { }
+    .s-span05 { }
+    .s-span06 { }
+    .s-span07 { }
+    .s-span08 { }
+    .s-span09 { }
+    .s-span10 { }
+    .s-span11 { }
+    .s-span12 { }
+
+    .m-span01 { @include grid-cell( 1, 100%); }
+    .m-span02 { @include grid-cell( 2, 100%); }
+    .m-span03 { @include grid-cell( 3, 100%); }
+    .m-span04 { @include grid-cell( 4, 100%); }
+    .m-span05 { @include grid-cell( 5, 100%); }
+    .m-span06 { @include grid-cell( 6, 100%); }
+    .m-span07 { @include grid-cell( 7, 100%); }
+    .m-span08 { @include grid-cell( 8, 100%); }
+    .m-span09 { @include grid-cell( 9, 100%); }
+    .m-span10 { @include grid-cell(10, 100%); }
+    .m-span11 { @include grid-cell(11, 100%); }
+    .m-span12 { @include grid-cell(12, 100%); }
+
+    .l-span01 { }
+    .l-span02 { }
+    .l-span03 { }
+    .l-span04 { }
+    .l-span05 { }
+    .l-span06 { }
+    .l-span07 { }
+    .l-span08 { }
+    .l-span09 { }
+    .l-span10 { }
+    .l-span11 { }
+    .l-span12 { }
+
+    .m-justify {
+        text-align: justify;
+    }
+
+    .m-left-align {
+        text-align: left;
+    }
+
+    .m-right-align {
+        text-align: right;
+    }
+
+    .m-center {
+        text-align: center;
+    }
+}
+
+@media (max-width: $grid-container-width * 0.6 - 1) {
+
+    .container {
+        width: 100%;
+    }
+
+    .s-span01 { @include grid-cell( 1, 100%); }
+    .s-span02 { @include grid-cell( 2, 100%); }
+    .s-span03 { @include grid-cell( 3, 100%); }
+    .s-span04 { @include grid-cell( 4, 100%); }
+    .s-span05 { @include grid-cell( 5, 100%); }
+    .s-span06 { @include grid-cell( 6, 100%); }
+    .s-span07 { @include grid-cell( 7, 100%); }
+    .s-span08 { @include grid-cell( 8, 100%); }
+    .s-span09 { @include grid-cell( 9, 100%); }
+    .s-span10 { @include grid-cell(10, 100%); }
+    .s-span11 { @include grid-cell(11, 100%); }
+    .s-span12 { @include grid-cell(12, 100%); }
+
+    .m-span01 { }
+    .m-span02 { }
+    .m-span03 { }
+    .m-span04 { }
+    .m-span05 { }
+    .m-span06 { }
+    .m-span07 { }
+    .m-span08 { }
+    .m-span09 { }
+    .m-span10 { }
+    .m-span11 { }
+    .m-span12 { }
+
+    .l-span01 { }
+    .l-span02 { }
+    .l-span03 { }
+    .l-span04 { }
+    .l-span05 { }
+    .l-span06 { }
+    .l-span07 { }
+    .l-span08 { }
+    .l-span09 { }
+    .l-span10 { }
+    .l-span11 { }
+    .l-span12 { }
+
+    .s-justify {
+        text-align: justify;
+    }
+
+    .s-left-align {
+        text-align: left;
+    }
+
+    .s-right-align {
+        text-align: right;
+    }
+
+    .s-center {
+        text-align: center;
+    }
+}
+
+

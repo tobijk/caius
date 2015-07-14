@@ -6,21 +6,29 @@
 
     <title>Caius - API</title>
 
-    <link href="../assets/css/normalize.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/css/grid.css"      rel="stylesheet" type="text/css" />
-    <link href="../assets/css/navbar.css"    rel="stylesheet" type="text/css" />
-    <link href="../assets/css/masthead.css"  rel="stylesheet" type="text/css" />
-    <link href="../assets/css/footer.css"    rel="stylesheet" type="text/css" />
-    <link href="../assets/css/style.css"     rel="stylesheet" type="text/css" />
-    <link href="../assets/css/man.css"       rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/fontello.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/navbar.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/tables.css"/>
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/highlight.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/man.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/customize.css"/>
+
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/blink.js"></script>
   </head>
   <body style="background-color: #eaeaea;">
 
-    <div class="navbar">
+    <div class="header">
       <div class="container">
         <div class="row">
-          <div class="span12">
+
+          <div class="navbar">
             <a href="../index.html"><img src="../assets/img/logo.png" alt="logo" class="logo"/></a>
+
             <ul>
               <li><a href="../index.html">Overview</a></li>
               <li><a href="../tutorial/index.html">Tutorial</a></li>
@@ -28,33 +36,49 @@
               <li><a href="../resources.html">Resources</a></li>
             </ul>
           </div>
+
         </div>
       </div>
     </div>
 
-    <div class="masthead" style="background-color: #7e363e;">
+    <div class="summary" style="background-color: #7e363e;">
       <div class="container">
         <div class="row">
-          <div class="span09">
-            <div class="billboard">
-             <div class="billboard-slogan">
-               Programming Interface
-              </div>
-              <div class="billboard-text">
-                {{ page.title }}(3caius)
-              </div>
+
+          <div class="s-span12 m-span12 l-span09">
+            <div class="box">
+              <span style="font-size: 48px; font-weight: bold;">Programming Interface</span>
+              <span style="font-size: 28px;">{{ page.title }}(3caius)</span>
             </div>
           </div>
-          <div class="span03" style="background-color: #8b4a51; height: 400px;">
-            <ul class="man-toc">
-              <li><a href="clidriver.html"{% if page.title == 'CLIDRIVER' %} class="active"{% endif %}>CLIDRIVER</a></li>
-              <li><a href="error.html"{% if page.title == 'ERROR' %} class="active"{% endif %}>ERROR</a></li>
-              <li><a href="markdown.html"{% if page.title == 'MARKDOWN' %} class="active"{% endif %}>MARKDOWN</a></li>
-              <li><a href="oosupport.html"{% if page.title == 'OOSUPPORT' %} class="active"{% endif %}>OOSUPPORT</a></li>
-              <li><a href="subprocess.html"{% if page.title == 'SUBPROCESS' %} class="active"{% endif %}>SUBPROCESS</a></li>
-              <li><a href="testing.html"{% if page.title == 'TESTING' %} class="active"{% endif %}>TESTING</a></li>
-              <li><a href="webdriver.html"{% if page.title == 'WEBDRIVER' %} class="active"{% endif %}>WEBDRIVER</a></li>
-            </ul>
+          <div class="s-span12 m-span12 l-span03 man-toc" style="background-color: #8b4a51; height: 400px;">
+            
+            <div class="row" style="height: 55px;"></div>
+
+            <div class="row">
+              <div class="s-span12 m-span06 l-span12">
+                <a href="clidriver.html"{% if page.title == 'CLIDRIVER' %} class="active"{% endif %}>CLIDRIVER</a>
+              </div>
+              <div class="s-span12 m-span06 l-span12">
+                <a href="error.html"{% if page.title == 'ERROR' %} class="active"{% endif %}>ERROR</a>
+              </div>
+              <div class="s-span12 m-span06 l-span12">
+                <a href="markdown.html"{% if page.title == 'MARKDOWN' %} class="active"{% endif %}>MARKDOWN</a>
+              </div>
+              <div class="s-span12 m-span06 l-span12">
+                <a href="oosupport.html"{% if page.title == 'OOSUPPORT' %} class="active"{% endif %}>OOSUPPORT</a>
+              </div>
+              <div class="s-span12 m-span06 l-span12">
+                <a href="subprocess.html"{% if page.title == 'SUBPROCESS' %} class="active"{% endif %}>SUBPROCESS</a>
+              </div>
+              <div class="s-span12 m-span06 l-span12">
+                <a href="testing.html"{% if page.title == 'TESTING' %} class="active"{% endif %}>TESTING</a>
+              </div>
+              <div class="s-span12 m-span06 l-span12">
+                <a href="webdriver.html"{% if page.title == 'WEBDRIVER' %} class="active"{% endif %}>WEBDRIVER</a>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -62,12 +86,12 @@
 
     <div class="container">
       <div class="row" style="background-color: #f3f3f3;">
-        <div class="span09" style="background-color: #ffffff;">
+        <div class="s-span12 m-span12 l-span09" style="background-color: #ffffff;">
 
           {{ content }}
 
         </div>
-        <div class="span03">
+        <div class="s-span12 m-span12 l-span03">
         </div>
       </div>
     </div>
@@ -76,9 +100,9 @@
       <div class="container">
         <div class="row">
           <div class="span12">
-            &copy; 2014 Caius Project. Built with attention to detail by
-            <a href="http://twitter.com/tobijk" style="color: #cc4455">@tobijk</a> and
-            <a href="https://raw.githubusercontent.com/tobijk/caius/master/AUTHORS" style="color: #cc4455">contributors</a>.
+            &copy; 2015 Caius Project. Built with attention to detail by
+            <a href="http://twitter.com/tobijk" style="color: #cc4455;">@tobijk</a> and
+            <a href="https://raw.githubusercontent.com/tobijk/caius/master/AUTHORS" style="color: #cc4455;">contributors</a>.
           </div>
         </div>
       </div>

@@ -63,7 +63,7 @@ The table below shows the capabilities that can be specified and their default
 values upon creation of a `Capabilities` object. These default values *do not*
 represent the defaults offered by any given browser. Adjust them to your needs.
 
-<table>
+<table class="table">
     <thead>
         <tr>
             <th> Capability </th>
@@ -233,7 +233,7 @@ $window set_cookie -expiry "[expr [clock seconds] + duration]" \
 
 You may set the following attributes on the `Cookie` object:
 
-<table>
+<table class="table">
     <thead>
         <tr>
             <th> Parameter </th>
@@ -290,7 +290,7 @@ access page elements and query and manipulate their states.
 For looking up page elements, Selenium supports a number of
 so-called locator strategies, listed in the table below.
 
-<table>
+<table class="table">
     <thead>
         <tr>
             <th>Strategy</th>

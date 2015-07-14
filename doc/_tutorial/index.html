@@ -9,22 +9,29 @@ title: Tutorial
 
     <title>Caius - Tutorial</title>
 
-    <link href="../assets/css/normalize.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/css/grid.css"      rel="stylesheet" type="text/css" />
-    <link href="../assets/css/navbar.css"    rel="stylesheet" type="text/css" />
-    <link href="../assets/css/masthead.css"  rel="stylesheet" type="text/css" />
-    <link href="../assets/css/footer.css"    rel="stylesheet" type="text/css" />
-    <link href="../assets/css/style.css"     rel="stylesheet" type="text/css" />
-    <link href="../assets/css/toc.css"       rel="stylesheet" type="text/css" />
-    <link href="../assets/css/highlight.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/fontello.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/navbar.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/tables.css"/>
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/highlight.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/man.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/customize.css"/>
+
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/blink.js"></script>
   </head>
   <body>
 
-    <div class="navbar">
+    <div class="header">
       <div class="container">
         <div class="row">
-          <div class="span12">
+
+          <div class="navbar">
             <a href="../index.html"><img src="../assets/img/logo.png" alt="logo" class="logo"/></a>
+
             <ul>
               <li><a href="../index.html">Overview</a></li>
               <li><a href="index.html" class="active">Tutorial</a></li>
@@ -32,35 +39,35 @@ title: Tutorial
               <li><a href="../resources.html">Resources</a></li>
             </ul>
           </div>
+
         </div>
       </div>
     </div>
 
-    <div class="masthead" style="background-color: #6e4629;">
-      <div class="container" style="background-image: url('../assets/img/cogwheels2.png'); background-repeat: no-repeat; background-position: center right; height: 400px;">
+    <div class="summary" style="background-color: #6e4629;">
+      <div class="container cogwheels2-background" style="background-repeat: no-repeat;
+          background-position: center right;">
+        <div class="row">
+
+          <div class="box">
+            <span style="font-size: 48px; font-weight: bold;">Introduction to Caius</span><br/>
+            <span style="font-size: 28px;">Installation and usage</span><br/>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="container toc">
         <div class="row">
           <div class="span12">
-            <div class="billboard">
-             <div class="billboard-slogan">
-              Introduction to Caius
-              </div>
-              <div class="billboard-text">
-              Installation and usage
-              </div>
-            </div>
+
+            <h2>Table of Contents</h2>
+
+            {% include tutorial_toc.html %}
+
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container toc" style="margin-bottom: 2ex;">
-      <div class="row">
-        <div class="span12">
-
-          <h2>Table of Contents</h2>
-
-          {% include tutorial_toc.html %}
-
         </div>
       </div>
     </div>
@@ -69,7 +76,7 @@ title: Tutorial
       <div class="container">
         <div class="row">
           <div class="span12">
-            &copy; 2014 Caius Project. Built with attention to detail by
+            &copy; 2015 Caius Project. Built with attention to detail by
             <a href="http://twitter.com/tobijk" style="color: #dd7755;">@tobijk</a> and
             <a href="https://raw.githubusercontent.com/tobijk/caius/master/AUTHORS" style="color: #dd7755;">contributors</a>.
           </div>

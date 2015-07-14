@@ -1,0 +1,107 @@
+/******************************************************************************
+ *
+ * PROJECT SPECIFIC CUSTOMIZATIONS
+ *
+ * Definition of additional CSS classes and small overrides for
+ * caiusproject.com.
+ *
+ *****************************************************************************/ 
+
+@import 'variables';
+@import 'mixins/clearfix';
+
+.header {
+    background-color: black;
+}
+
+.main {
+    padding-bottom: 2ex;
+}
+
+.footer {
+    color: white;
+    background-color: black;
+    font-size: 12px;
+}
+
+.tutorial-footer .container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.navbar .logo {
+    margin: 4px 8em 2px -4px;
+}
+
+.logo-inverse {
+    margin-top: 4px;
+}
+
+.box {
+    display: table-cell;
+    vertical-align: middle;
+    color: white;
+    padding: 0px $grid-gutter-width/2;
+}
+
+@media (min-width: $grid-container-width * 0.8) {
+    .box {
+        height: 400px;
+    }
+
+    .cogwheels1-background {
+      background-image: url('../img/cogwheels1.png');
+    }
+    .cogwheels2-background {
+      background-image: url('../img/cogwheels2.png');
+    }
+    .spaceman-background {
+      background-image: url('../img/spaceman.png');
+    }
+}
+
+@media (max-width: $grid-container-width * 0.8 - 1) {
+    .box {
+        padding: 20px $grid-gutter-width/2;
+    }
+
+    .cogwheels1-background {
+      background-image: none;
+    }
+    .cogwheels2-background {
+      background-image: none;
+    }
+    .spaceman-background {
+      background-image: none;
+    }
+}
+
+.summary a, .summary a:hover, .summary a:visited {
+    color: white;
+}
+
+.tutorial-title {
+    color: #666666;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 28px;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.tutorial-nav-elements a img {
+    margin-top: 14px;
+}
+
+p {
+    text-align: justify;
+}
+
+.toc a {
+  color: #000000;
+}
+
+ul.toc {
+  padding: 0ex 2em 0ex 2em;
+}
+

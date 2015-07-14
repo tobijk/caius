@@ -6,23 +6,29 @@
 
     <title>Caius - Automate Everything</title>
 
-    <link href="assets/css/fontello.css"  rel="stylesheet" type="text/css" />
-    <link href="assets/css/normalize.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/grid.css"      rel="stylesheet" type="text/css" />
-    <link href="assets/css/navbar.css"    rel="stylesheet" type="text/css" />
-    <link href="assets/css/masthead.css"  rel="stylesheet" type="text/css" />
-    <link href="assets/css/footer.css"    rel="stylesheet" type="text/css" />
-    <link href="assets/css/style.css"     rel="stylesheet" type="text/css" />
-    <link href="assets/css/toc.css"       rel="stylesheet" type="text/css" />
-    <link href="assets/css/highlight.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/fontello.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/navbar.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/tables.css"/>
+
+    <link rel="stylesheet" type="text/css" href="assets/css/highlight.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/man.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/customize.css"/>
+
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/blink.js"></script>
   </head>
   <body>
 
-    <div class="navbar">
+    <div class="header">
       <div class="container">
         <div class="row">
-          <div class="span12">
+
+          <div class="navbar">
             <a href="index.html"><img src="assets/img/logo.png" alt="logo" class="logo"/></a>
+
             <ul>
               <li><a href="index.html" class="active">Overview</a></li>
               <li><a href="tutorial/index.html">Tutorial</a></li>
@@ -30,144 +36,140 @@
               <li><a href="resources.html">Resources</a></li>
             </ul>
           </div>
+
         </div>
       </div>
     </div>
 
-    <div class="masthead">
-      <div class="container" style="background-image: url('assets/img/cogwheels1.png'); background-repeat: no-repeat; background-position: center right; height: 400px;">
+    <div class="summary" style="background-color: #334466;">
+      <div class="container cogwheels1-background" style="background-repeat: no-repeat;
+          background-position: center right;">
+        <div class="row">
+
+          <div class="box">
+            <span style="font-size: 48px; font-weight: bold;">Automate Everything</span><br/>
+            <span style="font-size: 28px;">Build great software and test it to the bones</span><br/>
+            <span style="line-height: 48px;">Download version
+              <a href="https://github.com/tobijk/caius/archive/0.15.0.tar.gz">0.15.0</a></span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="container">
         <div class="row">
           <div class="span12">
-            <div class="billboard" style="margin-top: 100px;">
-             <div class="billboard-slogan">
-              Automate Everything
-              </div>
-              <div class="billboard-text">
-              Build great software and test it to the bones
-              </div>
-              <div class="direct-links">
-              Download version <a href="https://github.com/tobijk/caius/archive/0.15.0.tar.gz">0.15.0</a>
-              </div>
-            </div>
+            <h2>Summary</h2>
+            <p>
+            Caius is a functional testing framework for the 21st century. It was born out of the
+            need for a contemporary replacement for <a href="http://www.gnu.org/software/dejagnu/">DejaGnu</a>.
+            Caius is written in object-oriented Tcl and provides easy-to-use programming interfaces
+            to proven testing technologies. Through its versatile reporting system, Caius integrates
+            well with modern CI systems and test management tools. 
+            </p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="container justify content" style="margin-bottom: 20px;">
-      <div class="row">
-        <div class="span12">
-          <h2>Summary</h2>
-          <p>
-          Caius is a functional testing framework for the 21st century. It was born out of the
-          need for a contemporary replacement for <a href="http://www.gnu.org/software/dejagnu/">DejaGnu</a>.
-          Caius is written in object-oriented Tcl and provides easy-to-use programming interfaces
-          to proven testing technologies. Through its versatile reporting system, Caius integrates
-          well with modern CI systems and test management tools. 
-          </p>
-        </div>
-      </div>
+        <div class="row">
+          <div class="s-span12 m-span12 l-span06">
+            <h3 class="icon-play-circled2">Expect</h3>
+            <p>
+            Drive command line applications and automate shell sessions, log into remote systems
+            via Telnet, SSH or the serial line. Caius offers you the power of Expect through a
+            simple, intuitive, object-oriented API.
+            </p>
+          </div>
 
-      <div class="row">
-        <div class="span06">
-          <h3 class="icon-play-circled2">Expect</h3>
-          <p>
-          Drive command line applications and automate shell sessions, log into remote systems
-          via Telnet, SSH or the serial line. Caius offers you the power of Expect through a
-          simple, intuitive, object-oriented API.
-          </p>
+          <div class="s-span12 m-span12 l-span06">
+            <h3 class="icon-globe">Selenium WebDriver</h3>
+            <p>
+            Test Web applications by automating complete browser sessions through the WebDriver
+            interface. Select windows, manage cookies, click, send keystrokes, inject JavaScript
+            and inspect page elements.
+            </p>
+          </div>
         </div>
 
-        <div class="span06">
-          <h3 class="icon-globe">Selenium WebDriver</h3>
-          <p>
-          Test Web applications by automating complete browser sessions through the WebDriver
-          interface. Select windows, manage cookies, click, send keystrokes, inject JavaScript
-          and inspect page elements.
-          </p>
-        </div>
-      </div>
+        <div class="row">
+          <div class="s-span12 m-span12 l-span06">
+            <h3 class="icon-pencil">Reporting</h3>
+            <p>
+            Produce clean, accessible HTML reports or make test results available through your
+            favorite CI system. Caius can output test results in different reporting formats and
+            new formats can be added easily.
+            </p>
+          </div>
 
-      <div class="row">
-        <div class="span06">
-          <h3 class="icon-pencil">Reporting</h3>
-          <p>
-          Produce clean, accessible HTML reports or make test results available through your
-          favorite CI system. Caius can output test results in different reporting formats and
-          new formats can be added easily.
-          </p>
+          <div class="s-span12 m-span12 l-span06">
+            <h3 class="icon-puzzle">Object-Oriented</h3>
+            <p>
+            Caius provides enhancements that make object-oriented programming in Tcl more fun and
+            more productive. Enjoy fine-grained exception handling and create objects that serialize
+            to JSON with a snap.
+            </p>
+          </div>
         </div>
 
-        <div class="span06">
-          <h3 class="icon-puzzle">Object-Oriented</h3>
-          <p>
-          Caius provides enhancements that make object-oriented programming in Tcl more fun and
-          more productive. Enjoy fine-grained exception handling and create objects that serialize
-          to JSON with a snap.
-          </p>
+        <div class="row">
+          <div class="span12">
+            <h2>Usage Scenarios</h2>
+            <p>
+            The combination of Expect and WebDriver makes Caius particularly suitable for building
+            large integration test setups for headless embedded systems, for example in industrial
+            automation environments. If the majority of your systems can be configured and controlled
+            from the command line or a Web-based management console, then Caius can be used to test
+            component functionality and interaction at network scale.
+            </p>
+            <p>
+            Even if you are dealing with much smaller test environments or if your test assets are
+            mainly written in languages other than Tcl, you can use Caius as a test harness for test
+            execution and report generation.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="span12">
-          <h2>Usage Scenarios</h2>
-          <p>
-          The combination of Expect and WebDriver makes Caius particularly suitable for building
-          large integration test setups for headless embedded systems, for example in industrial
-          automation environments. If the majority of your systems can be configured and controlled
-          from the command line or a Web-based management console, then Caius can be used to test
-          component functionality and interaction at network scale.
-          </p>
-          <p>
-          Even if you are dealing with much smaller test environments or if your test assets are
-          mainly written in languages other than Tcl, you can use Caius as a test harness for test
-          execution and report generation.
-          </p>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="span12">
-          <h2>Quickstart</h2>
-          <p>
-          Download the source tarball from <a href="https://github.com/tobijk/caius/archive/0.15.0.tar.gz">here</a>.
-          In order to run Caius, you need to install a number of additional packages.
-          </p>
-          <h3>Dependencies</h3>
-          <p>
-          On OpenSUSE, install the required packages with <tt>zypper</tt> by executing the following command:
-          </p>
-          <pre style="padding: 5px 10px; margin: 2ex 0;
-            background-color: #eeeeee;">sudo zypper install tcl tcllib expect tdom</pre>
-          <p>
-          On Debian or Ubuntu, install the dependencies by running <tt>apt-get</tt> instead:
-          </p>
-          <pre style="padding: 5px 10px; margin: 2ex 0;
-            background-color: #eeeeee;">sudo apt-get install tcl8.6 tcllib tcl-thread itcl3 expect tdom</pre>
-          <p>
-          On some versions of Debian, you may have to install the package <tt>tclthread</tt> instead of
-          <tt>tcl-thread</tt>.
-          </p>
-          <h3>Installation</h3>
-          <p>
-          Unpack the sources and execute the <tt>install.tcl</tt> script. You should see the following output:
-          </p>
-          <pre style="padding: 5px 10px; margin: 2ex 0;
-              background-color: #eeeeee;">tobias@neil-vm:~/caius-0.9.1$ sudo ./install.tcl
-  * Checking Tcl shell /usr/bin/tclsh...              
-  - Check Tcl version >= 8.6:                          ok
-  - Check if interpreter is thread-enabled:            ok
-  - Check for the Thread package:                      ok
-  - Check for tcllib (require json):                   ok
-  - Check for [incr Tcl] extension:                    ok
-  - Check for Expect:                                  ok
-  - Check for tdom extension:                          ok
-  * Installing to /usr/local/lib/tcltk/caius...       
-  - Copying files:                                     done</pre>
-          <p>
-          Next, you should have a look at the <a href="tutorial/part01.html#writing-tests">tutorial</a>
-          for a brief introduction to writing and executing tests.
-          </p>
+        <div class="row">
+          <div class="span12">
+            <h2>Quickstart</h2>
+            <p>
+            Download the source tarball from <a href="https://github.com/tobijk/caius/archive/0.15.0.tar.gz">here</a>.
+            In order to run Caius, you need to install a number of additional packages.
+            </p>
+            <h3>Dependencies</h3>
+            <p>
+            On OpenSUSE, install the required packages with <tt>zypper</tt> by executing the following command:
+            </p>
+            <pre class="terminal">sudo zypper install tcl tcllib expect tdom</pre>
+            <p>
+            On Debian or Ubuntu, install the dependencies by running <tt>apt-get</tt> instead:
+            </p>
+            <pre class="terminal">sudo apt-get install tcl8.6 tcllib tcl-thread itcl3 expect tdom</pre>
+            <p>
+            On some versions of Debian, you may have to install the package <tt>tclthread</tt> instead of
+            <tt>tcl-thread</tt>.
+            </p>
+            <h3>Installation</h3>
+            <p>
+            Unpack the sources and execute the <tt>install.tcl</tt> script. You should see the following output:
+            </p>
+            <pre class="terminal">tobias@neil-vm:~/caius-0.9.1$ sudo ./install.tcl
+    * Checking Tcl shell /usr/bin/tclsh...              
+    - Check Tcl version >= 8.6:                          ok
+    - Check if interpreter is thread-enabled:            ok
+    - Check for the Thread package:                      ok
+    - Check for tcllib (require json):                   ok
+    - Check for [incr Tcl] extension:                    ok
+    - Check for Expect:                                  ok
+    - Check for tdom extension:                          ok
+    * Installing to /usr/local/lib/tcltk/caius...       
+    - Copying files:                                     done</pre>
+            <p>
+            Next, you should have a look at the <a href="tutorial/part01.html#writing-tests">tutorial</a>
+            for a brief introduction to writing and executing tests.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -176,9 +178,9 @@
       <div class="container">
         <div class="row">
           <div class="span12">
-            &copy; 2014 Caius Project. Built with attention to detail by
-            <a href="http://twitter.com/tobijk">@tobijk</a> and
-            <a href="https://raw.githubusercontent.com/tobijk/caius/master/AUTHORS">contributors</a>.
+            &copy; 2015 Caius Project. Built with attention to detail by
+            <a href="http://twitter.com/tobijk" style="color: #99bbdd;">@tobijk</a> and
+            <a href="https://raw.githubusercontent.com/tobijk/caius/master/AUTHORS" style="color: #99bbdd;">contributors</a>.
           </div>
         </div>
       </div>

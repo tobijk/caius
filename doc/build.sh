@@ -7,6 +7,9 @@ rm -f  _manpages/*.gz
 # make the TCO for the tutorial
 ./gen-toc.sh
 
+# build the css
+(cd assets && ./build.sh css)
+
 # pre-process manpages with ronn
 ls _manpages | while read page
 do

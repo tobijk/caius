@@ -1,0 +1,98 @@
+/******************************************************************************
+ *
+ * GENERAL TYPOGRAPHY AND COLORS
+ *
+ * This section initializes the document fonts and 
+ *
+ *****************************************************************************/ 
+
+@import 'variables';
+
+body {
+    font-family: $document-font-stack;
+    color: $document-text-color;
+    background-color: $document-bg-color;
+    font-size: $document-font-size;
+    line-height: $document-line-height;
+}
+
+em {
+    font-weight: normal;
+    font-style: italic;
+}
+
+strong {
+    font-weight: bold;
+    font-style: normal;
+}
+
+code {
+    font-family: monospace;
+}
+
+@mixin headline($font-size) {
+    color: $heading-text-color;
+    font-size: $font-size;
+    margin: 1.5ex 0em 1ex 0em;
+    font-weight: bold;
+}
+
+h1 {
+    @include headline(round($document-font-size*2.15));
+}
+h2 {
+    @include headline(round($document-font-size*1.70));
+}
+h3 {
+    @include headline(round($document-font-size*1.30));
+}
+h4 {
+    @include headline($document-font-size);
+}
+h5 {
+    @include headline($document-font-size);
+    font-style: italic;
+}
+h6 {
+    @include headline($document-font-size);
+    font-style: italic;
+    font-weight: normal;
+}
+
+p {
+    margin: 1.5ex 0em 1.5ex 0em;
+}
+
+.justify {
+    text-align: justify;
+}
+
+.left-align {
+    text-align: left;
+}
+
+.right-align {
+    text-align: right;
+}
+
+.center {
+    text-align: center;
+}
+
+a {
+    color: #aa3333;
+}
+
+@mixin pre-display() {
+    padding: 10px 10px;
+    margin: 2ex 0;
+}
+
+pre {
+    @include pre-display();
+}
+
+.terminal {
+    background-color: #eeeeee;    
+}
+

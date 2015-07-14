@@ -1,0 +1,37 @@
+/******************************************************************************
+ *
+ * DEFAULT TABLE STYLING
+ *
+ * Sets a light-blue color on table cells and a light-gray on table header.
+ *
+ *****************************************************************************/ 
+
+@import 'variables';
+
+table.table {
+    margin: 3ex 0px;
+
+    thead {
+        tr {
+            th, td {
+                color: #000000;
+                background-color: #bbbbbb;
+                padding: 2px 5px;
+                border: 1px solid white;
+            }
+            th {
+                font-weight: bold;
+            }
+        }
+    }
+    tbody {
+        tr {
+            td {
+                padding: 2px 5px;
+                border: 1px solid white;
+                background-color: #dfeeff;
+            }
+        }
+    }
+}
+

@@ -62,7 +62,7 @@ execution of a code block, the block may be guarded with an `except` statement:
 &nbsp;&nbsp;*control_flow*<br/>
 }?
 
-The `except` command takes a minimum of three arguments\:
+The `except` command takes a minimum of three arguments:
 
  - the block of code to be executed,
  - the *name* of a variable for storing an exception object reference,

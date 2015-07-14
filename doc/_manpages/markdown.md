@@ -95,7 +95,7 @@ That means, if you want to set a table with just one column, you either need a
 leading or a trailing pipe in every row.
 
 Alignment can be controlled per column and is indicated by colons before or
-after the dashes in the cells separating table header and table body.
+after the dashes separating table header and table body in each column.
 
      Left Aligned | Centered | Right Aligned
      :------------|:--------:|-------------:

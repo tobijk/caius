@@ -6,28 +6,39 @@
 
     <title>{{ page.title }}</title>
 
-    <link href="../assets/css/normalize.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/css/grid.css"      rel="stylesheet" type="text/css" />
-    <link href="../assets/css/navbar.css"    rel="stylesheet" type="text/css" />
-    <link href="../assets/css/masthead.css"  rel="stylesheet" type="text/css" />
-    <link href="../assets/css/footer.css"    rel="stylesheet" type="text/css" />
-    <link href="../assets/css/style.css"     rel="stylesheet" type="text/css" />
-    <link href="../assets/css/toc.css"       rel="stylesheet" type="text/css" />
-    <link href="../assets/css/highlight.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../assets/css/normalize.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/fontello.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/navbar.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/tables.css"/>
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/highlight.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/man.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/css/customize.css"/>
+
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/blink.js"></script>
+
+    <style>
+p {
+  text-align: left;
+}
+    </style>
   </head>
-  <body>
+  <body style="margin-bottom: 0px;">
 
     <div class="container">
       <div class="row" style="border-bottom: 1px dotted black;">
-        <div class="span03">
-          <a href="index.html"><img src="../assets/img/logo-inverse.png" alt="logo" class="logo"/></a>
+        <div class="s-span12 m-span03 l-span03 s-center m-left-align l-left-align">
+          <a href="index.html"><img src="../assets/img/logo-inverse.png" alt="logo" class="logo-inverse"/></a>
         </div>
-        <div class="span06 tutorial-title">
+        <div class="s-span12 m-span06 l-span06 center tutorial-title">
 
           Tutorial - {{ page.title }}
 
         </div>
-        <div class="span03 tutorial-nav-elements">
+        <div class="s-span12 m-span03 l-span03 s-center m-right-align l-right-align tutorial-nav-elements">
           {% if page.previous %}
           <a href="{{ page.previous }}.html"><img src="../assets/img/prev.gif" alt="previous"/></a>
           {% endif %}
@@ -39,34 +50,38 @@
       </div>
     </div>
 
-    <div class="container content">
-      <div class="row">
-        <div class="span12">
+    <div class="main">
+      <div class="container">
+        <div class="row">
+          <div class="span12">
 
-          {{ content }}
+            {{ content }}
 
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="container" style="margin-top: 2ex;">
-      <div class="row" style="border-top: 1px dotted black; line-height: 36px;">
-        <div class="span04">
-          {% if page.previous %}
-            Prev: <a href="{{ page.previous }}.html">{{ page.previous_title }}</a>
-          {% else %}
-            &nbsp;
-          {% endif %}
-        </div>
-        <div class="span04" style="text-align: center;">
-          Up: <a href="index.html">Table of Contents</a>
-        </div>
-        <div class="span04" style="text-align: right;">
-          {% if page.next %}
-            Next: <a href="{{ page.next }}.html">{{ page.next_title }}</a>
-          {% else %}
-            &nbsp;
-          {% endif %}
+    <div class="tutorial-footer">
+      <div class="container" style="border-top: 1px dotted black">
+        <div class="row">
+          <div class="s-span12 m-span04 l-span04 s-center m-left-align l-left-align">
+            {% if page.previous %}
+              Prev: <a href="{{ page.previous }}.html">{{ page.previous_title }}</a>
+            {% else %}
+              &nbsp;
+            {% endif %}
+          </div>
+          <div class="s-span12 m-span04 l-span04 center">
+            Up: <a href="index.html">Table of Contents</a>
+          </div>
+          <div class="s-span12 m-span04 l-span04 s-center m-right-align l-right-align">
+            {% if page.next %}
+              Next: <a href="{{ page.next }}.html">{{ page.next_title }}</a>
+            {% else %}
+              &nbsp;
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
