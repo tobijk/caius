@@ -58,6 +58,8 @@ namespace eval WebDriver {
             -skip_undefined
 
         method select_frame {{id null}} {
+            $this focus
+
             if {[::itcl::is object -class ::WebDriver::WebElement $id]} {
                 set json "{ \"id\": \"[$id to_json]\" }"
             } else {
@@ -75,7 +77,7 @@ namespace eval WebDriver {
         }
 
         method focus {} {
-            set json "{ \"name\": \"$_handle\" }"
+            set json "{ \"name\": \"\{$_handle\}\" }"
             set interval 5
 
             for {set i 0} {$i < 10} {incr i} {
@@ -121,6 +123,8 @@ namespace eval WebDriver {
         }
 
         method set_size {w h} {
+            $this focus
+
             set json "{\"width\": $w, \"height\": $h}"
             set response [::WebDriver::Protocol::dispatch -query $json \
                 [$_session session_url]/window/$_handle/size]
@@ -150,6 +154,8 @@ namespace eval WebDriver {
         }
 
         method size {} {
+            $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/window/$_handle/size]
 
@@ -160,6 +166,8 @@ namespace eval WebDriver {
         }
 
         method set_position {x y} {
+            $this focus
+
             set json "{\"x\": $x, \"y\": $y}"
             set response [::WebDriver::Protocol::dispatch -query $json \
              [$_session session_url]/window/$_handle/position]
@@ -188,6 +196,8 @@ namespace eval WebDriver {
         }
 
         method position {} {
+            $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/window/$_handle/position]
 
@@ -198,6 +208,8 @@ namespace eval WebDriver {
         }
 
         method maximize {} {
+            $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/window/$_handle/maximize]
@@ -213,6 +225,7 @@ namespace eval WebDriver {
 
         method name {} {
             $this focus
+
             set rval [$this execute "window.name"]
 
             if {[$_session logging_enabled]} {
@@ -322,6 +335,8 @@ namespace eval WebDriver {
         }
 
         method execute_async {args} {
+            $this focus
+
             set joinable     ""
             set result_array ""
             set result_var   ""
@@ -403,6 +418,8 @@ namespace eval WebDriver {
         }
 
         method screenshot {args} {
+            $this focus
+
             set decode false
 
             # read options
@@ -478,6 +495,8 @@ namespace eval WebDriver {
         }
 
         method set_cookie {args} {
+            $this focus
+
             set options {
                 {path.arg      "/"  "the cookie path"                                }
                 {domain.arg    ""   "the cookie domain"                              }
@@ -576,15 +595,18 @@ namespace eval WebDriver {
 
         method page_source {} {
             $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/source]
             set src [$response value]
+
             ::itcl::delete object $response
             return $src
         }
 
         method page_title {} {
             $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/title]
             set title [$response value]
@@ -611,7 +633,7 @@ namespace eval WebDriver {
         }
 
         method active_element {} {
-            #$this focus
+            $this focus
 
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/element/active]
@@ -629,6 +651,8 @@ namespace eval WebDriver {
         }
 
         method orientation {} {
+            $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/orientation]
 
@@ -639,6 +663,8 @@ namespace eval WebDriver {
         }
 
         method set_orientation {orientation} {
+            $this focus
+
             set orientation [string toupper $orientation]
 
             if {[$_session logging_enabled]} {
@@ -668,6 +694,8 @@ namespace eval WebDriver {
         }
 
         method alert_text {} {
+            $this focus
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/alert_text]
 
@@ -683,6 +711,8 @@ namespace eval WebDriver {
         }
 
         method alert_send_text {text} {
+            $this focus
+
             set text OOSupport::json_escape_chars $text
             set json "{\"text\": \"$text\"}"
 
@@ -693,6 +723,8 @@ namespace eval WebDriver {
         }
 
         method accept_alert {} {
+            $this focus
+
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
                     "accept alert"
@@ -705,6 +737,8 @@ namespace eval WebDriver {
         }
 
         method dismiss_alert {} {
+            $this focus
+
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
                     "dismiss alert"
@@ -718,6 +752,8 @@ namespace eval WebDriver {
 
         method move_to {xoffset yoffset} {
             set json "{ \"xoffset\": $xoffset, \"yoffset\": $yoffset }"
+
+            $this focus
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
@@ -773,6 +809,8 @@ namespace eval WebDriver {
         }
 
         method doubleclick {} {
+            $this focus
+
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
                     "double click"
