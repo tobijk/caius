@@ -5,6 +5,12 @@ doc/_api/**
 doc/assets/img/cogwheels1.png
 doc/assets/img/cogwheels2.png
 doc/assets/img/spaceman.png
+doc/assets/css/customize.css
+doc/assets/css/layout.css
+doc/assets/css/navbar.css
+doc/assets/css/normalize.css
+doc/assets/css/style.css
+doc/assets/css/tables.css
 doc/_manpages/*.gz
 test/spool/**
 pack/tmp-install/**

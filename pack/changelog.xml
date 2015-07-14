@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
+    <release version="0.15.1" revision="1" maintainer="Tobias Koch"
+        email="tobias.koch@gmail.com" date="2015-07-14 21:21:00 +0300">
+        <changeset>
+            <li>Many fixes and improvements to the markdown processor.</li>
+            <li>Fixed "window focus"</li>
+        </changeset>
+    </release>
     <release version="0.15.0" revision="1" maintainer="Tobias Koch"
         email="tobias.koch@gmail.com" date="2015-02-10 22:06:00 +0200">
         <changeset>

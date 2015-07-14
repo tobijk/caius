@@ -1,3 +1,10 @@
+caius (0.15.1-1) unstable; urgency=low
+
+  * Many fixes and improvements to the markdown processor.
+  * Fixed "window focus"
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Tue, 14 Jul 2015 21:21:00 +0300
+
 caius (0.15.0-1) unstable; urgency=low
 
   * Markdown: support simple table syntax
