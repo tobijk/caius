@@ -14,7 +14,7 @@
     position: relative;
     width: 100%;
     background-color: $navbar-bg-color;
-    height: $navbar-height;
+    /* height: $navbar-height; */
     line-height: $navbar-height;
     padding: 0px $grid-gutter-width/2;
     clear: both;
@@ -52,6 +52,68 @@
 
             a:hover {
                 color: $navbar-text-color;
+            }
+        }
+    }
+
+    .menu-button {
+        float: right;
+
+        img {
+          margin: 0px;
+        }
+    }
+}
+
+@media (min-width: $grid-container-width * 0.8) {
+    .navbar {
+        .menu-button {
+            display: none;
+        }
+    }
+}
+
+@media (min-width: $grid-container-width * 0.6) and (max-width: $grid-container-width * 0.8 - 1) {
+    .navbar {
+        ul {
+            display: none;
+            margin-left: $grid-gutter-width/-2;
+            margin-right: $grid-gutter-width/-2;
+
+            clear: both;
+
+            li {
+                display: block;
+                float: none;
+
+                a {
+                    display: block;
+                }
+
+                border-top: 1px solid #444444;
+            }
+        }
+    }
+}
+
+@media (max-width: $grid-container-width * 0.6 - 1) {
+    .navbar {
+        ul {
+            display: none;
+            margin-left: $grid-gutter-width/-2;
+            margin-right: $grid-gutter-width/-2;
+
+            clear: both;
+
+            li {
+                display: block;
+                float: none;
+
+                a {
+                    display: block;
+                }
+
+                border-top: 1px solid #444444;
             }
         }
     }

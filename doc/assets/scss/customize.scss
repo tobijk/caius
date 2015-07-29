@@ -58,6 +58,11 @@
     .spaceman-background {
       background-image: url('../img/spaceman.png');
     }
+
+    .man-toc {
+      height: 400px;
+      background-color: #8b4a51;
+    }
 }
 
 @media (max-width: $grid-container-width * 0.8 - 1) {
@@ -73,6 +78,10 @@
     }
     .spaceman-background {
       background-image: none;
+    }
+
+    .man-toc {
+      background-color: #7e363e;
     }
 }
 
@@ -103,5 +112,21 @@ p {
 
 ul.toc {
   padding: 0ex 2em 0ex 2em;
+}
+
+ul.api-menu {
+  list-style-type: none;
+  margin-left: 0px;
+  margin-top: 55px;
+  padding: 0px;
+}
+
+select.api-menu {
+  width: 100%; 
+  font-size: 16px;
+  margin: 10px 0px;
+  background-color: #8b4a51;
+  color: white;
+  border: 1px solid white;
 }
 

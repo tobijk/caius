@@ -18,7 +18,7 @@
     <link rel="stylesheet" type="text/css" href="../assets/css/customize.css"/>
 
     <script src="../assets/js/jquery.js"></script>
-    <script src="../assets/js/blink.js"></script>
+    <script src="../assets/js/custom.js"></script>
   </head>
   <body style="background-color: #eaeaea;">
 
@@ -28,6 +28,7 @@
 
           <div class="navbar">
             <a href="../index.html"><img src="../assets/img/logo.png" alt="logo" class="logo"/></a>
+            <a href="#"><img src="../assets/img/menu-icon.png" alt="menu-button" class="menu-button"/></a>
 
             <ul>
               <li><a href="../index.html">Overview</a></li>
@@ -47,37 +48,45 @@
 
           <div class="s-span12 m-span12 l-span09">
             <div class="box">
-              <span style="font-size: 48px; font-weight: bold;">Programming Interface</span>
+              <span style="font-size: 48px; font-weight: bold;">Programming Interface</span><br/>
               <span style="font-size: 28px;">{{ page.title }}(3caius)</span>
             </div>
           </div>
-          <div class="s-span12 m-span12 l-span03 man-toc" style="background-color: #8b4a51; height: 400px;">
-            
-            <div class="row" style="height: 55px;"></div>
+          <div class="s-span12 m-span12 l-span03 man-toc">
 
-            <div class="row">
-              <div class="s-span12 m-span06 l-span12">
+            <ul class="api-menu l-visible m-invisible s-invisible">
+              <li>
                 <a href="clidriver.html"{% if page.title == 'CLIDRIVER' %} class="active"{% endif %}>CLIDRIVER</a>
-              </div>
-              <div class="s-span12 m-span06 l-span12">
+              </li>
+              <li>
                 <a href="error.html"{% if page.title == 'ERROR' %} class="active"{% endif %}>ERROR</a>
-              </div>
-              <div class="s-span12 m-span06 l-span12">
+              </li>
+              <li>
                 <a href="markdown.html"{% if page.title == 'MARKDOWN' %} class="active"{% endif %}>MARKDOWN</a>
-              </div>
-              <div class="s-span12 m-span06 l-span12">
+              </li>
+              <li>
                 <a href="oosupport.html"{% if page.title == 'OOSUPPORT' %} class="active"{% endif %}>OOSUPPORT</a>
-              </div>
-              <div class="s-span12 m-span06 l-span12">
+              </li>
+              <li>
                 <a href="subprocess.html"{% if page.title == 'SUBPROCESS' %} class="active"{% endif %}>SUBPROCESS</a>
-              </div>
-              <div class="s-span12 m-span06 l-span12">
+              </li>
+              <li>
                 <a href="testing.html"{% if page.title == 'TESTING' %} class="active"{% endif %}>TESTING</a>
-              </div>
-              <div class="s-span12 m-span06 l-span12">
+              </li>
+              <li>
                 <a href="webdriver.html"{% if page.title == 'WEBDRIVER' %} class="active"{% endif %}>WEBDRIVER</a>
-              </div>
-            </div>
+              </li>
+            </ul>
+
+            <select onchange="location = this.options[this.selectedIndex].value;" class="api-menu l-invisible m-visible s-visible">
+              <option value="clidriver.html"{% if page.title == 'CLIDRIVER' %} selected="selected"{% endif %}>CLIDRIVER</option>
+              <option value="error.html"{% if page.title == 'ERROR' %} selected="selected"{% endif %}>ERROR</option>
+              <option value="markdown.html"{% if page.title == 'MARKDOWN' %} selected="selected"{% endif %}>MARKDOWN</option>
+              <option value="oosupport.html"{% if page.title == 'OOSUPPORT' %} selected="selected"{% endif %}>OOSUPPORT</option>
+              <option value="subprocess.html"{% if page.title == 'SUBPROCESS' %} selected="selected"{% endif %}>SUBPROCESS</option>
+              <option value="testing.html"{% if page.title == 'TESTING' %} selected="selected"{% endif %}>TESTING</option>
+              <option value="webdriver.html"{% if page.title == 'WEBDRIVER' %} selected="selected"{% endif %}>WEBDRIVER</option>
+            </select>
 
           </div>
         </div>
@@ -101,8 +110,7 @@
         <div class="row">
           <div class="span12">
             &copy; 2015 Caius Project. Built with attention to detail by
-            <a href="http://twitter.com/tobijk" style="color: #cc4455;">@tobijk</a> and
-            <a href="https://raw.githubusercontent.com/tobijk/caius/master/AUTHORS" style="color: #cc4455;">contributors</a>.
+            <a href="http://twitter.com/tobijk" style="color: #cc4455;">@tobijk</a> in Istanbul, Turkey.
           </div>
         </div>
       </div>
