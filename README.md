@@ -28,7 +28,7 @@ Even if you are dealing with much smaller test environments or if your test asse
 
 ## Quickstart
 
-Download the source tarball from <a href="https://github.com/tobijk/caius/archive/0.15.1.tar.gz">here</a>. In order to run Caius, you need to install a number of additional packages.
+Download the source tarball from <a href="https://github.com/tobijk/caius/releases">here</a>. In order to run Caius, you need to install a number of additional packages.
             
 ### Dependencies
 
