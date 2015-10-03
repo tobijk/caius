@@ -1,5 +1,7 @@
 # Caius Functional Testing Framework
 
+The project homepage is at <a href="http://caiusproject.com">caiusproject.com</a>.
+
 ## Summary
 
 Caius is a functional testing framework for the 21st century. It was born out of the need for a contemporary replacement for <a href="http://www.gnu.org/software/dejagnu/">DejaGnu</a>. Caius is written in object-oriented Tcl and provides easy-to-use programming interface to proven testing technologies. Through its versatile reporting system, Caius integrates well with modern CI systems and test management tools.
