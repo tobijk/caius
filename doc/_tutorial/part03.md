@@ -358,7 +358,13 @@ the information that we needed.
 You can read the value of an element's attribute by calling
 
 ~~~~{tcl}
-set value [$element attribute <attribute_name>]
+$element attribute <attribute_name>
+~~~~
+
+In order to read the value of a CSS property instead use
+
+~~~~{tcl}
+$element css_property <prop_name>
 ~~~~
 
 ### Clicking an Element

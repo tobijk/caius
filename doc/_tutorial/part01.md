@@ -66,7 +66,7 @@ itcl::class MyTests {
     }
 }
 
-exit [[MyTest #auto] run $::argv]
+exit [[MyTests #auto] run $::argv]
 ~~~
 
 The test class `MyTests` inherits a lot of functionality from
