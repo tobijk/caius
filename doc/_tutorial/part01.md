@@ -64,6 +64,10 @@ itcl::class MyTests {
     method test_failing {} {
         error "Hello, I'm about to fail!"
     }
+
+    method test_fail_with_assertion {} {
+        Testing::assert {1 == 2}
+    }
 }
 
 exit [[MyTests #auto] run $::argv]
