@@ -694,8 +694,6 @@ namespace eval WebDriver {
         }
 
         method alert_text {} {
-            $this focus
-
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/alert_text]
 
@@ -711,8 +709,6 @@ namespace eval WebDriver {
         }
 
         method alert_send_text {text} {
-            $this focus
-
             set text OOSupport::json_escape_chars $text
             set json "{\"text\": \"$text\"}"
 
@@ -723,8 +719,6 @@ namespace eval WebDriver {
         }
 
         method accept_alert {} {
-            $this focus
-
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
                     "accept alert"
@@ -737,8 +731,6 @@ namespace eval WebDriver {
         }
 
         method dismiss_alert {} {
-            $this focus
-
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
                     "dismiss alert"
