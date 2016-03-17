@@ -15,7 +15,7 @@ set REQUIRED_CAPABILITIES_JSON \
 
 set CAPABILITIES_JSON \
 {{
-	"browserName": "firefox",
+	"browserName": "chrome",
 	"javascriptEnabled": true,
 	"takesScreenshot": true,
 	"handlesAlerts": true,
@@ -45,7 +45,7 @@ set CAPABILITIES_JSON \
         docstr "Test that capabilities can be created and modified."
 
         WebDriver::Capabilities cap
-        cap set_browser_name firefox
+        cap set_browser_name "chrome"
 
         if {[cap to_json] == $::CAPABILITIES_JSON} {
             return 0
@@ -60,7 +60,7 @@ set CAPABILITIES_JSON \
         docstr "Test that required capabilities can be created an modified."
 
         set req_cap [WebDriver::RequiredCapabilities #auto]
-        $req_cap set_browser_name chrome
+        $req_cap set_browser_name "chrome"
 
         if {[$req_cap to_json] == $::REQUIRED_CAPABILITIES_JSON} {
             return 0

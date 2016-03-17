@@ -19,7 +19,7 @@ set PAGE_URL "file://$DATA_DIR/html/page_select.html"
         docstr "Test checking checkboxes and reading their state."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "htmlunit"
+        $cap set_browser_name "chrome"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
         $session set_logging_enabled 1
@@ -45,7 +45,7 @@ set PAGE_URL "file://$DATA_DIR/html/page_select.html"
         docstr "Test selecting from a combobox."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "htmlunit"
+        $cap set_browser_name "chrome"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
         $session set_logging_enabled 1

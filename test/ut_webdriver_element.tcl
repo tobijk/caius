@@ -24,7 +24,7 @@ set INPUT_TEXT "Input Field"
         text."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "htmlunit"
+        $cap set_browser_name "chrome"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
         $session set_logging_enabled 1

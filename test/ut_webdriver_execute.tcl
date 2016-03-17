@@ -20,7 +20,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         the result."
 
         set cap [namespace which [::WebDriver::Capabilities #auto]]
-        $cap set_browser_name "htmlunit"
+        $cap set_browser_name "chrome"
         set result 0
 
         set session [::WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
@@ -50,7 +50,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         and retrieve the result."
 
         set cap [namespace which [::WebDriver::Capabilities #auto]]
-        $cap set_browser_name "htmlunit"
+        $cap set_browser_name "chrome"
         set result 0
 
         set session [::WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
