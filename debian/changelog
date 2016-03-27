@@ -1,3 +1,10 @@
+caius (0.15.2-1) unstable; urgency=low
+
+  * Use 'chrome' in all tests
+  * Don't do implicit '$this focus' when dealing with alerts
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Sun, 27 Mar 2016 22:35:00 +0300
+
 caius (0.15.1-1) unstable; urgency=low
 
   * Many fixes and improvements to the markdown processor.
