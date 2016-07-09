@@ -359,12 +359,26 @@ namespace eval WebDriver {
                 set result [namespace which \
                     [[::WebDriver::WebElement #auto $this] from_tcl \
                         [$response value]]]
+
+                if {$_logging_enabled} {
+                    set log_str "got element [$result ELEMENT]"
+                    ::WebDriver::log $_session_id $log_str
+                }
             } else {
                 set element_list [$response value]
+                set id_list {}
 
                 foreach {elm} $element_list {
-                    lappend result [namespace which \
+                    set fq_element [namespace which \
                         [[::WebDriver::WebElement #auto $this] from_tcl $elm]]
+
+                    lappend result $fq_element
+                    lappend id_list [$fq_element ELEMENT]
+                }
+
+                if {$_logging_enabled} {
+                    set log_str "got elements [join $id_list ", "]"
+                    ::WebDriver::log $_session_id $log_str
                 }
             }
 

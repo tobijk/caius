@@ -73,6 +73,29 @@ set INPUT_TEXT "Input Field"
 
         return
     }
+
+    method test_retrieving_multiple_elements {} {
+        docstr "Test retrieving multiple elements matching same locator."
+
+        set cap [namespace which [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "chrome"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url $::PAGE_URL
+
+        set list_items [$window elements by_tag_name "li"]
+
+        ::Testing::assert {[llength $list_items] == 3}
+
+        foreach {ref} $list_items {
+            ::itcl::delete object $ref
+        }
+
+        ::itcl::delete object $session
+    }
 }
 
 exit [[TestWebDriverElementAccess #auto] run $::argv]
