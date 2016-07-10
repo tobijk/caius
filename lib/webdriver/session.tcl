@@ -332,7 +332,7 @@ namespace eval WebDriver {
                 }
                 set log_str "get $what by $strategy "
                 if {$root ne {null}} {
-                    append log_str "'$root/$locator'"
+                    append log_str "'<element [$root ELEMENT]>/$locator'"
                 } else {
                     append log_str "'$locator'"
                 }
