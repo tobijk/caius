@@ -103,7 +103,7 @@ namespace eval WebDriver {
         }
 
         method close {} {
-            set all_windows [$_session all_windows]
+            set all_windows [$_session windows]
 
             if {[llength $all_windows] == 1} {
                 raise ::WebDriver::CloseSessionWindowError \
