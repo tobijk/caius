@@ -776,7 +776,7 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
                 [$_session session_url]/buttondown]
-            ::ictl::delete $response
+            ::itcl::delete object $response
         }
 
         method button_up {{button left}} {
@@ -797,7 +797,7 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
                 [$_session session_url]/buttonup]
-            ::ictl::delete $response
+            ::itcl::delete object $response
         }
 
         method doubleclick {} {
@@ -811,7 +811,7 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -method POST \
                 [$_session session_url]/doubleclick]
-            ::itcl::delete $response
+            ::itcl::delete object $response
         }
     }
 }
