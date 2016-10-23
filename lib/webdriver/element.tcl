@@ -31,6 +31,7 @@ namespace eval WebDriver {
 
         common attributes {
             {string ELEMENT "" rw}
+            {string "element-6066-11e4-a52e-4f735466cecf" "" rw}
         }
 
         # not serializable
@@ -46,6 +47,14 @@ namespace eval WebDriver {
         OOSupport::bless_attributes -json_support -skip_undefined \
             -collapse_underscore
 
+        method web_element_id {} {
+            if {$_ELEMENT ne {}} {
+                return $_ELEMENT
+            } else {
+                return ${_element-6066-11e4-a52e-4f735466cecf}
+            }
+        }
+
         method descendant {by locator} {
             return [namespace inscope ::WebDriver::Session \
                 $_session __elements $by "$locator" "$this" true]
@@ -57,7 +66,7 @@ namespace eval WebDriver {
         }
 
         method move_to {{xoffset null} {yoffset null}} {
-            set json "{ \"element\": \"$_ELEMENT\""
+            set json "{ \"element\": \"[$this web_element_id]\""
             if {($xoffset ne "null") && ($yoffset ne "null")} {
                 set json "$json, \"xoffset\": $xoffset, \"yoffset\": $yoffset"
             }
@@ -77,12 +86,12 @@ namespace eval WebDriver {
         method click {} {
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "click element $_ELEMENT"
+                    "click element [$this web_element_id]"
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
-                [$_session session_url]/element/$_ELEMENT/click]
+                -query "{}" \
+                [$_session session_url]/element/[$this web_element_id]/click]
             ::itcl::delete object $response
         }
 
@@ -93,20 +102,20 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
-                [$_session session_url]/element/$_ELEMENT/submit]
+                -query "{}" \
+                [$_session session_url]/element/[$this web_element_id]/submit]
             ::itcl::delete object $response
         }
 
         method text {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/text]
+                [$_session session_url]/element/[$this web_element_id]/text]
             set element_text [encoding convertfrom "utf-8" [$response value]]
             ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT text: $element_text"
+                    "element [$this web_element_id] text: $element_text"
             }
 
             return $element_text
@@ -117,24 +126,24 @@ namespace eval WebDriver {
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "send keys to element $_ELEMENT: $text"
+                    "send keys to element [$this web_element_id]: $text"
             }
 
             set json [encoding convertto "utf-8" "{\"value\": \[\"$text\"]}"]
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
-                [$_session session_url]/element/$_ELEMENT/value]
+                [$_session session_url]/element/[$this web_element_id]/value]
             ::itcl::delete object $response
         }
 
         method tag_name {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/name]
+                [$_session session_url]/element/[$this web_element_id]/name]
             set tag_name [encoding convertfrom "utf-8" [$response value]]
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT tag name: $tag_name"
+                    "element [$this web_element_id] tag name: $tag_name"
             }
 
             ::itcl::delete object $response
@@ -144,24 +153,24 @@ namespace eval WebDriver {
         method clear {} {
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "clear element $_ELEMENT"
+                    "clear element [$this web_element_id]"
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
-                [$_session session_url]/element/$_ELEMENT/clear]
+                -query "{}" \
+                [$_session session_url]/element/[$this web_element_id]/clear]
             ::itcl::delete object $response
         }
 
         method selected {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/selected]
+                [$_session session_url]/element/[$this web_element_id]/selected]
             set value [$response value]
             ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT selected: $value"
+                    "element [$this web_element_id] selected: $value"
             }
 
             return $value
@@ -169,13 +178,13 @@ namespace eval WebDriver {
 
         method enabled {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/enabled]
+                [$_session session_url]/element/[$this web_element_id]/enabled]
             set value [$response value]
             ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT enabled: $value"
+                    "element [$this web_element_id] enabled: $value"
             }
 
             return $value
@@ -183,28 +192,28 @@ namespace eval WebDriver {
 
         method attribute {attr_name} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/attribute/$attr_name]
+                [$_session session_url]/element/[$this web_element_id]/attribute/$attr_name]
             set value [encoding convertfrom "utf-8" [$response value]]
             ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT attribute $attr_name: $value"
+                    "element [$this web_element_id] attribute $attr_name: $value"
             }
 
             return $value
         }
 
         method equals {other} {
-            set other_id [$other ELEMENT]
+            set other_id [$other web_element_id]
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/equals/$other_id]
+                [$_session session_url]/element/[$this web_element_id]/equals/$other_id]
             set value [$response value]
             ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT equals $other_id: $value"
+                    "element [$this web_element_id] equals $other_id: $value"
             }
 
             return $value
@@ -212,13 +221,13 @@ namespace eval WebDriver {
 
         method displayed {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/displayed]
+                [$_session session_url]/element/[$this web_element_id]/displayed]
             set value [$response value]
             ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT displayed: $value"
+                    "element [$this web_element_id] displayed: $value"
             }
 
             return $value
@@ -226,13 +235,13 @@ namespace eval WebDriver {
 
         method location {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/location]
+                [$_session session_url]/element/[$this web_element_id]/location]
             array set value [$response value]
             ::itcl::delete $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT location: ($value(x), $value(y))"
+                    "element [$this web_element_id] location: ($value(x), $value(y))"
             }
 
             return [list $value(x) $value(y)]
@@ -240,13 +249,13 @@ namespace eval WebDriver {
 
         method size {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/size]
+                [$_session session_url]/element/[$this web_element_id]/size]
             array set value [$response value]
             ::itcl::delete $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT size: $value(width)x$value(height)"
+                    "element [$this web_element_id] size: $value(width)x$value(height)"
             }
 
             return [list $value(width) $value(height)]
@@ -254,13 +263,13 @@ namespace eval WebDriver {
 
         method css_property {css_property} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/$_ELEMENT/css/$css_property]
+                [$_session session_url]/element/[$this web_element_id]/css/$css_property]
             set value [encoding convertfrom "utf-8" [$response value]]
             ::itcl::delete $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "element $_ELEMENT $css_property: $value"
+                    "element [$this web_element_id] $css_property: $value"
             }
 
             return $value

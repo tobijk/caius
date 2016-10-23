@@ -310,19 +310,56 @@ namespace eval WebDriver {
 
         private method __elements {by locator {root null} {single true}} {
             array set by2text "
-                by_class_name        {class name}
                 by_css_selector      {css selector}
-                by_id                {id}
-                by_name              {name}
                 by_link_text         {link text}
                 by_partial_link_text {partial link text}
-                by_tag_name          {tag name}
                 by_xpath             {xpath}
+                by_class_name        {class name}
+                by_id                {id}
+                by_name              {name}
+                by_tag_name          {tag name}
             "
 
             set strategy $by2text($by)
-            set locator [::OOSupport::json_escape_chars $locator]
-            set json "{ \"using\": \"$strategy\", \"value\": \"$locator\" }"
+
+            ##
+            # WORKAROUND:
+            #
+            # Selenium 3 seems to have dropped these from the protocol, probably
+            # because they can be expressed through the other strategies?
+            ##
+            set internal_strategy ""
+            set internal_locator ""
+
+            switch $strategy {
+                {class name} {
+                    set internal_strategy {css selector}
+                    set internal_locator  .$locator
+                }
+                {id} {
+                    set internal_strategy {xpath}
+                    set internal_locator  //*\[@id='$locator'\]
+                }
+                {name} {
+                    set internal_strategy {xpath}
+                    set internal_locator  //*\[@name='$locator'\]
+                }
+                {tag name} {
+                    set internal_strategy {css selector}
+                    set internal_locator  $locator
+                }
+                default {
+                    set internal_strategy $strategy
+                    set internal_locator  $locator
+                }
+            }
+
+            set internal_locator \
+                [::OOSupport::json_escape_chars $internal_locator]
+            set json "{
+                \"using\": \"$internal_strategy\",
+                \"value\": \"$internal_locator\"
+            }"
 
             if {$_logging_enabled} {
                 if {$single == true} {
@@ -332,7 +369,7 @@ namespace eval WebDriver {
                 }
                 set log_str "get $what by $strategy "
                 if {$root ne {null}} {
-                    append log_str "'<element [$root ELEMENT]>/$locator'"
+                    append log_str "'<element [$root web_element_id]>/$locator'"
                 } else {
                     append log_str "'$locator'"
                 }
@@ -344,7 +381,7 @@ namespace eval WebDriver {
             if {$root eq "null"} {
                 set url [$this session_url]/element
             } else {
-                set url [$this session_url]/element/[$root ELEMENT]/element
+                set url [$this session_url]/element/[$root web_element_id]/element
             }
 
             if {!$single} {
@@ -361,7 +398,7 @@ namespace eval WebDriver {
                         [$response value]]]
 
                 if {$_logging_enabled} {
-                    set log_str "got element [$result ELEMENT]"
+                    set log_str "got element [$result web_element_id]"
                     ::WebDriver::log $_session_id $log_str
                 }
             } else {
@@ -373,7 +410,7 @@ namespace eval WebDriver {
                         [[::WebDriver::WebElement #auto $this] from_tcl $elm]]
 
                     lappend result $fq_element
-                    lappend id_list [$fq_element ELEMENT]
+                    lappend id_list [$fq_element web_element_id]
                 }
 
                 if {$_logging_enabled} {

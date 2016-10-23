@@ -211,7 +211,7 @@ namespace eval WebDriver {
             $this focus
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/window/$_handle/maximize]
 
             if {[$_session logging_enabled]} {
@@ -248,6 +248,17 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch -query $json \
                 [$_session session_url]/url]
             ::itcl::delete object $response
+
+            ## 
+            # WORKAROUND:
+            #
+            # It seems that in the new Gecko Driver the window handle can change
+            # when a new page is loaded.
+            ##
+            set response [::WebDriver::Protocol::dispatch \
+                [$_session session_url]/window_handle]
+            set _handle [string trim [$response value] "{}"]
+            ::itcl::delete object $response
         }
 
         method url {} {
@@ -276,7 +287,7 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/forward]
             ::itcl::delete object $response
         }
@@ -290,7 +301,7 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/back]
             ::itcl::delete object $response
         }
@@ -304,7 +315,7 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/refresh]
             ::itcl::delete object $response
         }
@@ -644,7 +655,7 @@ namespace eval WebDriver {
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "active element: [$element ELEMENT]"
+                    "active element: [$element web_element_id]"
             }
 
             return $element
@@ -725,7 +736,7 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/accept_alert]
             ::itcl::delete object $response
         }
@@ -737,7 +748,7 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/dismiss_alert]
             ::itcl::delete object $response
         }
@@ -809,7 +820,7 @@ namespace eval WebDriver {
             }
 
             set response [::WebDriver::Protocol::dispatch \
-                -method POST \
+                -query "{}" \
                 [$_session session_url]/doubleclick]
             ::itcl::delete object $response
         }
