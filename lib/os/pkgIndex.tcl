@@ -25,15 +25,15 @@
 package ifneeded OS 1.0 "
     switch \"\$::tcl_platform(os)\" {
         Linux {
-            source \[file join \[list $dir] linux.tcl]
+            source \[file join [list $dir] linux.tcl\]
         }
         \"Windows NT\" {
-            source \[file join \[list $dir] windows.tcl]
+            source \[file join [list $dir] windows.tcl\]
         }
         default {
             error \"\$::tcl_platform(os) is not supported.\"
         }
     }
-    source \[file join \[list $dir] version.tcl]
+    source \[file join [list $dir] version.tcl\]
 "
 

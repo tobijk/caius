@@ -23,6 +23,6 @@
 #
 
 package ifneeded Markdown 1.0 "
-    source \[file join \[list $dir] markdown.tcl]
-    source \[file join \[list $dir] version.tcl ]
+    source \[file join [list $dir] markdown.tcl\]
+    source \[file join [list $dir] version.tcl \]
 "

@@ -23,10 +23,10 @@
 #
 
 package ifneeded Caius 1.0 "
-    source \[file join \[list $dir] error.tcl   ]
-    source \[file join \[list $dir] report.tcl  ]
-    source \[file join \[list $dir] runner.tcl  ]
-    source \[file join \[list $dir] testplan.tcl]
-    source \[file join \[list $dir] version.tcl ]
+    source \[file join [list $dir] error.tcl   \]
+    source \[file join [list $dir] report.tcl  \]
+    source \[file join [list $dir] runner.tcl  \]
+    source \[file join [list $dir] testplan.tcl\]
+    source \[file join [list $dir] version.tcl \]
 "
 
