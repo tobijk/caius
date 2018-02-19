@@ -62,14 +62,10 @@ namespace eval WebDriver {
                     }
                 }
 
+                set status [$response_object status]
+
                 # failed requests carry more information in the response object
-                if {[regexp {5\d\d} $status_code]} {
-                    set status [$response_object status]
-
-                    if { $status == 0 } {
-                        raise ::WebDriver::UnknownError "request failed: unknown error"
-                    }
-
+                if { $status != 0 } {
                     set info_object [::WebDriver::FailedCommandInfo #auto]
                     $info_object from_tcl [$response_object value]
 
@@ -82,6 +78,11 @@ namespace eval WebDriver {
                         if 1 "raise ::WebDriver::${error_class} {$msg}"
                     } else {
                         raise ::WebDriver::FailedCommandError "$msg"
+                    }
+                } else {
+                    if {[regexp {5\d\d} $status_code]} {
+                        raise ::WebDriver::UnknownError \
+                            "request failed: unknown error"
                     }
                 }
 
