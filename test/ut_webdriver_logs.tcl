@@ -20,7 +20,7 @@ proc new_puts {args} {
     inherit Testing::TestObject
 
     method test_retrieve_driver_log {} {
-        docstr "Fetch the driver log types and client log."
+        docstr "Fetch the driver log types and server log."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
         $cap set_browser_name "chrome"
@@ -34,9 +34,9 @@ proc new_puts {args} {
             error "expected at least four standard log types."
         }
 
-        set log [$session get_log client]
+        set log [$session get_log server]
         if {[string length $log] == 0} {
-            error "expected client log not to be empty."
+            error "expected server log not to be empty."
         }
 
         ::itcl::delete object $session
