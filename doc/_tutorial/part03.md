@@ -409,25 +409,6 @@ combobox, call
 $element selected
 ~~~~
 
-### Testing two Page Elements for Equality
-
-Using the `element` or `elements` methods on the window object, you can retrieve
-multiple references representing the same element.
-
-In order to find out, if any given two references are for the same element, call
-the `equals` method:
-
-~~~~{tcl}
-if {[$element1 equals $element2]} {
-    puts "same element"
-} else {
-    puts "different elements"
-}
-~~~~
-
-Be aware that `$element2` must be a fully qualified object reference obtained
-by a call to `namespace which`.
-
 ## Taking Screenshots
 
 You may take a screenshot of the active page at any time by calling

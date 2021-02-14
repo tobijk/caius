@@ -347,9 +347,6 @@ receives from a test script.
 * `method enabled`:
   Check whether the element is currently enabled.
 
-* `method equals` *other*:
-  Check if this `WebElement` references the same page object as *other*.
-
 * `method location`:
   Return the element's location on the page as a Tcl list of format `{x y}`.
   The point `{0 0}` refers to the top left corner of the canvas.
