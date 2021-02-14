@@ -56,12 +56,14 @@ namespace eval WebDriver {
                 set _${key} $val
             }
 
-            if {[llength $args] != 2} {
-                raise ::WebDriver::Error "WebDriver::Cookie: insufficient arguments."
-            }
+            if {[llength $args] != 0} {
+                if {[llength $args] != 2} {
+                    raise ::WebDriver::Error "WebDriver::Cookie: invalid number of arguments."
+                }
 
-            set _name  [lindex $args 0]
-            set _value [lindex $args 1]
+                set _name  [lindex $args 0]
+                set _value [lindex $args 1]
+            }
         }
 
         destructor {}
