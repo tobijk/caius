@@ -204,21 +204,6 @@ namespace eval WebDriver {
             return $value
         }
 
-        method equals {other} {
-            set other_id [$other web_element_id]
-            set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/[$this web_element_id]/equals/$other_id]
-            set value [$response value]
-            ::itcl::delete object $response
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "element [$this web_element_id] equals $other_id: $value"
-            }
-
-            return $value
-        }
-
         method displayed {} {
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/element/[$this web_element_id]/displayed]

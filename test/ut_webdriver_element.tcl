@@ -60,15 +60,8 @@ set INPUT_TEXT "Input Field"
             error "input element should be enabled."
         }
 
-        set input_ [$window element by_id input]
-
-        if {![$input equals $input_]} {
-            error "references should point to same element."
-        }
-
         ::itcl::delete object $label
         ::itcl::delete object $input
-        ::itcl::delete object $input_
         ::itcl::delete object $session
 
         return
