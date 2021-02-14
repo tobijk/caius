@@ -77,7 +77,7 @@ namespace eval WebDriver {
         }
 
         method focus {} {
-            set json "{ \"name\": \"\{$_handle\}\" }"
+            set json "{ \"name\": \"$_handle\" }"
             set interval 5
 
             for {set i 0} {$i < 10} {incr i} {
