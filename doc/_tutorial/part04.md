@@ -1,8 +1,8 @@
 ---
 title:  "Part IV: Extension Modules"
-previous: part03
+previous_file: part03
 previous_title: "Driving the Web Browser"
-next:
+next_file:
 next_title:
 layout: tutorial
 ---

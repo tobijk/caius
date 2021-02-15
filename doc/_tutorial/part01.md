@@ -1,8 +1,8 @@
 ---
 title:  "Part I: Getting Started"
-previous:
+previous_file:
 previous_title:
-next: part02
+next_file: part02
 next_title: "Driving the Command Line"
 layout: tutorial
 ---

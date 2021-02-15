@@ -39,12 +39,12 @@ p {
 
         </div>
         <div class="s-span12 m-span03 l-span03 s-center m-right-align l-right-align tutorial-nav-elements">
-          {% if page.previous %}
-          <a href="{{ page.previous }}.html"><img src="../assets/img/prev.gif" alt="previous"/></a>
+          {% if page.previous_file %}
+          <a href="{{ page.previous_file }}.html"><img src="../assets/img/prev.gif" alt="previous"/></a>
           {% endif %}
           <a href="index.html"><img src="../assets/img/up.gif" alt="table of contents"/></a>
-          {% if page.next %}
-          <a href="{{ page.next }}.html"><img src="../assets/img/next.gif" alt="next"/></a>
+          {% if page.next_file %}
+          <a href="{{ page.next_file }}.html"><img src="../assets/img/next.gif" alt="next"/></a>
           {% endif %}
         </div>
       </div>
@@ -66,8 +66,8 @@ p {
       <div class="container" style="border-top: 1px dotted black">
         <div class="row">
           <div class="s-span12 m-span04 l-span04 s-center m-left-align l-left-align">
-            {% if page.previous %}
-              Prev: <a href="{{ page.previous }}.html">{{ page.previous_title }}</a>
+            {% if page.previous_file %}
+              Prev: <a href="{{ page.previous_file }}.html">{{ page.previous_title }}</a>
             {% else %}
               &nbsp;
             {% endif %}
@@ -76,8 +76,8 @@ p {
             Up: <a href="index.html">Table of Contents</a>
           </div>
           <div class="s-span12 m-span04 l-span04 s-center m-right-align l-right-align">
-            {% if page.next %}
-              Next: <a href="{{ page.next }}.html">{{ page.next_title }}</a>
+            {% if page.next_file %}
+              Next: <a href="{{ page.next_file }}.html">{{ page.next_title }}</a>
             {% else %}
               &nbsp;
             {% endif %}

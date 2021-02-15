@@ -1,8 +1,8 @@
 ---
 title:  "Part III: Driving the Web Browser"
-previous: part02
+previous_file: part02
 previous_title: "Driving the Command Line"
-next: part04
+next_file: part04
 next_title: "Extension Modules"
 layout: tutorial
 ---

@@ -1,8 +1,8 @@
 ---
 title:  "Part II: Driving the Command Line"
-previous: part01
+previous_file: part01
 previous_title: "Getting Started"
-next: part03
+next_file: part03
 next_title: "Driving the Web Browser"
 layout: tutorial
 ---
