@@ -105,7 +105,7 @@ namespace eval WebDriver {
             set http_config [::http::config]
 
             # content and accept headers must be set to "application/json"
-            ::http::config -accept "application/json" -useragent "Caius FT Framework"
+            ::http::config -accept "application/json;charset=utf-8" -useragent "Caius FT Framework"
 
             # just copy parms, no checks
             set parms [lrange $args 0 end-1]
@@ -116,7 +116,7 @@ namespace eval WebDriver {
                 if { [ catch \
                         {
                             set token [eval "::http::geturl $url \
-                                -type application/json $parms"]
+                                -type \"application/json;charset=utf-8\" $parms"]
                         } msg ]
                 } {
                     raise ::WebDriver::Error "error while dispatching request: $msg"
