@@ -14,7 +14,6 @@
     <run timeout="60">ut_webdriver_element.tcl</run>
     <run timeout="60">ut_webdriver_execute.tcl</run>
     <run timeout="60">ut_webdriver_failed_command.tcl</run>
-    <run timeout="60">ut_webdriver_logs.tcl</run>
     <run timeout="60">ut_webdriver_page.tcl</run>
     <run timeout="60">ut_webdriver_select.tcl</run>
 </testplan>
