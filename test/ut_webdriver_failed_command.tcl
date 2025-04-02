@@ -19,7 +19,7 @@ set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
         docstr "Inject invalid JavaScript and expect a WebDriver exception to be thrown."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "chrome"
+        $cap set_browser_name "firefox"
 
         except {
             set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]

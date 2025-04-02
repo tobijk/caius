@@ -129,7 +129,7 @@ namespace eval WebDriver {
                     "send keys to element [$this web_element_id]: $text"
             }
 
-            set json [encoding convertto "utf-8" "{\"value\": \[\"$text\"]}"]
+            set json [encoding convertto "utf-8" "{\"text\": \"$text\\n\"}"]
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
                 [$_session session_url]/element/[$this web_element_id]/value]
@@ -199,6 +199,20 @@ namespace eval WebDriver {
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
                     "element [$this web_element_id] attribute $attr_name: $value"
+            }
+
+            return $value
+        }
+
+        method property {prop_name} {
+            set response [::WebDriver::Protocol::dispatch \
+                [$_session session_url]/element/[$this web_element_id]/property/$prop_name]
+            set value [encoding convertfrom "utf-8" [$response value]]
+            ::itcl::delete object $response
+
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "element [$this web_element_id] property $prop_name: $value"
             }
 
             return $value

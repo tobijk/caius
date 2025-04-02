@@ -36,23 +36,6 @@ namespace eval WebDriver {
         puts "WebDriver\[$session_id]: $log_string"
     }
 
-    proc sessions {url} {
-        set sessions {}
-        set response [::WebDriver::Protocol::dispatch $url/sessions]
-
-        foreach {entry} [$response value] {
-            array set properties $entry
-
-            set session [::WebDriver::Session #auto]
-            $session set_session_id $properties(id)
-            $session set_session_url $url/session/$properties(id)
-
-            lappend sessions [namespace which $session]
-        }
-
-        return $sessions
-    }
-
     ::itcl::class Session {
 
         common attributes {
@@ -65,35 +48,38 @@ namespace eval WebDriver {
         # these are not serializable
         private variable _windows
 
-        constructor {{url ""} \
-            {desired_capabilities  ""} \
-            {required_capabilities ""} \
-        } {
+        constructor {{url ""} {required_capabilities ""}} {
             OOSupport::init_attributes
 
             # these are not serializable
             set _windows {}
 
             if {$url != ""} {
-                set desired_and_required_caps [ \
-                    ::WebDriver::DesiredAndRequiredCapabilities #auto \
-                    $desired_capabilities $required_capabilities]
-
                 # serialize capabilities
-                set post_data [$desired_and_required_caps to_json]
-                
+                set post_data [format {
+                    {
+                        "capabilities": {
+                            "alwaysMatch": %s
+                        }
+                    }
+                } [$required_capabilities to_json]]
+
                 # open a new session
                 set response [::WebDriver::Protocol::dispatch -query $post_data \
                     $url/session]
 
                 # save session URL and ID
                 array set meta [$response headers]
+                array set data [$response value  ]
 
                 # different versions use different methods to report session id
                 if {[info exists meta(Location)]} {
                     set _session_url $meta(Location)
+                } elseif {[info exists data(sessionId)]} {
+                    set _session_url "$url/session/$data(sessionId)"
                 } else {
-                    set _session_url "$url/session/[$response session_id]"
+                    raise ::WebDriver::Error \
+                        "session URL not found in response: [$response to_json]"
                 }
                 set _session_id [lindex [split $_session_url /] end]
 
@@ -119,52 +105,6 @@ namespace eval WebDriver {
         OOSupport::bless_attributes -json_support -collapse_underscore \
             -skip_undefined
 
-        method capabilities {} {
-            if {$_logging_enabled} {
-                ::WebDriver::log $_session_id "query session capabilities"
-            }
-
-            set response [::WebDriver::Protocol::dispatch $_session_url]
-
-            # parse capabilities
-            set caps [namespace which [WebDriver::Capabilities #auto]]
-            $caps from_tcl [$response value]
-
-            ::itcl::delete object $response
-            return $caps
-        }
-
-        method log_types {} {
-            set response [::WebDriver::Protocol::dispatch \
-                $_session_url/log/types]
-
-            set rval [$response value]
-
-            if {$_logging_enabled} {
-                ::WebDriver::log $_session_id \
-                    "available log types: [join $rval ", "]"
-            }
-
-            ::itcl::delete object $response
-            return $rval
-        }
-
-        method get_log {type} {
-            set json "{ \"type\": \"$type\" }"
-
-            if {$_logging_enabled} {
-                ::WebDriver::log $_session_id "fetch $type log"
-            }
-
-            set response [::WebDriver::Protocol::dispatch -query $json \
-                $_session_url/log]
-
-            set log [$response value]
-            ::itcl::delete object $response
-
-            return $log
-        }
-
         method set_page_load_timeout {ms} {
             if {![regexp {^\d+$} $ms]} {
                 raise ::ValueError \
@@ -175,7 +115,7 @@ namespace eval WebDriver {
                 ::WebDriver::log $_session_id "set page load timeout to ${ms}ms"
             }
 
-            set json "{ \"type\": \"page load\", \"ms\": $ms }"
+            set json "{ \"pageLoad\": $ms }"
             set response [::WebDriver::Protocol::dispatch -query $json \
                 $_session_url/timeouts]
             ::itcl::delete object $response
@@ -192,9 +132,9 @@ namespace eval WebDriver {
                     "set async script timeout to ${ms}ms"
             }
 
-            set json "{ \"ms\": $ms }"
+            set json "{ \"script\": $ms }"
             set response [::WebDriver::Protocol::dispatch -query $json \
-                $_session_url/timeouts/async_script]
+                $_session_url/timeouts]
             ::itcl::delete object $response
         }
 
@@ -209,15 +149,15 @@ namespace eval WebDriver {
                     "set implicit wait timeout to ${ms}ms"
             }
 
-            set json "{ \"ms\": $ms }"
+            set json "{ \"implicit\": $ms }"
             set response [::WebDriver::Protocol::dispatch -query $json \
-                $_session_url/timeouts/implicit_wait]
+                $_session_url/timeouts]
             ::itcl::delete object $response
         }
 
         method active_window {} {
             set response [::WebDriver::Protocol::dispatch \
-                $_session_url/window_handle]
+                $_session_url/window]
 
             set handle [string trim [$response value] "{}"]
             ::itcl::delete object $response
@@ -238,7 +178,7 @@ namespace eval WebDriver {
 
         method windows {} {
             set response [::WebDriver::Protocol::dispatch \
-                $_session_url/window_handles]
+                $_session_url/window/handles]
 
             set handles [$response value]
             for {set i 0} {$i < [llength $handles]} {incr i} {
@@ -299,7 +239,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
-                $_session_url/execute_async]
+                $_session_url/execute/async]
 
             # return TCL'ized JSON object or single value
             set result [$response value]

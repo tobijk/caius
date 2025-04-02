@@ -22,9 +22,10 @@ set CLICK_ME_TEXT "You clicked me!"
         docstr "Test clicking on an element to summon a JavaScript alert and dismiss it."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "chrome"
+        $cap set_browser_name "firefox"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
         $session set_logging_enabled 1
         set window [$session active_window]
 

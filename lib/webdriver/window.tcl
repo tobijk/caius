@@ -77,7 +77,7 @@ namespace eval WebDriver {
         }
 
         method focus {} {
-            set json "{ \"name\": \"$_handle\" }"
+            set json "{ \"handle\": \"$_handle\" }"
             set interval 5
 
             for {set i 0} {$i < 10} {incr i} {
@@ -127,7 +127,7 @@ namespace eval WebDriver {
 
             set json "{\"width\": $w, \"height\": $h}"
             set response [::WebDriver::Protocol::dispatch -query $json \
-                [$_session session_url]/window/$_handle/size]
+                [$_session session_url]/window/rect]
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
@@ -157,7 +157,7 @@ namespace eval WebDriver {
             $this focus
 
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/window/$_handle/size]
+                [$_session session_url]/window/rect]
 
             array set value [$response value]
             ::itcl::delete object $response
@@ -170,7 +170,7 @@ namespace eval WebDriver {
 
             set json "{\"x\": $x, \"y\": $y}"
             set response [::WebDriver::Protocol::dispatch -query $json \
-             [$_session session_url]/window/$_handle/position]
+             [$_session session_url]/window/rect]
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
@@ -199,7 +199,7 @@ namespace eval WebDriver {
             $this focus
 
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/window/$_handle/position]
+                [$_session session_url]/window/rect]
 
             array set value [$response value]
             ::itcl::delete object $response
@@ -212,7 +212,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 -query "{}" \
-                [$_session session_url]/window/$_handle/maximize]
+                [$_session session_url]/window/maximize]
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
@@ -256,7 +256,7 @@ namespace eval WebDriver {
             # when a new page is loaded.
             ##
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/window_handle]
+                [$_session session_url]/window]
             set _handle [string trim [$response value] "{}"]
             ::itcl::delete object $response
         }
@@ -336,7 +336,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
-                [$_session session_url]/execute]
+                [$_session session_url]/execute/sync]
 
             # return TCL'ized JSON object or single value
             set result [$response value]
@@ -706,7 +706,7 @@ namespace eval WebDriver {
 
         method alert_text {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/alert_text]
+                [$_session session_url]/alert/text]
 
             set alert_text [$response value]
             ::itcl::delete object $response
@@ -725,7 +725,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
-                [$_session session_url]/alert_text]
+                [$_session session_url]/alert/text]
             ::itcl::delete object $response
         }
 
@@ -737,7 +737,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 -query "{}" \
-                [$_session session_url]/accept_alert]
+                [$_session session_url]/alert/accept]
             ::itcl::delete object $response
         }
 
@@ -749,7 +749,7 @@ namespace eval WebDriver {
 
             set response [::WebDriver::Protocol::dispatch \
                 -query "{}" \
-                [$_session session_url]/dismiss_alert]
+                [$_session session_url]/alert/dismiss]
             ::itcl::delete object $response
         }
 

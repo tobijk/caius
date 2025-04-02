@@ -24,7 +24,7 @@ set INPUT_TEXT "Input Field"
         text."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "chrome"
+        $cap set_browser_name "firefox"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
         $session set_logging_enabled 1
@@ -38,7 +38,7 @@ set INPUT_TEXT "Input Field"
         }
 
         set input [$window element by_id input]
-        if {[$input attribute value] ne $::INPUT_TEXT} {
+        if {[$input property value] ne $::INPUT_TEXT} {
             error "input field text is wrong."
         }
 
@@ -48,7 +48,11 @@ set INPUT_TEXT "Input Field"
         set ::INPUT_TEXT [encoding convertfrom "utf-8" "Hello World! ÄÖÜß"]
         $input send_keys $::INPUT_TEXT
 
-        if {[$input attribute value] ne $::INPUT_TEXT} {
+        if {[$input displayed] ne true} {
+            error "input field should be visisble."
+        }
+
+        if {[$input property value] ne $::INPUT_TEXT} {
             error "input field text wrong or encoding problem."
         }
 
@@ -71,7 +75,7 @@ set INPUT_TEXT "Input Field"
         docstr "Test retrieving multiple elements matching same locator."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "chrome"
+        $cap set_browser_name "firefox"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
         $session set_logging_enabled 1

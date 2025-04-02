@@ -41,7 +41,7 @@ set NORMALIZE_XSLT {<?xml version="1.0" encoding="utf-8"?>
         docstr "Test getting the page source and title."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
-        $cap set_browser_name "chrome"
+        $cap set_browser_name "firefox"
 
         set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
         $session set_logging_enabled 1
