@@ -11,4 +11,4 @@ The following people have contributed to Caius:
     - Bugfixes and Itcl4 compatibility work
 
 * Will Duquette
-    - Fixes to the Markdown module
+    - Started initiative to get the markdown module into tcllib
