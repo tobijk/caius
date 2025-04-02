@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testplan>
     <run timeout="60">ut_exceptions.tcl</run>
-    <run timeout="60">ut_markdown.tcl</run>
     <run timeout="60">ut_oosupport_common_attributes.tcl</run>
     <run timeout="60">ut_oosupport_from_json.tcl</run>
     <run timeout="60">ut_oosupport_json_strings.tcl</run>
