@@ -555,7 +555,7 @@ namespace eval WebDriver {
             $cookie set_http_only $params(http_only)
             $cookie set_expiry    $params(expiry)
 
-            set json "{\"sessionId\": \"[$_session session_id]\", \"cookie\": [$cookie to_json]}"
+            set json "{\"cookie\": [$cookie to_json]}"
 
             except {
                 set response [::WebDriver::Protocol::dispatch \
@@ -661,49 +661,6 @@ namespace eval WebDriver {
             return $element
         }
 
-        method orientation {} {
-            $this focus
-
-            set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/orientation]
-
-            set orientation [$response value]
-            ::itcl::delete object $response
-
-            return [string tolower $orientation]
-        }
-
-        method set_orientation {orientation} {
-            $this focus
-
-            set orientation [string toupper $orientation]
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "set orientation to $orientation"
-            }
-
-            set interval 50
-            for {set i 0} {$i < 5} {incr i} {
-                set response [::WebDriver::Protocol::dispatch \
-                    -query $orientation \
-                    [$_session session_url]/orientation]
-                ::itcl::delete object $response
-
-                after $interval
-                set interval [expr $interval * 2]
-
-                set actual_orientation [$this orientation]
-                if {$actual_orientation == $orientation} {
-                    break
-                }
-            }
-
-            if {$i == 5} {
-                raise ::WebDriver::UnknownError "failed to change orientation."
-            }
-        }
-
         method alert_text {} {
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/alert/text]
@@ -720,7 +677,7 @@ namespace eval WebDriver {
         }
 
         method alert_send_text {text} {
-            set text OOSupport::json_escape_chars $text
+            set text [OOSupport::json_escape_chars $text]
             set json "{\"text\": \"$text\"}"
 
             set response [::WebDriver::Protocol::dispatch \
@@ -808,20 +765,6 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
                 [$_session session_url]/buttonup]
-            ::itcl::delete object $response
-        }
-
-        method doubleclick {} {
-            $this focus
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "double click"
-            }
-
-            set response [::WebDriver::Protocol::dispatch \
-                -query "{}" \
-                [$_session session_url]/doubleclick]
             ::itcl::delete object $response
         }
     }

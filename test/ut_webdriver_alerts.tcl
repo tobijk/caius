@@ -7,7 +7,8 @@ package require OOSupport
 package require Testing
 
 set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
-set PAGE_URL "file://$DATA_DIR/html/page_click_alert.html"
+set PAGE1_URL "file://$DATA_DIR/html/page_click_alert.html"
+set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
 
 #
 # TEST CASES
@@ -29,7 +30,7 @@ set CLICK_ME_TEXT "You clicked me!"
         $session set_logging_enabled 1
         set window [$session active_window]
 
-        $window set_url $::PAGE_URL
+        $window set_url $::PAGE1_URL
         set link [$window element by_id a:clickme]
 
         $link click
@@ -39,6 +40,35 @@ set CLICK_ME_TEXT "You clicked me!"
         }
 
         $window dismiss_alert
+
+        ::itcl::delete object $session
+
+        return
+    }
+
+    method test_fill_prompt {} {
+        docstr "Test clicking on an element to summon a JavaScript prompt and fill it."
+
+        set cap [namespace which [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "firefox"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url $::PAGE2_URL
+        set link [$window element by_id a:clickme]
+
+        $link click
+
+        $window alert_send_text "John"
+        $window accept_alert
+
+        set input [$window element by_id input]
+        if {[$input property value] ne "John"} {
+            error "input field text is wrong."
+        }
 
         ::itcl::delete object $session
 
