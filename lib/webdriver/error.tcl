@@ -37,81 +37,13 @@ namespace eval WebDriver {
         destructor {}
     }
 
+    # FAILED COMMAND
+
     ::itcl::class FailedCommandError {
         inherit ::WebDriver::Error
 
         constructor {msg} {
             ::WebDriver::Error::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class NoSuchDriverError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class NoSuchElementError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class NoSuchFrameError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class UnknownCommandError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class StaleElementReferenceError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class ElementNotVisibleError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class InvalidElementStateError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
         } {}
 
         destructor {}
@@ -127,168 +59,6 @@ namespace eval WebDriver {
         destructor {}
     }
 
-    ::itcl::class ElementIsNotSelectableError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class JavaScriptError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class XPathLookupError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class TimeoutError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class NoSuchWindowError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class InvalidCookieDomainError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class UnableToSetCookieError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class UnexpectedAlertOpenError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class NoAlertOpenError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class ScriptTimeoutError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class InvalidElementCoordinatesError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class IMENotAvailableError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class IMEEngineActivationError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class InvalidSelectorError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class SessionNotCreatedException {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    ::itcl::class MoveTargetOutOfBoundsError {
-        inherit ::WebDriver::FailedCommandError
-
-        constructor {msg} {
-            ::WebDriver::FailedCommandError::constructor "$msg"
-        } {}
-
-        destructor {}
-    }
-
-    # ADDITIONAL
-
     ::itcl::class CloseSessionWindowError {
         inherit ::WebDriver::FailedCommandError
 
@@ -298,6 +68,8 @@ namespace eval WebDriver {
 
         destructor {}
     }
+
+    # BAD REQUEST
 
     ::itcl::class InvalidRequestError {
         inherit ::WebDriver::Error
@@ -309,6 +81,18 @@ namespace eval WebDriver {
         destructor {}
     }
 
+    ::itcl::class NotFoundError {
+        inherit ::WebDriver::InvalidRequestError
+
+        constructor {msg} {
+            ::WebDriver::InvalidRequestError::constructor "$msg"
+        } {}
+
+        destructor {}
+    }
+
+    # SERVER ERROR
+
     ::itcl::class ServerError {
         inherit ::WebDriver::Error
 
@@ -319,4 +103,3 @@ namespace eval WebDriver {
         destructor {}
     }
 }
-

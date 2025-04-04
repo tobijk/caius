@@ -63,6 +63,11 @@ namespace eval WebDriver {
                     set msg \
                         "$status_code: [$info_object error] - [$info_object message]"
 
+                    if {[info exists ::WebDriver::Response::StatusCode($status_code)]} {
+                        set error_class $::WebDriver::Response::StatusCode($status_code)
+                        raise ::WebDriver::${error_class} $msg
+                    }
+
                     if {[regexp {4\d\d} $status_code]} {
                         raise ::WebDriver::InvalidRequestError "$msg"
                     }
@@ -143,6 +148,10 @@ namespace eval WebDriver {
 
     ::itcl::class Response {
 
+        public common StatusCode
+
+        set StatusCode(404) NotFoundError
+
         common attributes {
             {string session_id "" ro}
             {number status     0  ro}
@@ -160,4 +169,3 @@ namespace eval WebDriver {
             -skip_undefined
     }
 }
-
