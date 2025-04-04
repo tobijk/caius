@@ -496,7 +496,7 @@ namespace eval WebDriver {
             # delete cookies not visible to current page
             foreach {c_name c_obj} [array get session_cookies] {
                 if {![info exists c_idx($c_name)]} {
-                    delete $session_cookies($c_name)
+                    ::itcl::delete object $session_cookies($c_name)
                     unset session_cookies($c_name)
                 }
             }
@@ -509,11 +509,11 @@ namespace eval WebDriver {
             $this focus
 
             set options {
-                {path.arg      "/"  "the cookie path"                                }
-                {domain.arg    ""   "the cookie domain"                              }
-                {secure             "whether the cookie is a secure cookie"          }
-                {http_only          "whether the cookie is an http only cookie"      }
-                {expiry.arg    null "expiry in seconds since midnight 1 Jan 1970 UTC"}
+                {path.arg      "/"    "the cookie path"                                }
+                {domain.arg    ""     "the cookie domain"                              }
+                {secure        0      "whether the cookie is a secure cookie"          }
+                {http_only     0      "whether the cookie is an http only cookie"      }
+                {expiry.arg    null   "expiry in seconds since midnight 1 Jan 1970 UTC"}
             }
 
             array set params [::cmdline::getoptions args $options]
@@ -549,11 +549,20 @@ namespace eval WebDriver {
                 set session_cookies($c_name) $cookie
             }
 
-            $cookie set_domain    $params(domain)
-            $cookie set_path      $params(path)
-            $cookie set_secure    $params(secure)
-            $cookie set_http_only $params(http_only)
-            $cookie set_expiry    $params(expiry)
+            $cookie set_domain $params(domain)
+            $cookie set_path   $params(path)
+
+            if {$params(secure) != 0} {
+                $cookie set_secure $params(secure)
+            }
+
+            if {$params(http_only) != 0} {
+                $cookie set_http_only $params(http_only)
+            }
+
+            if {$params(expiry) ne "null"} {
+                $cookie set_expiry $params(expiry)
+            }
 
             set json "{\"cookie\": [$cookie to_json]}"
 
@@ -717,22 +726,6 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -query "{}" \
                 [$_session session_url]/alert/dismiss]
-            ::itcl::delete object $response
-        }
-
-        method move_to {xoffset yoffset} {
-            set json "{ \"xoffset\": $xoffset, \"yoffset\": $yoffset }"
-
-            $this focus
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "move mouse (x+$xoffset, y+$yoffset)"
-            }
-
-            set response [::WebDriver::Protocol::dispatch \
-                -query $json \
-                [$_session session_url]/moveto]
             ::itcl::delete object $response
         }
     }
