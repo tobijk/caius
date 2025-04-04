@@ -95,9 +95,18 @@ namespace eval WebDriver {
 
             # delete session
             if {!$_cloned} {
-                set response [::WebDriver::Protocol::dispatch -method DELETE \
-                    $_session_url]
-                ::itcl::delete object $response
+                except {
+                    set response [::WebDriver::Protocol::dispatch \
+                        -method DELETE $_session_url]
+                } e {
+                    ::WebDriver::Error {
+                        # ignore, maybe window was closed already.
+                    }
+                } final {
+                    if {[info exists response]} {
+                        ::itcl::delete object $response
+                    }
+                }
             }
         }
 
