@@ -32,13 +32,8 @@ namespace eval WebDriver {
 
         proc _check_http_response {token} {
             set status_code [::http::ncode $token]
-            set data        [::http::data  $token]
+            set body        [::http::data  $token]
             set headers     [::http::meta  $token]
-
-            # invalid requests, no response object
-            if {[regexp {4\d\d} $status_code]} {
-                raise ::WebDriver::InvalidRequestError "$status_code: $data"
-            }
 
             # create response object
             set response_object [namespace which [::WebDriver::Response #auto]]
@@ -50,42 +45,32 @@ namespace eval WebDriver {
             }
 
             except {
-
-                # all other requests (2xx, 5xx) must return a response object
-                if {$data ne ""} {
+                if {$body ne ""} {
                     if { [ catch \
                             {
-                                $response_object from_json $data
+                                $response_object from_json $body
                             } msg ]  
                     } { 
-                        raise ::WebDriver::UnknownError "request failed: unknown error"
-                    }
-                }
-
-                set status [$response_object status]
-
-                # failed requests carry more information in the response object
-                if { $status != 0 } {
-                    set info_object [::WebDriver::FailedCommandInfo #auto]
-                    $info_object from_tcl [$response_object value]
-
-                    # save first line of error message
-                    set msg [$info_object message]
-                    set msg [lindex [split $msg "\r\n"] 0]
-
-                    if { [info exists ::WebDriver::Response::Code($status)] } {
-                        set error_class $::WebDriver::Response::Code($status)
-                        if 1 "raise ::WebDriver::${error_class} {$msg}"
-                    } else {
-                        raise ::WebDriver::FailedCommandError "$msg"
-                    }
-                } else {
-                    if {[regexp {5\d\d} $status_code]} {
                         raise ::WebDriver::UnknownError \
                             "request failed: unknown error"
                     }
                 }
 
+                if {![regexp {2\d\d} $status_code]} {
+                    set info_object [::WebDriver::FailedCallInfo #auto]
+                    $info_object from_tcl [$response_object value]
+
+                    set msg \
+                        "$status_code: [$info_object error] - [$info_object message]"
+
+                    if {[regexp {4\d\d} $status_code]} {
+                        raise ::WebDriver::InvalidRequestError "$msg"
+                    }
+
+                    if {[regexp {5\d\d} $status_code]} {
+                        raise ::WebDriver::ServerError "$msg"
+                    }
+                }
             } e {
                 ::Exception {
                     ::itcl::delete object $response_object
@@ -138,32 +123,12 @@ namespace eval WebDriver {
         }
     }
 
-    ::itcl::class StackTraceFrame {
+    ::itcl::class FailedCallInfo {
 
         common attributes {
-            {string file_name   ""   ro}
-            {string class_name  ""   ro}
-            {string method_name ""   ro}
-            {number line_number null ro}
-        }
-
-        constructor {} {
-            OOSupport::init_attributes
-        }
-
-        destructor {}
-
-        OOSupport::bless_attributes -json_support -collapse_underscore \
-            -skip_undefined
-    }
-
-    ::itcl::class FailedCommandInfo {
-
-        common attributes {
-            {string message "" ro}
-            {string screen  "" ro}
-            {string class   "" ro}
-            {[::WebDriver::StackTraceFrame] stack_trace {} ro}
+            {string error      "" ro}
+            {string message    "" ro}
+            {string stacktrace "" ro}
         }
 
         constructor {} {
@@ -177,34 +142,6 @@ namespace eval WebDriver {
     }
 
     ::itcl::class Response {
-
-        public common Code
-        
-        set Code(0) Success
-        set Code(6) NoSuchDriverError
-        set Code(7) NoSuchElementError
-        set Code(8) NoSuchFrameError
-        set Code(9) UnknownCommandError
-        set Code(10) StaleElementReferenceError
-        set Code(11) ElementNotVisibleError
-        set Code(12) InvalidElementStateError
-        set Code(13) UnknownError
-        set Code(15) ElementIsNotSelectableError
-        set Code(17) JavaScriptError
-        set Code(19) XPathLookupError
-        set Code(21) TimeoutError
-        set Code(23) NoSuchWindowError
-        set Code(24) InvalidCookieDomainError
-        set Code(25) UnableToSetCookieError
-        set Code(26) UnexpectedAlertOpenError
-        set Code(27) NoAlertOpenError
-        set Code(28) ScriptTimeoutError
-        set Code(29) InvalidElementCoordinatesError
-        set Code(30) IMENotAvailableError
-        set Code(31) IMEEngineActivationError
-        set Code(32) InvalidSelectorError
-        set Code(33) SessionNotCreatedException
-        set Code(34) MoveTargetOutOfBoundsError
 
         common attributes {
             {string session_id "" ro}

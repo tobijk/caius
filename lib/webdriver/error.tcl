@@ -308,5 +308,15 @@ namespace eval WebDriver {
 
         destructor {}
     }
+
+    ::itcl::class ServerError {
+        inherit ::WebDriver::Error
+
+        constructor {msg} {
+            ::WebDriver::Error::constructor "$msg"
+        } {}
+
+        destructor {}
+    }
 }
 
