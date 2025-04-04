@@ -42,8 +42,6 @@ set CLICK_ME_TEXT "You clicked me!"
         $window dismiss_alert
 
         ::itcl::delete object $session
-
-        return
     }
 
     method test_fill_prompt {} {
@@ -71,8 +69,33 @@ set CLICK_ME_TEXT "You clicked me!"
         }
 
         ::itcl::delete object $session
+    }
 
-        return
+    method test_accept_alert_when_there_is_none {} {
+        docstr "Test accepting an alert when there is none."
+
+        set cap [namespace which [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "firefox"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url $::PAGE2_URL
+        set link [$window element by_id a:clickme]
+
+        $link click
+
+        $window alert_send_text "John"
+        $window accept_alert
+
+        set input [$window element by_id input]
+        if {[$input property value] ne "John"} {
+            error "input field text is wrong."
+        }
+
+        ::itcl::delete object $session
     }
 }
 
