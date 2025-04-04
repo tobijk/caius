@@ -16,4 +16,5 @@
     <run timeout="60">ut_webdriver_page.tcl</run>
     <run timeout="60">ut_webdriver_select.tcl</run>
     <run timeout="60">ut_webdriver_screenshot.tcl</run>
+    <run timeout="60">ut_webdriver_session.tcl</run>
 </testplan>

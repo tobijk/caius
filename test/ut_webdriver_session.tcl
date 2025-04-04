@@ -15,7 +15,7 @@ package require Subprocess
     inherit Testing::TestObject
 
     method test_create_session_with_unfulfillable_capabilities {} {
-        docstr "Open google.com and take a screenshot."
+        docstr "Create a session with an impossible configuration and expect an error."
 
         set cap [namespace which [::WebDriver::Capabilities #auto]]
         $cap set_browser_name "earthhog"

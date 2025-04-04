@@ -69,9 +69,9 @@ namespace eval WebDriver {
         destructor {}
     }
 
-    # BAD REQUEST
+    # PROTOCOL ERROR
 
-    ::itcl::class InvalidRequestError {
+    ::itcl::class HTTPError {
         inherit ::WebDriver::Error
 
         constructor {msg} {
@@ -81,11 +81,23 @@ namespace eval WebDriver {
         destructor {}
     }
 
-    ::itcl::class NotFoundError {
-        inherit ::WebDriver::InvalidRequestError
+    # CLIENT ERROR
+
+    ::itcl::class InvalidRequestError {
+        inherit ::WebDriver::HTTPError
 
         constructor {msg} {
-            ::WebDriver::InvalidRequestError::constructor "$msg"
+            ::WebDriver::HTTPError::constructor "$msg"
+        } {}
+
+        destructor {}
+    }
+
+    ::itcl::class NotFoundError {
+        inherit ::WebDriver::HTTPError
+
+        constructor {msg} {
+            ::WebDriver::HTTPError::constructor "$msg"
         } {}
 
         destructor {}
