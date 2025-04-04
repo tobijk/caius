@@ -8,7 +8,8 @@ package require Testing
 package require Subprocess
 
 set DATA_DIR "[file dirname [file normalize $::argv0]]/data"
-set PAGE_URL "file://$DATA_DIR/html/page_text.html"
+set PAGE1_URL "file://$DATA_DIR/html/page_text.html"
+set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
 
 #
 # TEST CASES
@@ -26,7 +27,7 @@ set PAGE_URL "file://$DATA_DIR/html/page_text.html"
         $session set_logging_enabled true
         set window [$session active_window]
 
-        $window set_url $::PAGE_URL
+        $window set_url $::PAGE1_URL
         $window execute "window.close()"
 
         except {
@@ -52,8 +53,8 @@ set PAGE_URL "file://$DATA_DIR/html/page_text.html"
         $session set_logging_enabled true
         set window [$session active_window]
 
-        $window set_url http://www.google.de
-        $window execute {open("http://www.yahoo.de")}
+        $window set_url https://www.google.de
+        $window execute {open("https://www.yahoo.de")}
 
         set session_windows [$session windows]
 
@@ -71,6 +72,37 @@ set PAGE_URL "file://$DATA_DIR/html/page_text.html"
             if {![string equal $current_window [lindex $session_windows $j]]} {
                 error "window focus should be on window $j."
             }
+        }
+
+        ::itcl::delete object $session
+    }
+
+    method test_go_back_and_forth_in_history {} {
+        docstr "Go back and forth in history."
+
+        set cap [namespace which [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "firefox"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url $::PAGE1_URL
+        after 1000
+        $window set_url $::PAGE2_URL
+        after 1000
+        $window back
+
+        set current_url [$window url]
+        if {$current_url ne $::PAGE1_URL} {
+            error "current url should be $::PAGE1_URL but is $current_url."
+        }
+
+        $window forward
+        set current_url [$window url]
+        if {$current_url ne $::PAGE2_URL} {
+            error "current url should be $::PAGE2_URL but is $current_url."
         }
 
         ::itcl::delete object $session
