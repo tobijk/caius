@@ -72,7 +72,7 @@ set CLICK_ME_TEXT "You clicked me!"
     }
 
     method test_invoke_alert_methods_when_there_is_no_alert {} {
-        docstr "Test accepting an alert when there is none."
+        docstr "Test alert methods when there is no alert."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
         $cap set_browser_name "firefox"

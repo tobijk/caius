@@ -662,21 +662,31 @@ namespace eval WebDriver {
         }
 
         method alert_text {} {
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "get alert text"
+            }
+
             set response [::WebDriver::Protocol::dispatch \
                 [$_session session_url]/alert/text]
 
             set alert_text [$response value]
-            ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
-                    "alert text: '$alert_text'"
+                    "got alert text: '$alert_text'"
             }
 
+            ::itcl::delete object $response
             return $alert_text
         }
 
         method alert_send_text {text} {
+            if {[$_session logging_enabled]} {
+                ::WebDriver::log [$_session session_id] \
+                    "send alert text: '$text'"
+            }
+
             set text [OOSupport::json_escape_chars $text]
             set json "{\"text\": \"$text\"}"
 
@@ -723,48 +733,6 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -query $json \
                 [$_session session_url]/moveto]
-            ::itcl::delete object $response
-        }
-
-        method button_down {{button left}} {
-            array set button2num {
-                left   0
-                middle 1
-                right  2
-            }
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "press $button button"
-            }
-
-            set button $button2num($button)
-            set json "{ \"button\": $button }"
-
-            set response [::WebDriver::Protocol::dispatch \
-                -query $json \
-                [$_session session_url]/buttondown]
-            ::itcl::delete object $response
-        }
-
-        method button_up {{button left}} {
-            array set button2num {
-                left   0
-                middle 1
-                right  2
-            }
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "release $button button"
-            }
-
-            set button $button2num($button)
-            set json "{ \"button\": $button }"
-
-            set response [::WebDriver::Protocol::dispatch \
-                -query $json \
-                [$_session session_url]/buttonup]
             ::itcl::delete object $response
         }
     }
