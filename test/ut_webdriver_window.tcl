@@ -33,7 +33,7 @@ set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
         except {
             $session active_window
         } e {
-            ::WebDriver::NotFoundError {
+            ::WebDriver::HTTPError {
                 puts [$e msg]
                 return
             }
