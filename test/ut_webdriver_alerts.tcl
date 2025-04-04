@@ -71,7 +71,7 @@ set CLICK_ME_TEXT "You clicked me!"
         ::itcl::delete object $session
     }
 
-    method test_accept_alert_when_there_is_none {} {
+    method test_invoke_alert_methods_when_there_is_no_alert {} {
         docstr "Test accepting an alert when there is none."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
@@ -83,16 +83,65 @@ set CLICK_ME_TEXT "You clicked me!"
         set window [$session active_window]
 
         $window set_url $::PAGE2_URL
-        set link [$window element by_id a:clickme]
 
-        $link click
+        set exception_raise 0
 
-        $window alert_send_text "John"
-        $window accept_alert
+        except {
+            $window alert_send_text "John"
+        } e {
+            ::WebDriver::NotFoundError {
+                puts [$e msg]
+                set exception_raised 1
+            }
+        }
 
-        set input [$window element by_id input]
-        if {[$input property value] ne "John"} {
-            error "input field text is wrong."
+        if {$exception_raised == 0} {
+            error "alert_send_text should have raised an exception."
+        }
+
+        set exception_raised 0
+
+        except {
+            $window accept_alert
+        } e {
+            ::WebDriver::NotFoundError {
+                puts [$e msg]
+                set exception_raised 1
+            }
+        }
+
+        if {$exception_raised == 0} {
+            error "accept_alert should have raised an exception."
+        }
+
+        set exception_raised 0
+
+        except {
+            $window alert_text
+        } e {
+            ::WebDriver::NotFoundError {
+                puts [$e msg]
+                set exception_raised 1
+            }
+        }
+
+        if {$exception_raised == 0} {
+            error "alert_text should have raised an exception."
+        }
+
+        set exception_raised 0
+
+        except {
+            $window dismiss_alert
+        } e {
+            ::WebDriver::NotFoundError {
+                puts [$e msg]
+                set exception_raised 1
+            }
+        }
+
+        if {$exception_raised == 0} {
+            error "dismiss_alert should have raised an exception."
         }
 
         ::itcl::delete object $session
