@@ -36,19 +36,19 @@ namespace eval WebDriver {
             set headers     [::http::meta  $token]
 
             # create response object
-            set response_object [namespace which [::WebDriver::Response #auto]]
-            $response_object set_headers $headers
+            set response [namespace which [::WebDriver::Response #auto]]
+            $response set_headers $headers
 
             # redirects (new session)
             if {[regexp {3\d\d} $status_code]} {
-                return $response_object
+                return $response
             }
 
             except {
                 if {$body ne ""} {
                     if { [ catch \
                             {
-                                $response_object from_json $body
+                                $response from_json $body
                             } msg ]  
                     } { 
                         raise ::WebDriver::UnknownError \
@@ -58,7 +58,7 @@ namespace eval WebDriver {
 
                 if {![regexp {2\d\d} $status_code]} {
                     set info_object [::WebDriver::FailedCallInfo #auto]
-                    $info_object from_tcl [$response_object value]
+                    $info_object from_tcl [$response value]
 
                     set msg \
                         "$status_code: [$info_object error] - [$info_object message]"
@@ -73,7 +73,7 @@ namespace eval WebDriver {
                 }
             } e {
                 ::Exception {
-                    ::itcl::delete object $response_object
+                    ::itcl::delete object $response
                     reraise $e
                 }
             } final {
@@ -82,7 +82,7 @@ namespace eval WebDriver {
                 }
             }
 
-            return $response_object
+            return $response
         }
 
         proc dispatch {args} {
