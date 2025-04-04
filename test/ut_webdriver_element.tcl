@@ -106,13 +106,18 @@ set INPUT_TEXT "Input Field"
 
         $window set_url $::PAGE_URL
 
-        set element [$window elements by_id "no-such-element"]
-
-        if {$element ne ""} {
-            error "retrieving non-existent element should return empty string."
+        except {
+            set element [$window element by_id "no-such-element"]
+        } e {
+            ::WebDriver::NotFoundError {
+                puts [$e msg]
+                return
+            }
+        } final {
+            ::itcl::delete object $session
         }
 
-        ::itcl::delete object $session
+        error "an error sould have been thrown earlier"
     }
 
     method test_retrieving_by_invalid_xpath {} {
