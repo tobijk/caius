@@ -107,6 +107,75 @@ set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
 
         ::itcl::delete object $session
     }
+
+    method test_get_and_set_size {} {
+        docstr "Get and set window dimensions."
+
+        set cap [namespace which [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "firefox"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url $::PAGE1_URL
+        $window maximize
+
+        after 500
+
+        $window set_size 1024 768
+        lassign [$window size] w h
+
+        if {$w != 1024} {
+            error "width should be 1024 but is $w."
+        }
+        if {$h != 768} {
+            error "height should be 768 but is $h."
+        }
+
+        after 500
+
+        $window set_size 1080 900
+        lassign [$window size] w h
+
+        if {$w != 1080} {
+            error "width should be 1024 but is $w."
+        }
+        if {$h != 900} {
+            error "height should be 768 but is $h."
+        }
+
+        ::itcl::delete object $session
+    }
+
+    method test_get_and_set_cookies {} {
+        docstr "Retrieve cookies."
+
+        set cap [namespace which [WebDriver::Capabilities #auto]]
+        $cap set_browser_name "firefox"
+
+        set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+        $session set_logging_enabled 1
+        set window [$session active_window]
+
+        $window set_url "https://www.google.de"
+
+        set num_cookies_before [llength [$window cookies]]
+        $window set_cookie -path "/" test_cookie test_value
+        set cookies [$window cookies]
+
+        if {[llength $cookies] != [expr {$num_cookies_before + 1}]} {
+            error "failed to add cookie."
+        }
+
+        foreach {cookie} $cookies {
+            puts [$cookie to_json]
+        }
+
+        ::itcl::delete object $session
+    }
 }
 
 exit [[TestWebDriverWindow #auto] run $::argv]
