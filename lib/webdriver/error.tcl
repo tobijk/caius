@@ -94,10 +94,10 @@ namespace eval WebDriver {
     }
 
     ::itcl::class NotFoundError {
-        inherit ::WebDriver::HTTPError
+        inherit ::WebDriver::InvalidRequestError
 
         constructor {msg} {
-            ::WebDriver::HTTPError::constructor "$msg"
+            ::WebDriver::InvalidRequestError::constructor "$msg"
         } {}
 
         destructor {}
