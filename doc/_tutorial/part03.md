@@ -32,7 +32,8 @@ page](http://docs.seleniumhq.org/download/).
 
 Launch Selenium Server like this:
 
-    java -jar selenium-server-standalone-2.38.0.jar
+    java -jar Downloads/selenium-server-4.30.0.jar standalone \
+        --reject-unsupported-caps true
 
 ## Opening a new Session
 
