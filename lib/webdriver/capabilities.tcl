@@ -46,13 +46,19 @@ namespace eval WebDriver {
                 {browser_version.arg         ""       "the browser version (any)"}
                 {platform_name.arg           linux    "platform to use (default: linux)"}
                 {page_load_strategy.arg      normal   "page load strategy (normal|eager|none)"}
-                {accept_insecure_certs.arg   false    "accept insecure SSL certificates (true|false)"}
+                {accept_insecure_certs       0        "accept insecure SSL certificates (true|false)"}
             }
 
             array set params [::cmdline::getoptions args $options]
 
             foreach {key val} [array get params] {
-                set _${key} $val
+                if {$key eq "accept_insecure_certs"} {
+                    if {$val == 1} {
+                        set _${key} true
+                    }
+                } else {
+                    set _${key} $val
+                }
             }
         }
 
