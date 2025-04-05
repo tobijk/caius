@@ -611,6 +611,8 @@ namespace eval WebDriver {
             foreach {name cookie} $_cookies {
                 ::itcl::delete object $cookie
             }
+
+            set _cookies {}
         }
 
         method page_source {} {

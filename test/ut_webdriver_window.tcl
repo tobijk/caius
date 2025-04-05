@@ -149,8 +149,8 @@ set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
         ::itcl::delete object $session
     }
 
-    method test_get_and_set_cookies {} {
-        docstr "Retrieve cookies."
+    method test_get_set_and_remove_cookies {} {
+        docstr "Retrieve cookies, get, set, delete and purge."
 
         set cap [namespace which [WebDriver::Capabilities #auto]]
         $cap set_browser_name "firefox"
@@ -172,6 +172,20 @@ set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
 
         foreach {cookie} $cookies {
             puts [$cookie to_json]
+        }
+
+        $window delete_cookie test_cookie
+        set cookies [$window cookies]
+
+        if {[llength $cookies] != $num_cookies_before} {
+            error "failed to delete cookie."
+        }
+
+        $window purge_cookies
+        set cookies [$window cookies]
+
+        if {[llength $cookies] != 0} {
+            error "failed to purge cookies."
         }
 
         ::itcl::delete object $session
