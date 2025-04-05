@@ -30,13 +30,13 @@ namespace eval WebDriver {
     ::itcl::class Cookie {
 
         common attributes {
-            { string name      ""   "rw" }
-            { string value     ""   "rw" }
-            { string path      "/"  "rw" }
-            { string domain    ""   "rw" }
-            { bool   secure    null "rw" }
-            { bool   http_only null "rw" }
-            { number expiry    null "rw" }
+            { string name      ""    "rw" }
+            { string value     ""    "rw" }
+            { string path      "/"   "rw" }
+            { string domain    ""    "rw" }
+            { bool   secure    false "rw" }
+            { bool   http_only false "rw" }
+            { number expiry    null  "rw" }
         }
 
         constructor {args} {
@@ -45,15 +45,25 @@ namespace eval WebDriver {
             set options {
                 {path.arg      "/"  "the cookie path"}
                 {domain.arg    ""   "the domain"}
-                {secure.arg    null "whether the cookie is secure"}
-                {http_only.arg null "whether the cookie is for http only"}
+                {secure        0    "whether the cookie is secure"}
+                {http_only     0    "whether the cookie is for http only"}
                 {expiry.arg    null "timestamp marking the expiration date"}
             }
 
             array set params [::cmdline::getoptions args $options]
 
             foreach {key val} [array get params] {
-                set _${key} $val
+                if {$key eq "secure"} {
+                    if {$val == 1} {
+                        set _secure true
+                    }
+                } elseif {$key eq "http_only"} {
+                    if {$val == 1} {
+                        set _http_only true
+                    }
+                } else {
+                    set _${key} $val
+                }
             }
 
             if {[llength $args] != 0} {
