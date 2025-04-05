@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <testplan>
-    <run timeout="60">ut_setup_teardown.tcl</run>
     <run timeout="60">ut_exceptions.tcl</run>
     <run timeout="60">ut_oosupport_common_attributes.tcl</run>
     <run timeout="60">ut_oosupport_from_json.tcl</run>
     <run timeout="60">ut_oosupport_json_strings.tcl</run>
     <run timeout="60">ut_oosupport_to_json.tcl</run>
+    <run timeout="60">ut_setup_teardown.tcl</run>
     <run timeout="60">ut_subprocess.tcl</run>
     <run timeout="60">ut_testing.tcl</run>
-    <run timeout="60">ut_setup_teardown.tcl</run>
     <run timeout="60">ut_webdriver_alerts.tcl</run>
     <run timeout="60">ut_webdriver_capabilities.tcl</run>
+    <run timeout="60">ut_webdriver_cookie.tcl</run>
     <run timeout="60">ut_webdriver_element.tcl</run>
     <run timeout="60">ut_webdriver_execute.tcl</run>
     <run timeout="60">ut_webdriver_failed_command.tcl</run>
     <run timeout="60">ut_webdriver_page.tcl</run>
-    <run timeout="60">ut_webdriver_select.tcl</run>
     <run timeout="60">ut_webdriver_screenshot.tcl</run>
+    <run timeout="60">ut_webdriver_select.tcl</run>
     <run timeout="60">ut_webdriver_session.tcl</run>
     <run timeout="60">ut_webdriver_window.tcl</run>
 </testplan>
