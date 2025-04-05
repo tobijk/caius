@@ -45,6 +45,10 @@ set INPUT_TEXT "Input Field"
         $input click
         $input clear
 
+        if {[$input displayed] ne true} {
+            error "input field should be visisble."
+        }
+
         set ::INPUT_TEXT [encoding convertfrom "utf-8" "Hello World! ÄÖÜß"]
         $input send_keys $::INPUT_TEXT
 
