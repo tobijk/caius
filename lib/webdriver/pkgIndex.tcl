@@ -24,7 +24,6 @@
 
 package ifneeded WebDriver 1.0 "
     source \[file join [list $dir] error.tcl\]
-    source \[file join [list $dir] proxy.tcl\]
     source \[file join [list $dir] capabilities.tcl\]
     source \[file join [list $dir] protocol.tcl\]
     source \[file join [list $dir] cookie.tcl\]
