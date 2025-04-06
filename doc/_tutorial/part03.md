@@ -25,10 +25,10 @@ scripts. Caius communicates with the server over a TCP connection via the
 The server in turn is responsible for launching a browser instance using the
 appropriate driver engine and passing on the commands it receives.
 
-If you intend to only use Firefox during testing, then you don't need to install
-any additional drivers. If you want to control other browsers, then you need to
-install the respective drivers, which you can also find on Selenium's [download
-page](http://docs.seleniumhq.org/download/).
+In addition, you may have to install a driver for the browser that you are going
+to test with, for example [Geckodriver](https://github.com/mozilla/geckodriver/releases)
+for Firefox or or [Chromedriver](https://googlechromelabs.github.io/chrome-for-testing/)
+for Google Chrome.
 
 Launch Selenium Server like this:
 
@@ -50,114 +50,12 @@ set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 
 The `Session` constructor takes as arguments
 
-* the URL on which Selenium Server is listening for requests,
-* a *mandatory* references to a `Capabilities` object and
-* an *optional* reference to a `RequiredCapabilities` object.
+* the URL on which Selenium Server is listening for requests and
+* a *mandatory* references to a `Capabilities` object.
 
-The first `Capabilities` object describes the *desired* capabilities. Desired
-means, that you would *like* these capabilities to be available, but that they
-are not critical. The `RequiredCapabilities` object is optional and denotes 
-capabilities which *must* be available. If the server cannot satisfy the requested
-required capabilities, an error will be thrown.
-
-The table below shows the capabilities that can be specified and their default
-values upon creation of a `Capabilities` object. These default values *do not*
-represent the defaults offered by any given browser. Adjust them to your needs.
-
-<table class="table">
-    <thead>
-        <tr>
-            <th> Capability </th>
-            <th> Default value </th>
-            <th> Description </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td> browser_name </td>
-            <td> htmlunit </td>
-            <td> the browser to use (htmlunit|chrome|firefox|ie|...) </td>
-        </tr>
-        <tr>
-            <td> javascript_enabled </td>
-            <td> true </td>
-            <td> enable JavaScript (true|false) </td>
-        </tr>
-        <tr>
-            <td> takes_screenshot </td>
-            <td> true </td>
-            <td> enable taking screenshots (true|false) </td>
-        </tr>
-        <tr>
-            <td> handles_alerts </td>
-            <td> true </td>
-            <td> enable alert handling (true|false) </td>
-        </tr>
-        <tr>
-            <td> database_enabled </td>
-            <td> true </td>
-            <td> enable using browser database storage (true|false) </td>
-        </tr>
-        <tr>
-            <td> location_context_enabled </td>
-            <td> true </td>
-            <td> allow accessing the browser's location context (true|false) </td>
-        </tr>
-        <tr>
-            <td> application_cache_enabled </td>
-            <td> true </td>
-            <td> allow session to interact with application cache (true|false) </td>
-        </tr>
-        <tr>
-            <td> browser_connection_enabled </td>
-            <td> true </td>
-            <td> allow querying and modifying browser connectivity (true|false) </td>
-        </tr>
-        <tr>
-            <td> css_selectors_enabled </td>
-            <td> true </td>
-            <td> enable use of CSS selectors (true|false) </td>
-        </tr>
-        <tr>
-            <td> web_storage_enabled </td>
-            <td> true </td>
-            <td> enable interaction with storage objects (true|false) </td>
-        </tr>
-        <tr>
-            <td> rotatable </td>
-            <td> true </td>
-            <td> enable rotation on mobile platforms (true|false) </td>
-        </tr>
-        <tr>
-            <td> accept_ssl_certs </td>
-            <td> true </td>
-            <td> accept all SSL certificates by default (true|false) </td>
-        </tr>
-        <tr>
-            <td> native_events </td>
-            <td> false </td>
-            <td> whether session can generate native input events (true|false) </td>
-        </tr>
-        <tr>
-            <td> proxy </td>
-            <td> Direct Connection </td>
-            <td> a WebDriver::Proxy object (fully qualified object reference) </td>
-        </tr>
-    </tbody>
-</table>
-
-You can preset capabilties during the creation of the `Capabilities` object as
-indicated in the previous example. Or you can modify them later like this:
-
-~~~~{tcl}
-$caps set_native_events true
-~~~~
-
-and query them like this
-
-~~~~{tcl}
-set native_events_enabled [$caps native_events]
-~~~~
+The `Capabilities` object describes the *required* properties of the session.
+If the server cannot satisfy the requested capabilities, an error will be
+thrown.
 
 In order to end an on-going session, call the `close` method or delete it
 directly:
@@ -231,40 +129,6 @@ method:
 $window set_cookie -expiry "[expr [clock seconds] + duration]" \
     cookie_name cookie_value
 ~~~~
-
-You may set the following attributes on the `Cookie` object:
-
-<table class="table">
-    <thead>
-        <tr>
-            <th> Parameter </th>
-            <th> Default </th>
-            <th> Description </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td> -path </td>
-            <td> / </td>
-            <td> the path for which the Cookie is valid </td>
-        </tr>
-        <tr>
-            <td> -domain </td>
-            <td> active domain </td>
-            <td> the Cookie domain </td>
-        </tr>
-        <tr>
-            <td> -secure </td>
-            <td> not set </td>
-            <td> whether the <code>Cookie</code> is secure </td>
-        </tr>
-        <tr>
-            <td> -expiry </td>
-            <td> not set </td>
-            <td> cookie expiration date in seconds since midnight Jan 1, 1970 UTC</td>
-        </tr>
-    </tbody>
-</table>
 
 You can obtain a list of cookies set for the currently active domain, by
 calling the `cookies` method on the window object:
@@ -351,7 +215,7 @@ set is_displayed [$username_field displayed]
 ::itcl::delete object $username_field
 ~~~~
 
-Note how we explicitely delete the reference object, once we have obtained
+Note how we explicitly delete the reference object, once we have obtained
 the information that we needed.
 
 ### Reading Element Attributes and CSS Properties
@@ -424,4 +288,3 @@ close $fp
 
 Without the `-decode` parameter, the `screenshot` method returns the image
 Base64 encoded.
-
