@@ -42,6 +42,11 @@ set INPUT_TEXT "Input Field"
             error "input field text is wrong."
         }
 
+        lassign [$input location] x y
+        if {$x == 0 || $y == 0} {
+            error "failed to fetch element location."
+        }
+
         $input click
         $input clear
 

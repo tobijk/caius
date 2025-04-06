@@ -18,6 +18,27 @@ set PAGE2_URL "file://$DATA_DIR/html/page_fill_prompt.html"
 ::itcl::class TestWebDriverWindow {
     inherit Testing::TestObject
 
+    method test_framework_prohibits_closing_last_window {} {
+        docstr "Close the last window of a session, expect an error."
+
+        set cap [namespace which [::WebDriver::Capabilities #auto -browser_name firefox]]
+        set session [::WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $cap]
+
+        $session set_logging_enabled true
+        set window [$session active_window]
+
+        except {
+            $window close
+        } e {
+            ::WebDriver::CloseSessionWindowError {
+                puts [$e msg]
+                return
+            }
+        } final {
+            ::itcl::delete object $session
+        }
+    }
+
     method test_calling_active_window_fails_if_window_closed {} {
         docstr "Close a window and then try to access its handle, expect an error."
 

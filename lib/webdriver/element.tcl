@@ -65,24 +65,6 @@ namespace eval WebDriver {
                 $_session __elements $by "$locator" "$this" false]
         }
 
-        method move_to {{xoffset null} {yoffset null}} {
-            set json "{ \"element\": \"[$this web_element_id]\""
-            if {($xoffset ne "null") && ($yoffset ne "null")} {
-                set json "$json, \"xoffset\": $xoffset, \"yoffset\": $yoffset"
-            }
-            set json "$json }"
-
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "move to $json"
-            }
-
-            set response [::WebDriver::Protocol::dispatch \
-                -query $json \
-                [$_session session_url]/moveto]
-            ::itcl::delete object $response
-        }
-
         method click {} {
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
@@ -92,18 +74,6 @@ namespace eval WebDriver {
             set response [::WebDriver::Protocol::dispatch \
                 -query "{}" \
                 [$_session session_url]/element/[$this web_element_id]/click]
-            ::itcl::delete object $response
-        }
-
-        method submit {} {
-            if {[$_session logging_enabled]} {
-                ::WebDriver::log [$_session session_id] \
-                    "submit form"
-            }
-
-            set response [::WebDriver::Protocol::dispatch \
-                -query "{}" \
-                [$_session session_url]/element/[$this web_element_id]/submit]
             ::itcl::delete object $response
         }
 
@@ -234,9 +204,9 @@ namespace eval WebDriver {
 
         method location {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/[$this web_element_id]/location]
+                [$_session session_url]/element/[$this web_element_id]/rect]
             array set value [$response value]
-            ::itcl::delete $response
+            ::itcl::delete object $response
 
             if {[$_session logging_enabled]} {
                 ::WebDriver::log [$_session session_id] \
@@ -248,7 +218,7 @@ namespace eval WebDriver {
 
         method size {} {
             set response [::WebDriver::Protocol::dispatch \
-                [$_session session_url]/element/[$this web_element_id]/size]
+                [$_session session_url]/element/[$this web_element_id]/rect]
             array set value [$response value]
             ::itcl::delete $response
 
@@ -275,4 +245,3 @@ namespace eval WebDriver {
         }
     }
 }
-
