@@ -21,7 +21,7 @@ Application, thus you will also need a Java Runtime Environment.
 
 Selenium Server does not need to be running on the same computer as your
 scripts. Caius communicates with the server over a TCP connection via the
-[WebDriver Wire Protocol](https://code.google.com/p/selenium/wiki/JsonWireProtocol).
+[WebDriver Protocol](https://www.w3.org/TR/webdriver2/).
 The server in turn is responsible for launching a browser instance using the
 appropriate driver engine and passing on the commands it receives.
 
