@@ -52,7 +52,7 @@ This section explains how to write test modules and how to execute them.
 In Caius, test modules are classes which derive from `Testing::TestObject`. A
 minimal test module looks like this:
 
-~~~{tcl}
+~~~tcl
 package require Itcl
 package require Testing
 
@@ -106,7 +106,7 @@ destructor of your test class for this purpose. Instead define methods
 In order to document your tests, you may define *docstrings* for your test
 methods as shown in the following example:
 
-~~~~{tcl}
+~~~tcl
 itcl::class MyTest {
     inherit Testing::TestObject
 
@@ -125,7 +125,7 @@ itcl::class MyTest {
         # implementation here
     }
 }
-~~~~
+~~~
 
 Docstrings are a concept stolen from Python. They are a special feature
 of Caius and not generally available in Tcl. They only work in test methods.
@@ -210,13 +210,13 @@ with a non-zero exit status on failure.
 Test plans are written in a simple XML format and define a sequence of test
 scripts to be executed. The following listing shows a basic example:
 
-~~~~{xml}
+~~~xml
 <testplan>
     <run timeout="60">/home/tobias/Demo/test1.tcl</run>
     <run timeout="60">/home/tobias/Demo/test2.tcl</run>
     ...
 </testplan>
-~~~~
+~~~
 
 Test plans are loaded and executed with the `caius runplan` command. For each
 test, a subdirectory will be created inside the current working directory. This
@@ -236,7 +236,7 @@ capabilities of the device under test.
 To this end, you may attach constraints to arbitrary blocks of code or entire
 test methods:
 
-~~~{tcl}
+~~~tcl
 # test works only for devices that have a wifi chip and a DSL modem
 ::Testing::constraints {wifi dsl} {
     method test_share_dsl_connection_over_wifi {} {

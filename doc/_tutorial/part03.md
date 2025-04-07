@@ -43,10 +43,10 @@ about the browser you intend to drive and the capabilities you need to be
 available. Using the capabilities object, you initiate a session as shown in
 the following fragment:
 
-~~~~{tcl}
+~~~tcl
 set caps [namespace which [WebDriver::Capabilities #auto -browser_name firefox]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
-~~~~
+~~~
 
 The `Session` constructor takes as arguments
 
@@ -60,25 +60,25 @@ thrown.
 In order to end an on-going session, call the `close` method or delete it
 directly:
 
-~~~~{tcl}
+~~~tcl
 itcl::delete object $session
-~~~~
+~~~
 
 ## Turning on Logging
 
 In order to make the WebDriver module log informational messages to standard
 output, enable logging on the session object:
 
-~~~~{tcl}
+~~~tcl
 $session set_logging_enabled true
-~~~~
+~~~
 
 ## Resizing and Moving the Window
 
 You can control size and position of the browser window on the screen as shown
 in this example:
 
-~~~~{tcl}
+~~~tcl
 set caps [namespace which [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 set window [$session active_window]
@@ -96,28 +96,28 @@ lassign [$window size] w h
 
 # set position (x, y)
 $window set_position 10 10
-~~~~
+~~~
 
 ## Loading URLs and Navigating the History
 
 Load a URL using the `Window` object's `set_url` method:
 
-~~~~{tcl}
+~~~{tcl}
 set caps [namespace which [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 $window set_url http://www.example.com
-~~~~
+~~~
 
 You can navigate back and forth in the the history:
 
-~~~~{tcl}
+~~~tcl
 $window back
 
 # check current URL
 set url [$window url]
 
 $window forward
-~~~~
+~~~
 
 ## Retrieving and Setting Cookies
 
@@ -125,21 +125,21 @@ Cookies are represented by `WebDriver::Cookie` objects. You can add a `Cookie`
 for the currently active domain using the window object's `set_cookie`
 method:
 
-~~~~{tcl}
+~~~tcl
 $window set_cookie -expiry "[expr [clock seconds] + duration]" \
     cookie_name cookie_value
-~~~~
+~~~
 
 You can obtain a list of cookies set for the currently active domain, by
 calling the `cookies` method on the window object:
 
-~~~~{tcl}
+~~~tcl
 set cookie_list [$window cookies]
 
 foreach {c_obj} $cookie_list {
     puts "[$c_obj name]: [$c_obj value]"
 }
-~~~~
+~~~
 
 The result is a list of `WebDriver::Cookie` objects, whose name, value and
 additional attributes you may query. The cookie object references are
@@ -193,9 +193,9 @@ so-called locator strategies, listed in the table below.
 In order to get a reference to an input field with the id *username*, you
 would call the `element` method on the window object like this:
 
-~~~~{tcl}
+~~~tcl
 set username_field [$window element by_id username]
-~~~~
+~~~
 
 A call to `element` will only ever return a single object reference (the first
 one that matches), even if multiple objects match the locator. To get a list of
@@ -209,11 +209,11 @@ calling `itcl::delete object` on it.
 Once you have obtained an element reference, you may want to check if the
 element is actually displayed within the visibile canvas:
 
-~~~~{tcl}
+~~~tcl
 set username_field [$window element by_id username]
 set is_displayed [$username_field displayed]
 ::itcl::delete object $username_field
-~~~~
+~~~
 
 Note how we explicitly delete the reference object, once we have obtained
 the information that we needed.
@@ -222,23 +222,23 @@ the information that we needed.
 
 You can read the value of an element's attribute by calling
 
-~~~~{tcl}
+~~~tcl
 $element attribute <attribute_name>
-~~~~
+~~~
 
 In order to read the value of a CSS property instead use
 
-~~~~{tcl}
+~~~tcl
 $element css_property <prop_name>
-~~~~
+~~~
 
 ### Clicking an Element
 
 Clicking an element is as simple as
 
-~~~~{tcl}
+~~~tcl
 $element click
-~~~~
+~~~
 
 Depending on your application and the dimensions of its layout, you may want
 to ensure that the element is actually on the visible canvas, for example by
@@ -248,43 +248,43 @@ issuing a `move_to` or by checking the return value of `displayed`.
 
 The text of an element can be retrieved with a simple call:
 
-~~~~{tcl}
+~~~tcl
 puts [$element text]
-~~~~
+~~~
 
 ### Sending Text to an Input Field
 
 In order to send input to an element, make sure it is focused then use the
 `send_keys` method:
 
-~~~~{tcl}
+~~~tcl
 set element [$window element by_id username]
 $element click
 $element clear
 $element send_keys "jonathan"
 itcl::delete object $element
-~~~~
+~~~
 
 ### Determining the State of a Choice Field
 
 In order to check the state of an input field of type checkbox or of a
 combobox, call
 
-~~~~{tcl}
+~~~tcl
 $element selected
-~~~~
+~~~
 
 ## Taking Screenshots
 
 You may take a screenshot of the active page at any time by calling
 
-~~~~{tcl}
+~~~tcl
 set screenshot [$window screenshot -decode]
 
 set fp [open "test.png" "w+b"]
 puts $fp $screenshot
 close $fp
-~~~~
+~~~
 
 Without the `-decode` parameter, the `screenshot` method returns the image
 Base64 encoded.

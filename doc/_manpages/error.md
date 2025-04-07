@@ -41,7 +41,9 @@ It also defines a number of base exception types.
 ## API
 
 * `raise` *class* *string*:
+  <p>
   Raise an exception of type *class* with error message *string*.
+  </p>
 
 In order to catch exceptions (or Tcl errors) that may occur during the
 execution of a code block, the block may be guarded with an `except` statement:
@@ -83,11 +85,15 @@ The mother of all exceptions. All user-defined exceptions should directly or
 indirectly inherit from `Exception`.
 
 * `constructor` *msg*:
+  <p>
   Exceptions are generally not created directly, but rather by use of the
   `raise` command.
+  </p>
 
 * `method msg`:
+  <p>
   Return the error message stored with the exception object.
+  </p>
 
 ### itcl::class RuntimeError
 
@@ -109,4 +115,3 @@ Tcl errors that occur inside blocks guarded by `except`.
 ## SEE ALSO
 
 `catch`(3tcl)
-

@@ -21,17 +21,16 @@ functionality in an object-oriented programming interface.
 In order to spawn a process and interact with it through the standard channels,
 create a `CliDriver::Spawn` instance like this:
 
-~~~~{tcl}
+~~~tcl
 package require CliDriver
 
 set p [CliDriver::Spawn #auto telnet localhost]
-~~~~
+~~~
 
 You can then invoke `send` and `expect` on the object `p` as you would with
 classic expect:
 
-~~~~{tcl}
-
+~~~tcl
 set count 0
 set timeout 5
 
@@ -59,7 +58,7 @@ $p expect {
 }
 
 itcl::delete object $p
-~~~~
+~~~
 
 The advantages of working with objects become more apparent when you start
 spawning multiple processes. With classic expect you need to keep track of the
@@ -68,9 +67,9 @@ process. Caius does this for you implicitly.
 
 If you need to, you can still access the spawn id like this
 
-~~~~{tcl}
+~~~tcl
 set spawn_id [$p spawn_id]
-~~~~
+~~~
 
 and use classic expect calls, for example to wait on multiple channels at the
 same time. Note also how we used `timeout` and `exp_continue` just as if we
@@ -87,14 +86,14 @@ the convenience classes `CliDriver::Telnet` and `CliDriver:Ssh` are available.
 They are used in the same way as `Spawn` but implicitely invoke the `telnet`
 or `ssh` command installed in the system.
 
-~~~~{tcl}
+~~~tcl
 package require CliDriver
 
 set ssh [CliDriver::Ssh #auto user@host]
 
 $ssh expect "*Password:*"
 ...
-~~~~
+~~~
 
 ## Using a Serial Line
 
@@ -103,12 +102,12 @@ one is for running Expect on a serial connection. The constructor takes various
 optional parameters, such as the baud rate, that are used to configure the
 terminal device, as shown in the following example:
 
-~~~~{tcl}
+~~~tcl
 package require CliDriver
 
 set serial [CliDriver::Stty #auto -baud 56000 \
     -parity n -data_bits 8 -stop_bits 1 /dev/ttyS0]
-~~~~
+~~~
 
 The settings in the example above are actually the default settings. So in case
 they match your requirements, it is sufficient to specify the port.

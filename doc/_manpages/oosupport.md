@@ -107,25 +107,31 @@ JSON representation.
 ## API
 
 * `OOSupport::init_attributes`:
+  <p>
   In a constructor, bring to life member variables according to the
   `common attributes` declaration and initialize them with specified default
   values.
+  </p>
 
 * `OOSupport::bless_attributes` ?*-opts*?:
+  <p>
   In the body of a class definition, auto-generate getter and setter methods
   for members according to the *access* specification of each attribute.
-
+  </p>
+  <p>
   If the `-json_support` parameter is supplied, then objects will be blessed
   with additional methods `to_json` and `from_json` that allow serializing an
   object to and restoring it from JSON.
-  
+  </p>
+  <p>
   If `-skip_undefined` is specified, then empty strings and variables of
   other types that are initialized to `null` will not be included in JSON output.
-  
+  </p>
+  <p>
   If `-collapse_underscore` is given, then attributes of the form `attr_name`
   will be dumped and read in camel-case as `attrName` instead.
+  </p>
 
 ## SEE ALSO
 
 `itcl`(3itcl), `json`(3tcl)
-

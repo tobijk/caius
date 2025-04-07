@@ -42,23 +42,30 @@ the Caius framework. While it is *not* mandatory to derive tests from the
 execution and reporting functionality via its `run` method.
 
 ## API
+<p></p>
 
 ### namespace Testing
 
 * `assert` `{` *expression* `}`:
+  <p>
   Assert that *expression* is true. If not, raise a `::Testing::AssertionFailed`
   exception. The given *expression* is evaluated as by `if`.
+  </p>
 
 * `constraints` *constraints* *body*:
+  <p>
   Executes the *body* of code at the *current* stack level if all constraints
   are satisfied. For example
+  </p>
 
       ::Testing::constraints {unix nonRoot} {
           # code executed if platform is Unix and user not root
       }
 
+  <p>
   Constraints can be set or unset with the `set_constraint` command. There are a
   number of pre-defined constraints:
+  </p>
 
   * `unix`:
     Test or code block only runs on a Unix platform (includes Mac OS X).
@@ -106,36 +113,51 @@ execution and reporting functionality via its `run` method.
      Test must be run in an unprivileged account.
 
 * `set_constraint` *constraint* *boolean*:
-   Enable or disable *constraint*.
+  <p>
+  Enable or disable *constraint*.
+  </p>
 
 * `test_constraints` *constraints*:
-   Test given list of constraints and return 1 if all constraints are satisfied
-   or 0 otherwise.
-
+  <p>
+  Test given list of constraints and return 1 if all constraints are satisfied
+  or 0 otherwise.
+  </p>
 ### itcl::class Testing::TestObject
 
 * `method run` ?`-f` *report_format*? ?*test* *test* ...?:
+  <p>
   Execute the listed *test* methods and output test results in the given
   *report_format*, which must be one of *junit*, *text*, *xml* or *zero*. If no tests
   are explicitely listed, execute all methods in the class starting with the
   prefix *test*.
+  </p>
 
 * `method list_tests`:
+  <p>
   Return a list of all available test methods on the given `TestObject`.
+  </p>
 
 * `method setup_before` [interface]:
+  <p>
   If implemented, this method is called once on entry to the test module.
+  </p>
 
 * `method teardown_after` [interface]:
+  <p>
   If implemented, this method is called once after the last test in the module
   has finished.
+  </p>
 
 * `method setup` [interface]:
+  <p>
   If implemented, this method is invoked before each test.
+  </p>
 
 * `method teardown` [interface]:
+  <p>
   If implemented, this method is invoked after each test.
-
+  </p>
+  
 ## ADDITIONAL NOTES
 
 All methods starting with the prefix *test* are considered test cases and
