@@ -102,7 +102,7 @@ $window set_position 10 10
 
 Load a URL using the `Window` object's `set_url` method:
 
-~~~{tcl}
+~~~tcl
 set caps [namespace which [WebDriver::Capabilities #auto]]
 set session [WebDriver::Session #auto http://127.0.0.1:4444/wd/hub $caps]
 $window set_url http://www.example.com
