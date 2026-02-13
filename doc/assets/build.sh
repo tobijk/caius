@@ -27,9 +27,10 @@ do_build()
         # continue if not a regular file
         test -f scss/$scss_file || continue
 
-        sass -C --scss --style expanded scss/$scss_file \
-            --precision 8 \
-            >> css/`basename $scss_file .scss`.css
+        python3 -c "
+import sass, sys
+print(sass.compile(filename=sys.argv[1], output_style='expanded', precision=8))
+" scss/$scss_file >> css/`basename $scss_file .scss`.css
     done
 
     rm -f css/variables.css
