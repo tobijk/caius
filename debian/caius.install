@@ -1,0 +1,12 @@
+lib/caius        usr/share/tcltk/caius/
+lib/clidriver    usr/share/tcltk/caius/
+lib/error        usr/share/tcltk/caius/
+lib/iostream     usr/share/tcltk/caius/
+lib/oosupport    usr/share/tcltk/caius/
+lib/os           usr/share/tcltk/caius/
+lib/subprocess   usr/share/tcltk/caius/
+lib/testing      usr/share/tcltk/caius/
+lib/webdriver    usr/share/tcltk/caius/
+lib/pkgIndex.tcl usr/share/tcltk/caius/
+xsl              usr/share/tcltk/caius/
+bin/caius        usr/share/tcltk/caius/bin/

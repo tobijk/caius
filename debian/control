@@ -1,0 +1,34 @@
+Source: caius
+Section: devel
+Priority: optional
+Maintainer: Tobias Koch <tobias.koch@gmail.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Homepage: https://tobijk.github.io/caius/
+Vcs-Git: https://github.com/tobijk/caius.git
+Vcs-Browser: https://github.com/tobijk/caius
+Rules-Requires-Root: no
+
+Package: caius
+Architecture: all
+Depends:
+ ${misc:Depends},
+ tcl,
+ tcllib,
+ tcl-thread,
+ itcl3,
+ expect,
+ tdom
+Description: functional testing framework for Tcl
+ Caius is a functional testing framework for the 21st century, born out of
+ the need for a contemporary replacement for DejaGnu. It is written in
+ object-oriented Tcl and provides an easy-to-use programming interface to
+ proven testing technologies.
+ .
+ Features include:
+  * Driving command line applications via Expect, including Telnet, SSH
+    and serial line sessions.
+  * Automating browser sessions through the Selenium WebDriver protocol.
+  * Producing HTML reports or output suitable for CI integration.
+  * Object-oriented enhancements for Tcl, including fine-grained exception
+    handling and JSON-serialisable objects.

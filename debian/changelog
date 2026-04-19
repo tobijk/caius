@@ -1,0 +1,5 @@
+caius (0.20.2-1) unstable; urgency=medium
+
+  * Initial Debian packaging.
+
+ -- Tobias Koch <tobias.koch@gmail.com>  Sun, 19 Apr 2026 00:00:00 +0000
