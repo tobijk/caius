@@ -9,6 +9,7 @@ doc/assets/css/normalize.css
 doc/assets/css/style.css
 doc/assets/css/tables.css
 doc/_manpages/*.gz
+doc/caius.1.gz
 test/spool/**
 pack/tmp-install/**
 TODO.txt

@@ -7,10 +7,11 @@ override_dh_auto_build:
 	set -e; cd doc/_manpages && for src in *.md; do \
 	    ronn --pipe -r "$$src" | gzip -n9 > "$${src%.md}.3caius.gz"; \
 	done
+	ronn --pipe -r doc/caius.1.md | gzip -n9 > doc/caius.1.gz
 
 override_dh_auto_test:
 
 override_dh_auto_install:
 
 override_dh_auto_clean:
-	rm -f doc/_manpages/*.3caius.gz
+	rm -f doc/_manpages/*.3caius.gz doc/caius.1.gz
