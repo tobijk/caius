@@ -2,7 +2,9 @@ Source: caius
 Section: devel
 Priority: optional
 Maintainer: Tobias Koch <tobias.koch@gmail.com>
-Build-Depends: debhelper-compat (= 13)
+Build-Depends:
+ debhelper-compat (= 13),
+ ronn
 Standards-Version: 4.7.0
 Homepage: https://tobijk.github.io/caius/
 Vcs-Git: https://github.com/tobijk/caius.git
