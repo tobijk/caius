@@ -108,10 +108,15 @@ namespace eval Caius {
         }
 
         method find_stylesheet {} {
-            if {[file type $::argv0] eq {link}} {
-                set my_argv0 [file readlink $::argv0]
-            } else {
-                set my_argv0 $::argv0
+            set my_argv0 $::argv0
+            if {[file type $my_argv0] eq {link}} {
+                set link_target [file readlink $my_argv0]
+                if {[file pathtype $link_target] eq {relative}} {
+                    set my_argv0 [file join \
+                        [file dirname $my_argv0] $link_target]
+                } else {
+                    set my_argv0 $link_target
+                }
             }
 
             set install_dir [file normalize "[file dirname $my_argv0]/.." ]
